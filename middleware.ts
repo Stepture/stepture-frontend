@@ -1,0 +1,41 @@
+import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getServerApi } from "./lib/axios-server";
+
+export async function middleware(req: NextRequest) {
+  const excludedPaths = ["/favicon.ico", "/robots.txt", "/sitemap.xml"];
+  if (
+    excludedPaths.includes(req.nextUrl.pathname) ||
+    req.nextUrl.pathname.startsWith("/_next/") ||
+    req.nextUrl.pathname.startsWith("/static/") ||
+    req.nextUrl.pathname.match(/\.[a-zA-Z0-9]+$/)
+  ) {
+    return NextResponse.next();
+  }
+  console.log("Middleware triggered for:", req.nextUrl.pathname);
+  const cookieStore = await cookies();
+  // console.log("Cookies:", cookieStore.getAll());
+  const token = cookieStore.get("access_token")?.value || "";
+  // console.log("Token from cookies:", token);
+  const isPublic =
+    req.nextUrl.pathname.startsWith("/login") ||
+    req.nextUrl.pathname.startsWith("/auth/success");
+
+  if (isPublic) {
+    return NextResponse.next();
+  }
+
+  if (!token) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  const allCookies = req.headers.get("cookie") || "";
+  const api = getServerApi(allCookies);
+  const user = await api.protected.getMe();
+  console.log("user", user);
+  if (!user || !user.user) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  return NextResponse.next();
+}

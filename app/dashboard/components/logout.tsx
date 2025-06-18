@@ -8,7 +8,7 @@ const Logout = () => {
   const handleLogout = async (): Promise<void> => {
     try {
       const res = await fetch(`http://localhost:8000/auth/logout`, {
-        method: "GET",
+        method: "POST",
         credentials: "include",
       });
       console.log("Logout response:", res);
