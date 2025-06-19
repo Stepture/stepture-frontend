@@ -12,11 +12,8 @@ export async function middleware(req: NextRequest) {
   ) {
     return NextResponse.next();
   }
-  console.log("Middleware triggered for:", req.nextUrl.pathname);
   const cookieStore = await cookies();
-  // console.log("Cookies:", cookieStore.getAll());
   const token = cookieStore.get("access_token")?.value || "";
-  // console.log("Token from cookies:", token);
   const isPublic =
     req.nextUrl.pathname.startsWith("/login") ||
     req.nextUrl.pathname.startsWith("/auth/success");
@@ -32,7 +29,6 @@ export async function middleware(req: NextRequest) {
   const allCookies = req.headers.get("cookie") || "";
   const api = getServerApi(allCookies);
   const user = await api.protected.getMe();
-  console.log("user", user);
   if (!user || !user.user) {
     return NextResponse.redirect(new URL("/login", req.url));
   }

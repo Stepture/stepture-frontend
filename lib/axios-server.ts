@@ -45,23 +45,17 @@ function createPrivateApi(cookie?: string): AxiosInstance {
       originalRequest._retry = true;
 
       if (isRefreshing) {
-        console.log(
-          "[axios-server] Token refresh in progress, queuing request"
-        );
         try {
           await new Promise((resolve, reject) => {
             failedQueue.push({ resolve, reject });
           });
-          console.log("[axios-server] Token refresh done, retrying request");
           return instance(originalRequest);
         } catch (err) {
-          console.log("[axios-server] Token refresh failed for queued request");
           return Promise.reject(err);
         }
       }
 
       isRefreshing = true;
-      console.log("[axios-server] Starting token refresh");
 
       try {
         // 1. Make the refresh token request
@@ -75,38 +69,21 @@ function createPrivateApi(cookie?: string): AxiosInstance {
         const newCookieHeaders = refreshResponse.headers["set-cookie"];
 
         if (newCookieHeaders && newCookieHeaders.length > 0) {
-          // Join multiple set-cookie headers into a single string for the 'Cookie' header
           const newCookie = newCookieHeaders.join("; ");
-          console.log(
-            "[axios-server] Token refresh successful, updating cookie."
-          );
-
-          // 3. Update the default 'Cookie' header for this axios instance
-          // This ensures all *future* requests made with this 'instance' use the new cookie.
           instance.defaults.headers["Cookie"] = newCookie;
-
-          // 4. Update the 'Cookie' header in the *original failed request*
-          // This ensures the *retried* request uses the new cookie immediately.
           originalRequest.headers = {
             ...(originalRequest.headers || {}),
             Cookie: newCookie,
           };
-        } else {
-          console.log(
-            "[axios-server] Token refresh successful, but no 'set-cookie' header was found in response."
-          );
-          // You might want to handle this case, as it means the server didn't issue a new cookie
         }
 
-        processQueue(); // Unblock any queued requests
-        return instance(originalRequest); // Retry the original request with the new cookie
+        processQueue();
+        return instance(originalRequest);
       } catch (refreshError) {
-        console.log("[axios-server] Token refresh failed");
         processQueue(refreshError);
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
-        console.log("[axios-server] Token refresh process ended");
       }
     }
   );
@@ -139,8 +116,6 @@ export function getServerApi(cookie?: string) {
       getMe: async (options: AxiosRequestConfig = {}) => {
         const config = { ...options };
         if (cookie) {
-          // This part relies on the initial cookie passed to createPrivateApi
-          // The interceptor handles subsequent updates.
           config.headers = { ...(config.headers || {}), Cookie: cookie };
         }
         try {

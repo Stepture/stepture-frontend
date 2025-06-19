@@ -1,20 +1,17 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { apiClient } from "@/lib/axios-client";
 
 const Logout = () => {
   const router = useRouter();
 
   const handleLogout = async (): Promise<void> => {
     try {
-      const res = await fetch(`http://localhost:8000/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-      console.log("Logout response:", res);
+      apiClient.protected.logout();
       router.push("/login");
     } catch (error) {
-      console.error("Logout failed:", error);
+      // Optionally handle error
     }
   };
   return (
