@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-
+import { apiClient } from "@/lib/axios-client";
 // Menu items.
 const items = [
   {
@@ -39,15 +39,30 @@ const items = [
   },
 ];
 
+import { useEffect, useState } from "react";
+
 export function AppSidebar() {
   const pathname = usePathname();
+  const [user, setUser] = useState<any>(null);
   const isActive = (url: string) => pathname === url;
-  const activeItem = items.find((item) => isActive(item.url));
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const data = await apiClient.protected.getMe();
+        setUser(data.user);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      }
+    }
+    fetchUser();
+  }, []);
+
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>{user?.name}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (

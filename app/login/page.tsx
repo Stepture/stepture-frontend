@@ -1,8 +1,6 @@
-"use client"; // U may make separate "a button component" for this if you want as server component
+// U may make separate "a button component" for this if you want as server component
 export default function LoginPage() {
-  const loginWithGoogle = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
-  };
+  const googleAuthUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
   return (
     <div
       style={{
@@ -13,7 +11,8 @@ export default function LoginPage() {
         background: "#f9f9f9",
       }}
     >
-      <button
+      <a
+        href={googleAuthUrl}
         style={{
           padding: "12px 32px",
           fontSize: "1.1rem",
@@ -26,16 +25,11 @@ export default function LoginPage() {
           alignItems: "center",
           gap: "12px",
           color: "black",
+          textDecoration: "none",
         }}
-        onClick={loginWithGoogle}
       >
-        <img
-          src="/globe.svg"
-          alt="Google"
-          style={{ width: 24, height: 24, color: "black" }}
-        />
         Log in with Google
-      </button>
+      </a>
     </div>
   );
 }
