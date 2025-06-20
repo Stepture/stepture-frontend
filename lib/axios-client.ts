@@ -2,13 +2,13 @@ import axios from "axios";
 // import { apiClient } from "@/lib/axios-client";
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// const publicApi = axios.create({
-//   baseURL: BASE_URL,
-//   timeout: 10000,
-//   headers: {
-//     "Content-Type": "application/json",
-//   },
-// });
+const publicApi = axios.create({
+  baseURL: BASE_URL,
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 const privateApi = axios.create({
   baseURL: BASE_URL,
@@ -20,7 +20,7 @@ const privateApi = axios.create({
 });
 
 async function refreshToken() {
-  await privateApi.get("/auth/refresh-token");
+  await publicApi.post("/auth/refresh-token");
 }
 
 let isRefreshing = false;

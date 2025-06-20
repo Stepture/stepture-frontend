@@ -70,7 +70,7 @@ function createPrivateApi(cookie?: string): AxiosInstance {
 
         if (newCookieHeaders && newCookieHeaders.length > 0) {
           const newCookie = newCookieHeaders.join("; ");
-          instance.defaults.headers["Cookie"] = newCookie;
+          instance.defaults.headers.common["Cookie"] = newCookie;
           originalRequest.headers = {
             ...(originalRequest.headers || {}),
             Cookie: newCookie,

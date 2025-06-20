@@ -8,7 +8,7 @@ const Logout = () => {
 
   const handleLogout = async (): Promise<void> => {
     try {
-      apiClient.protected.logout();
+      await apiClient.protected.logout();
       router.push("/login");
     } catch (error) {
       // Optionally handle error
