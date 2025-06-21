@@ -28,7 +28,7 @@ export default function LoginPage() {
           textDecoration: "none",
         }}
       >
-        Log in with Google
+        Log in with Google !!
       </a>
     </div>
   );
