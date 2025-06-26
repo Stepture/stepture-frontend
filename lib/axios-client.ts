@@ -79,6 +79,25 @@ privateApi.interceptors.response.use(
 export const apiClient = {
   public: {
     // Add public endpoints here if needed
+    uploadImageToGoogleApi: async (file: File) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      try {
+        const response = await publicApi.post(
+          "/google-drive/upload-image",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+          }
+        );
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
   },
   protected: {
     getMe: async (options = {}) => {
