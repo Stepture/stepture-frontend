@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { apiClient } from "@/lib/axios-client";
+import Image from "next/image";
 
 type Props = {};
 
@@ -25,6 +26,7 @@ const page = (props: Props) => {
     setResult(null);
     try {
       const res = await apiClient.public.uploadImageToGoogleApi(file);
+      console.log("Upload response:", res);
       setResult(res);
     } catch (err: any) {
       setError(err?.response?.data?.message || "Upload failed");
@@ -48,6 +50,14 @@ const page = (props: Props) => {
         </div>
       )}
       {error && <div style={{ color: "red" }}>{error}</div>}
+
+      <Image
+        src={result?.publicUrl || "/placeholder.png"}
+        alt="Placeholder"
+        width={150}
+        height={150}
+        style={{ marginTop: "20px" }}
+      />
     </div>
   );
 };
