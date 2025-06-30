@@ -1,18 +1,20 @@
-'use client';
-
-import Image from 'next/image';
+"use client";
+import Image from "next/image";
 
 export default function LoginPage() {
+  const googleAuthUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
       <header className="px-6 py-4 bg-white shadow-sm">
-        <Image
-          src="/stepture logo.png"
-          alt="Stepture Logo"
-          width={100}
-          height={100}
-          priority
-        />
+        <div className="flex items-center justify-between max-w-[1280px] mx-auto">
+          <Image
+            src="/stepture logo.png"
+            alt="Stepture Logo"
+            width={100}
+            height={100}
+            priority
+          />
+        </div>
       </header>
 
       {/* Main content */}
@@ -35,7 +37,7 @@ export default function LoginPage() {
           <button
             className="w-full border border-gray-300 hover:border-gray-400 px-4 py-2 rounded-lg flex items-center justify-center gap-3 text-sm font-medium bg-white"
             onClick={() => {
-              alert('Google Sign-In clicked'); // Real Login Logic laterrrr
+              window.location.href = googleAuthUrl;
             }}
           >
             <Image
@@ -51,4 +53,3 @@ export default function LoginPage() {
     </div>
   );
 }
-// b

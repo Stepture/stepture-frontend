@@ -6,7 +6,7 @@ export default function TestPage() {
       <DocumentCard
         logoSrc="/AUlogo.png"
         websiteName="Assumption University"
-        docTitle="Exploring Assumption University Website on Crome"
+        docTitle="Exploring Assumption University Website on Chrome"
         author="MB Triad"
         stepCount={10}
         estimatedTime="15 Minutes"
