@@ -40,3 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 notes.txt
+.vscode/launch.json
+/.vscode
