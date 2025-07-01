@@ -131,6 +131,14 @@ export function getServerApi(cookie?: string) {
       logout: async () => {
         await privateApi.post("/auth/logout");
       },
+      getDocumentById: async (id: string, options: AxiosRequestConfig = {}) => {
+        const config = { ...options };
+        if (cookie) {
+          config.headers = { ...(config.headers || {}), Cookie: cookie };
+        }
+        const response = await privateApi.get(`/documents/${id}`, config);
+        return response.data;
+      },
     },
   };
 }
