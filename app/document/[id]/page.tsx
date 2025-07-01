@@ -4,13 +4,13 @@ import ScreenshotViewer from "../components/ScreeshotViewer";
 import { cookies } from "next/headers";
 
 type Props = {
-  params: Promise<{
+  params: {
     id: string;
-  }>;
+  };
 };
 
 interface CaptureData {
-  tab: any;
+  tab: string;
   screenshot: string;
   info: ElementInfo;
 }
@@ -24,8 +24,8 @@ interface ElementInfo {
     devicePixelRatio: number;
     viewportWidth: number;
     viewportHeight: number;
-    screenWidth: number;
-    screenHeight: number;
+    screenWidth?: number;
+    screenHeight?: number;
   };
 }
 
@@ -61,8 +61,6 @@ const fetchDocument = async (
           devicePixelRatio: step.screenshot?.devicePixelRatio || 1,
           viewportWidth: step.screenshot?.viewportWidth || 0,
           viewportHeight: step.screenshot?.viewportHeight || 0,
-          screenWidth: step.screenshot?.viewportWidth || 0,
-          screenHeight: step.screenshot?.viewportHeight || 0,
         },
       },
     }));

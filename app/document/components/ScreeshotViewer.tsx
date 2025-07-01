@@ -18,8 +18,8 @@ interface ElementInfo {
     devicePixelRatio: number;
     viewportWidth: number;
     viewportHeight: number;
-    screenWidth: number;
-    screenHeight: number;
+    screenWidth?: number;
+    screenHeight?: number;
   };
 }
 
