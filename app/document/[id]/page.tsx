@@ -15,6 +15,11 @@ interface CaptureData {
   info: ElementInfo;
 }
 
+interface CaptureResponse {
+  documentMetadata: DocumentData;
+  captures: CaptureData[];
+}
+
 interface ElementInfo {
   textContent: string;
   coordinates: {
@@ -29,48 +34,71 @@ interface ElementInfo {
   };
 }
 
+interface DocumentData {
+  title: string;
+  description: string;
+  author: string;
+  stepCount: number;
+  estimatedTime: string;
+}
+
+interface StepData {
+  stepDescription: string;
+  screenshot?: {
+    url: string;
+    viewportX?: number;
+    viewportY?: number;
+    devicePixelRatio?: number;
+    viewportWidth?: number;
+    viewportHeight?: number;
+  };
+}
+
 const fetchDocument = async (
   id: string,
   cookie?: string
-): Promise<CaptureData[]> => {
+): Promise<CaptureResponse> => {
   try {
     if (!id) {
       throw new Error("No document ID provided");
     }
 
-    // If backend unavailable, return dummy steps
-    return [
-      {
-        tab: null,
-        screenshot: "/screenshot1.png", // Replace with local image if needed
-        info: {
-          textContent: "Navigate to this site https://vms.au.edu/",
-          coordinates: {
-            viewport: { x: 0, y: 0 },
-          },
-          captureContext: {
-            devicePixelRatio: 2,
-            viewportWidth: 1280,
-            viewportHeight: 800,
-          },
-        },
-      },
-      {
-        tab: null,
-        screenshot: "/screenshot2.png",
-        info: {
-          textContent: "Click on the menu icon",
-          coordinates: {
-            viewport: { x: 100, y: 150 },
-          },
-          captureContext: {
-            devicePixelRatio: 2,
-            viewportWidth: 1280,
-            viewportHeight: 800,
+    const serverApi = getServerApi(cookie);
+    const data = await serverApi.protected.getDocumentById(id);
+
+    if (!data || !data.steps) {
+      throw new Error("No steps found for this document");
+    }
+
+    const documentMetadata: DocumentData = {
+      title: data.title || "",
+      description: data.description || "",
+      author: data?.user?.name || "",
+      stepCount: data.steps.length,
+      estimatedTime: data.estimatedTime || "N/A",
+    };
+
+    // Transform API steps to CaptureData[]
+    const mapped = data.steps.map((step: StepData) => ({
+      tab: null,
+      screenshot: step.screenshot?.url || "",
+      info: {
+        textContent: step.stepDescription || "",
+        coordinates: {
+          viewport: {
+            x: step.screenshot?.viewportX || 0,
+            y: step.screenshot?.viewportY || 0,
           },
         },
+        captureContext: {
+          devicePixelRatio: step.screenshot?.devicePixelRatio || 1,
+          viewportWidth: step.screenshot?.viewportWidth || 0,
+          viewportHeight: step.screenshot?.viewportHeight || 0,
+        },
       },
-    ];
+    }));
+
+    return { documentMetadata, captures: mapped };
   } catch (error) {
     console.error("Failed to fetch document:", error);
     throw error;
@@ -78,26 +106,20 @@ const fetchDocument = async (
 };
 
 const Page = async ({ params }: Props) => {
-  const { id } = params;
+  const { id } = await params;
 
   const cookieStore = await cookies();
   const allCookies = cookieStore.toString();
 
   try {
-    const captures = await fetchDocument(id, allCookies);
-
-    const dummyMetadata = {
-      title: "Checking Through Vincent Mary School of Science and Technology",
-      description:
-        "This walkthrough provides a simple and effective process for navigating the Vincent Mary School of Science and Technology (VMS) website...",
-      author: "MB Triad",
-      stepsCount: captures.length,
-      estimatedTime: "20 Minutes",
-    };
+    const { documentMetadata, captures } = await fetchDocument(id, allCookies);
 
     return (
       <div className="w-full max-w-[800px] mx-auto p-4">
-        <ScreenshotViewer initialCaptures={captures} metadata={dummyMetadata} />
+        <ScreenshotViewer
+          initialCaptures={captures}
+          metadata={documentMetadata}
+        />
       </div>
     );
   } catch (error) {
