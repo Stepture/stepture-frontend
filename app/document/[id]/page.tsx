@@ -1,6 +1,6 @@
 import React from "react";
 import { getServerApi } from "@/lib/axios-server";
-import ScreenshotViewer from "../components/ScreeshotViewer";
+import ScreenshotViewer from "../components/ScreenshotViewer";
 import { cookies } from "next/headers";
 
 type Props = {
@@ -13,6 +13,11 @@ interface CaptureData {
   tab: string;
   screenshot: string;
   info: ElementInfo;
+}
+
+interface CaptureResponse {
+  documentMetadata: DocumentData;
+  captures: CaptureData[];
 }
 
 interface ElementInfo {
@@ -29,10 +34,30 @@ interface ElementInfo {
   };
 }
 
+interface DocumentData {
+  title: string;
+  description: string;
+  author: string;
+  stepCount: number;
+  estimatedTime: string;
+}
+
+interface StepData {
+  stepDescription: string;
+  screenshot?: {
+    url: string;
+    viewportX?: number;
+    viewportY?: number;
+    devicePixelRatio?: number;
+    viewportWidth?: number;
+    viewportHeight?: number;
+  };
+}
+
 const fetchDocument = async (
   id: string,
   cookie?: string
-): Promise<CaptureData[]> => {
+): Promise<CaptureResponse> => {
   try {
     if (!id) {
       throw new Error("No document ID provided");
@@ -45,8 +70,16 @@ const fetchDocument = async (
       throw new Error("No steps found for this document");
     }
 
+    const documentMetadata: DocumentData = {
+      title: data.title || "",
+      description: data.description || "",
+      author: data?.user?.name || "",
+      stepCount: data.steps.length,
+      estimatedTime: data.estimatedTime || "N/A",
+    };
+
     // Transform API steps to CaptureData[]
-    const mapped = data.steps.map((step: any) => ({
+    const mapped = data.steps.map((step: StepData) => ({
       tab: null,
       screenshot: step.screenshot?.url || "",
       info: {
@@ -65,7 +98,7 @@ const fetchDocument = async (
       },
     }));
 
-    return mapped;
+    return { documentMetadata, captures: mapped };
   } catch (error) {
     console.error("Failed to fetch document:", error);
     throw error;
@@ -79,11 +112,14 @@ const Page = async ({ params }: Props) => {
   const allCookies = cookieStore.toString();
 
   try {
-    const captures = await fetchDocument(id, allCookies);
+    const { documentMetadata, captures } = await fetchDocument(id, allCookies);
 
     return (
       <div className="w-full max-w-[800px] mx-auto p-4">
-        <ScreenshotViewer initialCaptures={captures} />
+        <ScreenshotViewer
+          initialCaptures={captures}
+          metadata={documentMetadata}
+        />
       </div>
     );
   } catch (error) {

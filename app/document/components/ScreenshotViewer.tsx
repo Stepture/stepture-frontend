@@ -1,10 +1,19 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from "react";
-import React from "react";
+
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import TimeIcon from "@/public/time.svg";
+import StepsIcon from "@/public/steps.svg";
+import PersonIcon from "@/public/person.svg";
+import Logo from "@/public/AUlogo.png";
+
+interface ScreenshotViewerProps {
+  initialCaptures: CaptureData[];
+  metadata: DocumentMetadata;
+}
 
 interface CaptureData {
-  tab: any;
+  tab: string;
   screenshot: string;
   info: ElementInfo;
 }
@@ -23,8 +32,12 @@ interface ElementInfo {
   };
 }
 
-interface ScreenshotViewerProps {
-  initialCaptures: CaptureData[];
+interface DocumentMetadata {
+  title: string;
+  description: string;
+  author: string;
+  stepCount: number;
+  estimatedTime: string;
 }
 
 const ResponsiveScreenshotItem = ({
@@ -230,23 +243,11 @@ const ResponsiveScreenshotItem = ({
       ref={containerRef}
       className="screenshot-item border-1 border-corner rounded-md p-2.5 bg-white flex flex-col items-start gap-1"
     >
-      <div className="rounded-sm bg-background font-semibold color-blue px-2 py-1">
-        <p className="text-xs text-blue">Step {index + 1}</p>
-      </div>
-
-      <div className="text-start p-2 text-base text-slate-800">
-        {info && (
-          <div className="space-y-1">
-            <p>
-              <span className="font-medium">Click:</span>{" "}
-              <span className="text-slate-600">
-                {info.textContent && (
-                  <span className="text-slate-800">"{info.textContent}"</span>
-                )}
-              </span>
-            </p>
-          </div>
-        )}
+      <div className="flex items-center gap-2 text-sm font-medium">
+        <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100">
+          Step-{index + 1}
+        </span>
+        <p className="text-gray-800">{info.textContent}</p>
       </div>
 
       <div className="relative w-full">
@@ -257,6 +258,7 @@ const ResponsiveScreenshotItem = ({
           src={img}
           alt={`Screenshot ${index + 1}`}
           onLoad={handleImageLoad}
+          className="border rounded-md mt-2"
         />
 
         {info?.coordinates &&
@@ -279,40 +281,52 @@ const ResponsiveScreenshotItem = ({
   );
 };
 
-const ScreenshotViewer = ({ initialCaptures }: ScreenshotViewerProps) => {
-  const [captures, setCaptures] = useState<CaptureData[]>(initialCaptures);
-  const [loading, setLoading] = useState(false);
-
-  // If you need to refresh or update captures, you can add methods here
-  const refreshCaptures = useCallback((newCaptures: CaptureData[]) => {
-    setCaptures(newCaptures);
-  }, []);
-
-  if (loading) {
-    return <div className="text-center py-10">Loading...</div>;
-  }
-
-  if (!captures || captures.length === 0) {
-    return (
-      <div className="text-center text-gray-500 py-10">
-        No screenshots available
-      </div>
-    );
-  }
+export default function ScreenshotViewer({
+  initialCaptures,
+  metadata,
+}: ScreenshotViewerProps) {
+  const [captures] = useState(initialCaptures);
 
   return (
-    <div className="flex flex-col gap-4 items-center justify-center">
-      {captures.map((capture, index) => (
-        <div key={`${index}-${capture.screenshot.substring(0, 20)}`}>
-          <ResponsiveScreenshotItem
-            img={capture.screenshot}
-            index={index}
-            info={capture.info}
-          />
+    <div className="w-full max-w-4xl mx-auto px-4 py-8 space-y-6">
+      {/* Header Section */}
+      <div className="flex items-start gap-4">
+        <div className="w-16 h-16 rounded-xl bg-gradient-to-b from-[#E3EAFC] to-white flex items-center justify-center">
+          <Image src={Logo} alt="Logo" width={48} height={48} />
         </div>
-      ))}
+        <div className="flex-1">
+          <h1 className="text-2xl font-semibold text-gray-900">
+            {metadata.title}
+          </h1>
+          <p className="text-gray-700 mt-2">{metadata.description}</p>
+          <div className="flex items-center gap-4 text-sm text-gray-500 mt-2">
+            <div className="flex items-center gap-1">
+              <Image src={PersonIcon} alt="Author" width={16} height={16} />
+              {metadata.author}
+            </div>
+            <div className="flex items-center gap-1">
+              <Image src={StepsIcon} alt="Steps" width={16} height={16} />
+              {metadata.stepCount} Steps
+            </div>
+            <div className="flex items-center gap-1">
+              <Image src={TimeIcon} alt="Time" width={16} height={16} />
+              {metadata.estimatedTime}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4 items-center justify-center">
+        {captures.map((capture, index) => (
+          <div key={`${index}-${capture.screenshot.substring(0, 20)}`}>
+            <ResponsiveScreenshotItem
+              img={capture.screenshot}
+              index={index}
+              info={capture.info}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
-};
-
-export default ScreenshotViewer;
+}
