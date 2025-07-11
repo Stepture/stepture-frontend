@@ -4,7 +4,7 @@ import ScreenshotViewer from "@/app/document/components/ScreenshotViewer";
 
 const dummySteps = [
   {
-    tab: null,
+    tab: "",
     screenshot: "/sample1.png", // replace with real public path or remote URL
     info: {
       textContent: "Navigate to this site https://vms.au.edu/",
@@ -19,7 +19,7 @@ const dummySteps = [
     },
   },
   {
-    tab: null,
+    tab: "",
     screenshot: "/sample2.png", // replace with real public path or remote URL
     info: {
       textContent: "Click here",
@@ -40,7 +40,7 @@ const mockMetadata = {
   description:
     "This walkthrough provides a simple and effective process for navigating the Vincent Mary School of Science and Technology (VMS) website, allowing users to easily explore available majors, subject offerings, and academic structures. It highlights key sections of the site and guides users through accessing curriculum details and program requirements. By following this walkthrough, students can better understand their academic options and make more informed decisions about their studies.",
   author: "MB Triad",
-  stepsCount: 22,
+  stepCount: 22,
   estimatedTime: "20 Minutes",
 };
 

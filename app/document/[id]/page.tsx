@@ -4,9 +4,9 @@ import ScreenshotViewer from "../components/ScreenshotViewer";
 import { cookies } from "next/headers";
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 interface CaptureData {
@@ -107,7 +107,6 @@ const fetchDocument = async (
 
 const Page = async ({ params }: Props) => {
   const { id } = await params;
-
   const cookieStore = await cookies();
   const allCookies = cookieStore.toString();
 
