@@ -1,4 +1,4 @@
-import DocumentCard from "@/components/ui/DocumentCard";
+import DocumentCard from "@/components/ui/DocumentCard/DocumentCard";
 
 export default function TestPage() {
   return (
@@ -10,6 +10,7 @@ export default function TestPage() {
         author="MB Triad"
         stepCount={10}
         estimatedTime="15 Minutes"
+        href="/document/12345" // Example link, replace with actual document ID
       />
     </div>
   );
