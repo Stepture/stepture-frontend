@@ -3,6 +3,7 @@ import { Home, Save, Trash, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logout from "./logout";
+import { useUser } from "./providers/userProvider";
 
 import {
   Sidebar,
@@ -39,24 +40,10 @@ const items = [
   },
 ];
 
-import { useEffect, useState } from "react";
-
 export function AppSidebar() {
   const pathname = usePathname();
-  const [user, setUser] = useState<any>(null);
   const isActive = (url: string) => pathname === url;
-
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const data = await apiClient.protected.getMe();
-        setUser(data.user);
-      } catch (error) {
-        console.error("Failed to fetch user:", error);
-      }
-    }
-    fetchUser();
-  }, []);
+  const { user } = useUser();
 
   return (
     <Sidebar>
