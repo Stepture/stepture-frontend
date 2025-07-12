@@ -2,11 +2,9 @@
 import React from "react";
 import { useUser } from "./providers/userProvider";
 
-type Props = {};
-
-const navbarAvatar = (props: Props) => {
+const NavBarAvatar = () => {
   const { user } = useUser();
   return <div>{user?.name}</div>;
 };
 
-export default navbarAvatar;
+export default NavBarAvatar;

@@ -11,7 +11,9 @@ const DocumentNavbar = () => {
         >
           Dashboard
         </Link>
-        <div className="flex items-center">{/* to implement later */}</div>
+        <div className="flex items-center">
+          {/* TODO: Add navigation links or user profile menu. See issue #123 for details. */}
+        </div>
       </nav>
     </header>
   );

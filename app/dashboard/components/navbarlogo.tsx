@@ -3,9 +3,8 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import { Home, Save, Trash, User } from "lucide-react";
 import Image from "next/image";
-type Props = {};
 
-const NavbarLogo = (props: Props) => {
+const NavbarLogo = () => {
   const pathname = usePathname();
 
   const items = [
