@@ -155,6 +155,66 @@ export function getServerApi(cookie?: string) {
           throw error;
         }
       },
+
+      // Soft delete document
+      deleteDocument: async (id: string, options: AxiosRequestConfig = {}) => {
+        const config = { ...options };
+        if (cookie) {
+          config.headers = { ...(config.headers || {}), Cookie: cookie };
+        }
+        const response = await privateApi.delete(`/documents/${id}`, config);
+        return response.data;
+      },
+
+      // Permanently delete document
+      permanentlyDeleteDocument: async (
+        id: string,
+        options: AxiosRequestConfig = {}
+      ) => {
+        const config = { ...options };
+        if (cookie) {
+          config.headers = { ...(config.headers || {}), Cookie: cookie };
+        }
+        const response = await privateApi.delete(
+          `/documents/${id}/permanent`,
+          config
+        );
+        return response.data;
+      },
+
+      // Restore document
+      restoreDocument: async (id: string, options: AxiosRequestConfig = {}) => {
+        const config = { ...options };
+        if (cookie) {
+          config.headers = { ...(config.headers || {}), Cookie: cookie };
+        }
+        const response = await privateApi.put(
+          `/documents/${id}/restore`,
+          {},
+          config
+        );
+        return response.data;
+      },
+
+      // Get deleted documents list
+      getDeletedDocuments: async (options: AxiosRequestConfig = {}) => {
+        const config = { ...options };
+        if (cookie) {
+          config.headers = { ...(config.headers || {}), Cookie: cookie };
+        }
+        try {
+          const response = await privateApi.get(
+            "/documents/deleted/list",
+            config
+          );
+          return response.data;
+        } catch (error) {
+          console.error("Error fetching deleted documents:", error);
+          throw error;
+        }
+      },
+
+      // ...existing code...
     },
   };
 }

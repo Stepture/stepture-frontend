@@ -111,6 +111,66 @@ export const apiClient = {
         throw error;
       }
     },
+    getDocumentById: async (id: string, options = {}) => {
+      try {
+        const response = await privateApi.get(`/documents/${id}`, options);
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          return { document: null };
+        }
+        throw error;
+      }
+    },
+    // Soft delete document
+    deleteDocument: async (id: string, options = {}) => {
+      try {
+        const response = await privateApi.delete(`/documents/${id}`, options);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    // Permanently delete document
+    permanentlyDeleteDocument: async (id: string, options = {}) => {
+      try {
+        const response = await privateApi.delete(
+          `/documents/${id}/permanent`,
+          options
+        );
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    // Restore document
+    restoreDocument: async (id: string, options = {}) => {
+      try {
+        const response = await privateApi.put(
+          `/documents/${id}/restore`,
+          {},
+          options
+        );
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    // Get deleted documents list
+    getDeletedDocuments: async (options = {}) => {
+      try {
+        const response = await privateApi.get(
+          "/documents/deleted/list",
+          options
+        );
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          return { documents: null };
+        }
+        throw error;
+      }
+    },
     logout: async () => {
       await privateApi.post("/auth/logout");
     },
