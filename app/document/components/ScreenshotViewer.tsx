@@ -53,7 +53,10 @@ const ResponsiveScreenshotItem = ({
     width: 0,
     height: 0,
   });
-  const [containerWidth, setContainerWidth] = useState(0);
+  const [displayDimensions, setDisplayDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
   const imgRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -65,6 +68,21 @@ const ResponsiveScreenshotItem = ({
         width: imgElement.naturalWidth,
         height: imgElement.naturalHeight,
       });
+      setDisplayDimensions({
+        width: imgElement.clientWidth,
+        height: imgElement.clientHeight,
+      });
+    }
+  }, []);
+
+  // Update display dimensions when image resizes
+  const updateDisplayDimensions = useCallback(() => {
+    const imgElement = imgRef.current;
+    if (imgElement) {
+      setDisplayDimensions({
+        width: imgElement.clientWidth,
+        height: imgElement.clientHeight,
+      });
     }
   }, []);
 
@@ -72,15 +90,14 @@ const ResponsiveScreenshotItem = ({
     if (
       !info?.coordinates ||
       imageDimensions.width === 0 ||
-      containerWidth === 0
+      displayDimensions.width === 0
     ) {
       return { left: "50%", top: "50%" };
     }
 
-    // Get the capture context if available
     const captureContext = info.captureContext;
+    const coords = info.coordinates.viewport;
 
-    // Method 1: Use capture context for accurate positioning
     if (captureContext) {
       const {
         devicePixelRatio = 1,
@@ -88,84 +105,41 @@ const ResponsiveScreenshotItem = ({
         viewportHeight,
       } = captureContext;
 
-      // Screenshots are typically captured at actual device pixels
-      // So we need to account for device pixel ratio
-      const actualScreenshotWidth = imageDimensions.width;
-      const actualScreenshotHeight = imageDimensions.height;
-
-      // The viewport coordinates from the content script are in CSS pixels
-      // Convert to percentage of the actual screenshot
-      let xPercent, yPercent;
-
+      // Method 1: Use capture context for accurate positioning
       if (viewportWidth && viewportHeight) {
-        // Method A: Use viewport dimensions from capture context
-        // Account for device pixel ratio scaling
-        // const scaledViewportWidth = viewportWidth * devicePixelRatio;
-        // const scaledViewportHeight = viewportHeight * devicePixelRatio;
+        // Calculate position as percentage of the original viewport
+        const xPercent = (coords.x / viewportWidth) * 100;
+        const yPercent = (coords.y / viewportHeight) * 100;
 
-        // Calculate position as percentage
-        xPercent =
-          ((info.coordinates.viewport.x * devicePixelRatio) /
-            actualScreenshotWidth) *
-          100;
-        yPercent =
-          ((info.coordinates.viewport.y * devicePixelRatio) /
-            actualScreenshotHeight) *
-          100;
-      } else {
-        // Method B: Fallback - assume screenshot dimensions match viewport
-        xPercent =
-          ((info.coordinates.viewport.x * devicePixelRatio) /
-            actualScreenshotWidth) *
-          100;
-        yPercent =
-          ((info.coordinates.viewport.y * devicePixelRatio) /
-            actualScreenshotHeight) *
-          100;
+        // Debug logging for troubleshooting
+        if (index === 0) {
+          console.log("Enhanced Position Calculation:", {
+            originalCoords: coords,
+            devicePixelRatio,
+            captureViewport: { width: viewportWidth, height: viewportHeight },
+            screenshotDimensions: imageDimensions,
+            displayDimensions,
+            calculatedPercent: { x: xPercent, y: yPercent },
+          });
+        }
+
+        return {
+          left: `${Math.min(Math.max(xPercent, 0), 100)}%`,
+          top: `${Math.min(Math.max(yPercent, 0), 100)}%`,
+        };
       }
-
-      // Debug logging for the first item only
-      if (index === 0) {
-        console.log("Enhanced Position Calculation:", {
-          originalCoords: info.coordinates.viewport,
-          devicePixelRatio,
-          captureViewport: { width: viewportWidth, height: viewportHeight },
-          screenshotDimensions: {
-            width: actualScreenshotWidth,
-            height: actualScreenshotHeight,
-          },
-          calculatedPercent: { x: xPercent, y: yPercent },
-          scaledCoords: {
-            x: info.coordinates.viewport.x * devicePixelRatio,
-            y: info.coordinates.viewport.y * devicePixelRatio,
-          },
-        });
-      }
-
-      return {
-        left: `${Math.min(Math.max(xPercent, 0), 100)}%`,
-        top: `${Math.min(Math.max(yPercent, 0), 100)}%`,
-      };
     }
 
-    // Method 2: Fallback - Direct percentage calculation (original method)
-    // This assumes the screenshot dimensions directly correspond to viewport
-    const originalScreenshotWidth = imageDimensions.width;
-    const originalScreenshotHeight = imageDimensions.height;
+    // Method 2: Fallback - Direct calculation based on screenshot dimensions
+    // This assumes the coordinates are relative to the screenshot size
+    const xPercent = (coords.x / imageDimensions.width) * 100;
+    const yPercent = (coords.y / imageDimensions.height) * 100;
 
-    const xPercent =
-      (info.coordinates.viewport.x / originalScreenshotWidth) * 100;
-    const yPercent =
-      (info.coordinates.viewport.y / originalScreenshotHeight) * 100;
-
-    // Debug logging
     if (index === 0) {
       console.log("Fallback Position Calculation:", {
-        originalImageSize: {
-          width: originalScreenshotWidth,
-          height: originalScreenshotHeight,
-        },
-        viewportCoords: info.coordinates.viewport,
+        coords,
+        imageDimensions,
+        displayDimensions,
         calculatedPercent: { x: xPercent, y: yPercent },
       });
     }
@@ -174,61 +148,50 @@ const ResponsiveScreenshotItem = ({
       left: `${Math.min(Math.max(xPercent, 0), 100)}%`,
       top: `${Math.min(Math.max(yPercent, 0), 100)}%`,
     };
-  }, [info, imageDimensions, containerWidth, index]);
+  }, [info, imageDimensions, displayDimensions, index]);
 
-  // Get responsive indicator size
+  // Get responsive indicator size based on display dimensions
   const getIndicatorSize = useCallback(() => {
-    if (containerWidth === 0) return 32;
+    if (displayDimensions.width === 0) return 32;
 
-    // Scale indicator based on container width
+    // Scale indicator based on display size
     const baseSize = 32;
-    const scaleFactor = Math.min(containerWidth / 400, 1.5); // Max 1.5x scaling
+    const scaleFactor = Math.min(displayDimensions.width / 400, 1.5);
     return Math.max(16, Math.min(48, baseSize * scaleFactor));
-  }, [containerWidth]);
+  }, [displayDimensions.width]);
 
-  // Set up ResizeObserver to track container width changes
+  // Set up ResizeObserver to track image resize
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    const imgElement = imgRef.current;
+    if (!imgElement) return;
 
-    const updateContainerWidth = () => {
-      setContainerWidth(container.clientWidth);
-    };
-
-    // Initial measurement
-    updateContainerWidth();
-
-    // Use ResizeObserver for efficient resize detection
     const resizeObserver = new ResizeObserver(() => {
-      updateContainerWidth();
+      updateDisplayDimensions();
     });
 
-    resizeObserver.observe(container);
+    resizeObserver.observe(imgElement);
 
-    // Fallback: Listen to window resize (for older browsers)
-    const handleResize = () => updateContainerWidth();
+    // Fallback: Listen to window resize
+    const handleResize = () => updateDisplayDimensions();
     window.addEventListener("resize", handleResize);
 
     return () => {
       resizeObserver.disconnect();
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [updateDisplayDimensions]);
 
-  // Also listen for extension sidebar resize events
+  // Listen for sidebar resize events
   useEffect(() => {
     const handleSidebarResize = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.clientWidth);
-      }
+      setTimeout(updateDisplayDimensions, 100); // Small delay to ensure layout is complete
     };
 
-    // Chrome extension specific resize detection
     const observer = new MutationObserver(() => {
       handleSidebarResize();
     });
 
-    if (containerRef.current && document.body) {
+    if (document.body) {
       observer.observe(document.body, {
         attributes: true,
         attributeFilter: ["style", "class"],
@@ -236,34 +199,38 @@ const ResponsiveScreenshotItem = ({
     }
 
     return () => observer.disconnect();
-  }, []);
+  }, [updateDisplayDimensions]);
 
   return (
     <div
       ref={containerRef}
-      className="screenshot-item border-1 border-corner rounded-md p-2.5 bg-white flex flex-col items-start gap-1"
+      className="screenshot-item border border-gray-200 rounded-lg p-4 bg-white flex flex-col items-start gap-3 shadow-sm"
     >
       <div className="flex items-center gap-2 text-sm font-medium">
         <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100">
-          Step-{index + 1}
+          Step {index + 1}
         </span>
         <p className="text-gray-800">{info.textContent}</p>
       </div>
 
       <div className="relative w-full">
         <Image
-          width={info?.captureContext?.viewportWidth}
-          height={info?.captureContext?.viewportHeight}
           ref={imgRef}
           src={img}
           alt={`Screenshot ${index + 1}`}
+          width={info?.captureContext?.viewportWidth || 800}
+          height={info?.captureContext?.viewportHeight || 600}
           onLoad={handleImageLoad}
-          className="border rounded-md mt-2"
+          className="w-full h-auto border rounded-md"
+          style={{
+            maxWidth: "100%",
+            height: "auto",
+          }}
         />
 
         {info?.coordinates &&
           imageDimensions.width > 0 &&
-          containerWidth > 0 && (
+          displayDimensions.width > 0 && (
             <div
               className="absolute opacity-50 rounded-full border-4 border-blue-300 bg-blue-500 bg-opacity-30 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-all duration-200"
               style={{
@@ -290,7 +257,7 @@ export default function ScreenshotViewer({
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-8 space-y-6">
       {/* Header Section */}
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-4 mb-4">
         <div className="w-16 h-16 rounded-xl bg-gradient-to-b from-[#E3EAFC] to-white flex items-center justify-center">
           <Image src={Logo} alt="Logo" width={48} height={48} />
         </div>
@@ -299,7 +266,7 @@ export default function ScreenshotViewer({
             {metadata.title}
           </h1>
           <p className="text-gray-700 mt-2">{metadata.description}</p>
-          <div className="flex items-center gap-4 text-sm text-gray-500 mt-2">
+          <div className="flex items-center gap-4 text-sm text-gray-500 mt-3">
             <div className="flex items-center gap-1">
               <Image src={PersonIcon} alt="Author" width={16} height={16} />
               {metadata.author}
@@ -316,16 +283,20 @@ export default function ScreenshotViewer({
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 items-center justify-center">
+      {/* Screenshots Section */}
+      <div className="flex flex-col gap-6 mt-12">
         {captures.map((capture, index) => (
-          <div key={`${index}-${capture.screenshot.substring(0, 20)}`}>
-            <ResponsiveScreenshotItem
-              img={capture.screenshot}
-              index={index}
-              info={capture.info}
-            />
-          </div>
+          <ResponsiveScreenshotItem
+            key={`${index}-${capture.screenshot.substring(0, 20)}`}
+            img={capture.screenshot}
+            index={index}
+            info={capture.info}
+          />
         ))}
+      </div>
+      {/* Footer Section */}
+      <div className="text-center text-gray-500 text-sm mt-8">
+        <p>© {new Date().getFullYear()} Stepture. All rights reserved.</p>
       </div>
     </div>
   );
