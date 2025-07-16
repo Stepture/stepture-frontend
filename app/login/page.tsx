@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { stepture_text } from "@/public/constants/images";
 
 export default function LoginPage() {
   const googleAuthUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
@@ -8,10 +9,10 @@ export default function LoginPage() {
       <header className="px-6 py-4 bg-white shadow-sm">
         <div className="flex items-center justify-between max-w-[1280px] mx-auto">
           <Image
-            src="/stepture logo.png"
+            src={stepture_text}
             alt="Stepture Logo"
             width={100}
-            height={100}
+            height={80}
             priority
           />
         </div>
