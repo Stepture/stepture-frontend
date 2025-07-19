@@ -20,10 +20,12 @@ const privateApi = axios.create({
 });
 
 async function refreshToken() {
-  await publicApi.post("/auth/refresh-token");
+  await privateApi.post("/auth/refresh-token");
 }
 
 let isRefreshing = false;
+let refreshAttempts = 0;
+const MAX_REFRESH_ATTEMPTS = 1;
 let failedQueue: Array<{
   resolve: (value?: unknown) => void;
   reject: (reason?: any) => void;
@@ -38,6 +40,9 @@ const processQueue = (error: unknown = null) => {
     }
   });
   failedQueue = [];
+  if (!error) {
+    refreshAttempts = 0; // Reset attempts on success
+  }
 };
 
 privateApi.interceptors.response.use(
@@ -47,19 +52,28 @@ privateApi.interceptors.response.use(
     if (
       error.response?.status !== 401 ||
       originalRequest._retry ||
-      error.response?.data?.message !== "Access token is missing or invalid"
+      originalRequest.url?.includes("/auth/refresh-token") ||
+      refreshAttempts >= MAX_REFRESH_ATTEMPTS
     ) {
+      if (originalRequest.url?.includes("/auth/refresh-token")) {
+        refreshAttempts = 0;
+        isRefreshing = false;
+      }
       return Promise.reject(error);
     }
 
     originalRequest._retry = true;
+
     if (!isRefreshing) {
       isRefreshing = true;
+      refreshAttempts++;
+
       try {
         await refreshToken();
         processQueue();
         return privateApi(originalRequest);
       } catch (refreshError) {
+        refreshAttempts = 0;
         processQueue(refreshError);
         return Promise.reject(refreshError);
       } finally {
