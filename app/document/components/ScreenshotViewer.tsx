@@ -6,6 +6,7 @@ import TimeIcon from "@/public/time.svg";
 import StepsIcon from "@/public/steps.svg";
 import PersonIcon from "@/public/person.svg";
 import Logo from "@/public/AUlogo.png";
+import Link from "next/link";
 
 interface ScreenshotViewerProps {
   initialCaptures: CaptureData[];
@@ -210,40 +211,54 @@ const ResponsiveScreenshotItem = ({
         <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100">
           Step {index + 1}
         </span>
-        <p className="text-gray-800">{info.textContent}</p>
+        {img ? (
+          <p className="text-gray-800">
+            Click:
+            <span className="font-semibold"> {info.textContent} </span>
+          </p>
+        ) : (
+          <Link href={info.textContent || "#"}>
+            Navigate to:
+            <span className="text-blue-800 cursor-pointer font-semibold">
+              {" "}
+              {info.textContent}
+            </span>
+          </Link>
+        )}
       </div>
+      {img && (
+        <div className="relative w-full">
+          <Image
+            ref={imgRef}
+            src={img}
+            alt={`Screenshot ${index + 1}`}
+            width={info?.captureContext?.viewportWidth || 800}
+            height={info?.captureContext?.viewportHeight || 600}
+            onLoad={handleImageLoad}
+            className="w-full h-auto border rounded-md"
+            style={{
+              maxWidth: "100%",
+              height: "auto",
+            }}
+          />
 
-      <div className="relative w-full">
-        <Image
-          ref={imgRef}
-          src={img}
-          alt={`Screenshot ${index + 1}`}
-          width={info?.captureContext?.viewportWidth || 800}
-          height={info?.captureContext?.viewportHeight || 600}
-          onLoad={handleImageLoad}
-          className="w-full h-auto border rounded-md"
-          style={{
-            maxWidth: "100%",
-            height: "auto",
-          }}
-        />
-
-        {info?.coordinates &&
-          imageDimensions.width > 0 &&
-          displayDimensions.width > 0 && (
-            <div
-              className="absolute opacity-50 rounded-full border-4 border-blue-300 bg-blue-500 bg-opacity-30 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-all duration-200"
-              style={{
-                ...getResponsivePosition(),
-                width: `${getIndicatorSize()}px`,
-                height: `${getIndicatorSize()}px`,
-              }}
-              aria-label={`Click indicator for step ${index + 1}`}
-            >
-              <div className="absolute inset-0 animate-ping bg-blue-400 rounded-full opacity-50"></div>
-            </div>
-          )}
-      </div>
+          {info?.coordinates &&
+            imageDimensions.width > 0 &&
+            displayDimensions.width > 0 && (
+              <div
+                className="absolute opacity-50 rounded-full border-4 border-blue-300 bg-blue-500 bg-opacity-30 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-all duration-200"
+                style={{
+                  ...getResponsivePosition(),
+                  width: `${getIndicatorSize()}px`,
+                  height: `${getIndicatorSize()}px`,
+                }}
+                aria-label={`Click indicator for step ${index + 1}`}
+              >
+                <div className="absolute inset-0 animate-ping bg-blue-400 rounded-full opacity-50"></div>
+              </div>
+            )}
+        </div>
+      )}
     </div>
   );
 };
