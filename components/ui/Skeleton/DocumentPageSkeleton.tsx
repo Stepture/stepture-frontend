@@ -28,7 +28,6 @@ export default function DocumentPageSkeleton() {
         {Array.from({ length: 5 }).map((_, index) => (
           <StepSkeleton
             key={index}
-            index={index}
             hasScreenshot={Math.random() > 0.2} // 80% chance of having screenshot
           />
         ))}

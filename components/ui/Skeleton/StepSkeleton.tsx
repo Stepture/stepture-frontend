@@ -4,13 +4,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface StepSkeletonProps {
   hasScreenshot?: boolean;
-  index: number;
 }
 
-export function StepSkeleton({
-  hasScreenshot = true,
-  index,
-}: StepSkeletonProps) {
+export function StepSkeleton({ hasScreenshot = true }: StepSkeletonProps) {
   return (
     <div className="screenshot-item border-1 border-corner rounded-md p-2.5 bg-white flex flex-col items-start gap-1 w-full">
       {/* Step header */}

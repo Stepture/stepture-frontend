@@ -15,7 +15,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { apiClient } from "@/lib/axios-client";
 // Menu items.
 const items = [
   {

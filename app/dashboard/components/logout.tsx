@@ -11,7 +11,7 @@ const Logout = () => {
       await apiClient.protected.logout();
       router.push("/login");
     } catch (error) {
-      // Optionally handle error
+      console.error("Logout failed:", error);
     }
   };
   return (
