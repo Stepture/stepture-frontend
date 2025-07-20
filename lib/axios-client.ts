@@ -1,6 +1,15 @@
 import axios from "axios";
-// import { apiClient } from "@/lib/axios-client";
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+const refreshApi = axios.create({
+  baseURL: BASE_URL,
+  timeout: 10000,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 const publicApi = axios.create({
   baseURL: BASE_URL,
@@ -20,7 +29,7 @@ const privateApi = axios.create({
 });
 
 async function refreshToken() {
-  await publicApi.post("/auth/refresh-token");
+  await refreshApi.post("/auth/refresh-token");
 }
 
 let isRefreshing = false;
@@ -44,17 +53,16 @@ privateApi.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    if (
-      error.response?.status !== 401 ||
-      originalRequest._retry ||
-      error.response?.data?.message !== "Access token is missing or invalid"
-    ) {
+
+    if (error.response?.status !== 401 || originalRequest._retry) {
       return Promise.reject(error);
     }
 
     originalRequest._retry = true;
+
     if (!isRefreshing) {
       isRefreshing = true;
+
       try {
         await refreshToken();
         processQueue();

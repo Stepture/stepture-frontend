@@ -16,7 +16,7 @@ export async function middleware(req: NextRequest) {
 
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value || "";
-
+  const refreshToken = cookieStore.get("refresh_token")?.value || "";
   const isPublic =
     req.nextUrl.pathname.startsWith("/login") ||
     req.nextUrl.pathname.startsWith("/auth/success") ||
@@ -27,6 +27,9 @@ export async function middleware(req: NextRequest) {
   }
 
   if (!token) {
+    if (refreshToken) {
+      return NextResponse.next();
+    }
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
