@@ -13,8 +13,8 @@ RUN npm run build
 FROM node:24-alpine AS runner
 WORKDIR /app
 
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
 
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/public ./public
