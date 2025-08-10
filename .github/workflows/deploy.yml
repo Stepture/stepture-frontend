@@ -49,7 +49,7 @@ jobs:
             sed -i "s/FRONTEND_TAG=.*/FRONTEND_TAG=${{ steps.tag.outputs.IMAGE_TAG }}/" .env
 
             docker compose -f docker-compose.prod.yml pull frontend
-            docker compose -f docker-compose.prod.yml up -d frontend nginx
+            docker compose -f docker-compose.prod.yml up -d --no-deps frontend
 
             docker image prune -f
 
