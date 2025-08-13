@@ -523,8 +523,6 @@ export default function Page() {
     <p>Site by MB Traid</p>
   </div>
 </footer>
-
-      {/* next sections will be added below */}
     </main>
   );
 }
