@@ -245,7 +245,7 @@ export default function Page() {
                   <span className="absolute left-0 top-1 w-5 h-5 rounded-full bg-[#80A7FF] border-2 border-white shadow ring-2 ring-[#80A7FF]" />
                   <h3 className="font-semibold text-slate-800">Auto-Generate A Guide</h3>
                   <p className="mt-2 text-sm leading-6 text-slate-500">
-                    When you're done, Stepture automatically creates a clean, step-by-step guide 
+                    When you're done, Stepture will automatically create a clean, step-by-step guide 
                     including screenshots, titles, and clear instructions.
                   </p>
                 </div>
