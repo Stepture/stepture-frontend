@@ -1,5 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body { height: 100%; }
 
 @custom-variant dark (&:is(.dark *));
 
@@ -148,3 +155,4 @@
     scrollbar-width: none; /* Firefox */
   }
 }
+

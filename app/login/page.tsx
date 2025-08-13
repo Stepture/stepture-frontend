@@ -5,7 +5,14 @@ import { stepture_text } from "@/public/constants/images";
 export default function LoginPage() {
   const googleAuthUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
   return (
-    <div className="min-h-screen bg-[#f5f5f5]">
+    <div
+      className="min-h-screen"
+      style={{
+        backgroundImage: "url('/assets/landingpage/background.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <header className="px-6 py-4 bg-white shadow-sm">
         <div className="flex items-center justify-between max-w-[1280px] mx-auto">
           <Image
