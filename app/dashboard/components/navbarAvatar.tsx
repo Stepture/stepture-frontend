@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useUser } from "./providers/UserProvider";
+import { useUser } from "./providers/userProvider";
 import Image from "next/image";
 import { nav_user } from "@/public/constants/images";
 

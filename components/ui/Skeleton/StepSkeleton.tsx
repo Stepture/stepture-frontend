@@ -1,6 +1,6 @@
 "use client";
 
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface StepSkeletonProps {
   hasScreenshot?: boolean;

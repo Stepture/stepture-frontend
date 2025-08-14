@@ -1,6 +1,6 @@
 "use client";
 
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import StepSkeleton from "./StepSkeleton";
 
 export default function DocumentPageSkeleton() {

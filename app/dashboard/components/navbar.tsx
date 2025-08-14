@@ -1,5 +1,5 @@
 import React from "react";
-import NavbarLogo from "./NavbarLogo";
+import NavbarLogo from "./navbarLogo";
 import NavbarAvatar from "./navbarAvatar";
 
 const Navbar = () => {
