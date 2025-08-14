@@ -2,6 +2,8 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { apiClient } from "@/lib/axios-client";
+import Image from "next/image";
+import { SidebarMenuButton } from "@/components/ui/sidebar";
 
 const Logout = () => {
   const router = useRouter();
@@ -14,13 +16,15 @@ const Logout = () => {
       console.error("Logout failed:", error);
     }
   };
+
   return (
-    <button
+    <SidebarMenuButton
       onClick={handleLogout}
-      className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer"
+      className="flex items-center gap-2 text-white"
     >
-      Logout
-    </button>
+      <Image src="/logout.png" alt="Logout" width={20} height={20} />
+      <span className="text-md">Log Out</span>
+    </SidebarMenuButton>
   );
 };
 

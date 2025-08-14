@@ -12,6 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import Logout from "./logout";
 
 // Menu items.
 const items = [
@@ -95,24 +96,7 @@ export function AppSidebar() {
         {/* Logout */}
         <SidebarMenu className="mt-auto mb-4">
           <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={async () => {
-                try {
-                  const res = await fetch("/auth/logout", { method: "POST" });
-                  if (res.ok) {
-                    window.location.href = "/";
-                  } else {
-                    console.error("Logout failed");
-                  }
-                } catch (err) {
-                  console.error("Logout error", err);
-                }
-              }}
-              className="text-white"
-            >
-              <Image src="/Logout.png" alt="Logout" width={20} height={20} />
-              <span className="text-md">Log Out</span>
-            </SidebarMenuButton>
+            <Logout />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
