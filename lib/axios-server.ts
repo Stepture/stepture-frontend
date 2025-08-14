@@ -104,10 +104,13 @@ export function getServerApi(cookie?: string) {
   return {
     public: {
       refreshToken: async () => {
-        const response = await publicApi.post(
-          "/auth/refresh-token",
+        const response = await axios.post(
+          `${BASE_URL}/auth/refresh-token`,
           {},
-          cookie ? { headers: { Cookie: cookie } } : {}
+          {
+            headers: cookie ? { Cookie: cookie } : {},
+            timeout: 30000,
+          }
         );
         return response.data;
       },

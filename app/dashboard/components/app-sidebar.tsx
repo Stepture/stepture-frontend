@@ -12,8 +12,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useUser } from "./providers/userProvider";
+import { useUser } from "./providers/UserProvider";
 
+// Menu items.
 const items = [
   {
     title: "Home",
@@ -109,12 +110,7 @@ export function AppSidebar() {
               }}
               className="text-white"
             >
-              <Image
-                src="/Logout.png"
-                alt="Logout"
-                width={20}
-                height={20}
-              />
+              <Image src="/Logout.png" alt="Logout" width={20} height={20} />
               <span className="text-md">Log Out</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
