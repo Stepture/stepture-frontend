@@ -12,7 +12,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useUser } from "./providers/UserProvider";
 
 // Menu items.
 const items = [
@@ -45,7 +44,6 @@ const items = [
 export function AppSidebar() {
   const pathname = usePathname();
   const isActive = (url: string) => pathname === url;
-  const { user } = useUser();
 
   return (
     <Sidebar>
@@ -53,10 +51,12 @@ export function AppSidebar() {
         {/* Logo */}
         <SidebarGroup className="px-0 pt-2 pb-2">
           <div className="flex justify-start">
-            <img
+            <Image
               src="/SteptureLogo.png"
               alt="Stepture Logo"
-              className="h-10 object-contain ml-2"
+              width={100}
+              height={100}
+              className="ml-2"
             />
           </div>
         </SidebarGroup>

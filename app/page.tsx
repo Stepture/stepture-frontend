@@ -11,7 +11,13 @@ const raleway = Raleway({
 
 // rotates the highlighted word every 8s with a quick fade
 function RotatingWord() {
-  const words = ["workflows", "processes", "tutorials", "guidelines", "reports"];
+  const words = [
+    "workflows",
+    "processes",
+    "tutorials",
+    "guidelines",
+    "reports",
+  ];
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(true);
 
@@ -26,7 +32,7 @@ function RotatingWord() {
       return () => clearTimeout(t);
     }, 3000); // 8s interval
     return () => clearInterval(interval);
-  }, []);
+  }, [words.length]);
 
   return (
     <span
@@ -62,9 +68,15 @@ export default function Page() {
               />
             </div>
             <nav className="hidden md:flex justify-center gap-10 text-white/90 text-sm">
-              <a href="#why" className="hover:text-white">Why Us</a>
-              <a href="#how" className="hover:text-white">How It Works</a>
-              <a href="#features" className="hover:text-white">Instruction</a>
+              <a href="#why" className="hover:text-white">
+                Why Us
+              </a>
+              <a href="#how" className="hover:text-white">
+                How It Works
+              </a>
+              <a href="#features" className="hover:text-white">
+                Instruction
+              </a>
             </nav>
             <div className="justify-self-end">
               <a
@@ -110,9 +122,7 @@ export default function Page() {
               aria-hidden
             />
             <h1 className="text-4xl md:text-[44px] lg:text-[56px] font-extrabold leading-tight">
-              Turn your{" "}
-              <RotatingWord />
-              {" "}into
+              Turn your <RotatingWord /> into
               <br className="hidden md:block" /> step‑by‑step guides!
             </h1>
             {/* full arrow at END of headline */}
@@ -127,8 +137,9 @@ export default function Page() {
           </div>
 
           <p className="mt-5 mx-auto max-w-2xl text-center text-white/85">
-            Stepture captures your actions and instantly turns them into polished
-            guides you can share, embed, or export—no manual screenshots or writing needed.
+            Stepture captures your actions and instantly turns them into
+            polished guides you can share, embed, or export—no manual
+            screenshots or writing needed.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-4 justify-center">
@@ -155,8 +166,9 @@ export default function Page() {
             Why Choose Us
           </h2>
           <p className="mt-3 text-center text-slate-500 max-w-2xl mx-auto">
-            Stepture captures your actions and instantly turns them into polished guides you can share,
-            embed, or export—no manual screenshots or writing needed.
+            Stepture captures your actions and instantly turns them into
+            polished guides you can share, embed, or export—no manual
+            screenshots or writing needed.
           </p>
 
           <div className="mt-12 grid gap-10 sm:grid-cols-3">
@@ -188,7 +200,9 @@ export default function Page() {
                   className="mx-auto"
                 />
               </div>
-              <h3 className="mt-4 font-semibold text-slate-800">Private & Secure</h3>
+              <h3 className="mt-4 font-semibold text-slate-800">
+                Private & Secure
+              </h3>
               <p className="mt-2 text-sm leading-6 text-slate-500">
                 Your data stays safe, with zero setup or complexity.
               </p>
@@ -205,7 +219,9 @@ export default function Page() {
                   className="mx-auto"
                 />
               </div>
-              <h3 className="mt-4 font-semibold text-slate-800">Built For Real Workflows</h3>
+              <h3 className="mt-4 font-semibold text-slate-800">
+                Built For Real Workflows
+              </h3>
               <p className="mt-2 text-sm leading-6 text-slate-500">
                 Create, edit, and share guides that actually get used.
               </p>
@@ -213,17 +229,15 @@ export default function Page() {
           </div>
         </div>
       </section>
-  {/* ===== HOW STEPTURE WORKS ===== */}
+      {/* ===== HOW STEPTURE WORKS ===== */}
       <section id="how" className="bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
-          
           {/* Centered title */}
           <h2 className="text-3xl md:text-[32px] font-extrabold text-slate-800 text-center">
             How Stepture Works
           </h2>
 
           <div className="mt-12 grid md:grid-cols-2 gap-12 items-center">
-            
             {/* Left: Steps */}
             <div className="relative">
               {/* Vertical dotted line */}
@@ -233,30 +247,39 @@ export default function Page() {
                 {/* Step 1 */}
                 <div className="relative pl-10">
                   <span className="absolute left-0 top-1 w-5 h-5 rounded-full bg-[#80A7FF] border-2 border-white shadow ring-2 ring-[#80A7FF]" />
-                  <h3 className="font-semibold text-slate-800">Click And Capture</h3>
+                  <h3 className="font-semibold text-slate-800">
+                    Click And Capture
+                  </h3>
                   <p className="mt-2 text-sm leading-6 text-slate-500">
-                    Start by clicking the Stepture extension or app. Perform your task as usual. 
-                    Stepture quietly tracks your actions in the background.
+                    Start by clicking the Stepture extension or app. Perform
+                    your task as usual. Stepture quietly tracks your actions in
+                    the background.
                   </p>
                 </div>
 
                 {/* Step 2 */}
                 <div className="relative pl-10">
                   <span className="absolute left-0 top-1 w-5 h-5 rounded-full bg-[#80A7FF] border-2 border-white shadow ring-2 ring-[#80A7FF]" />
-                  <h3 className="font-semibold text-slate-800">Auto-Generate A Guide</h3>
+                  <h3 className="font-semibold text-slate-800">
+                    Auto-Generate A Guide
+                  </h3>
                   <p className="mt-2 text-sm leading-6 text-slate-500">
-                    When you're done, Stepture will automatically create a clean, step-by-step guide 
-                    including screenshots, titles, and clear instructions.
+                    When you&apos;tre done, Stepture will automatically create a
+                    clean, step-by-step guide including screenshots, titles, and
+                    clear instructions.
                   </p>
                 </div>
 
                 {/* Step 3 */}
                 <div className="relative pl-10">
                   <span className="absolute left-0 top-1 w-5 h-5 rounded-full bg-[#80A7FF] border-2 border-white shadow ring-2 ring-[#80A7FF]" />
-                  <h3 className="font-semibold text-slate-800">Share Or Export Instantly</h3>
+                  <h3 className="font-semibold text-slate-800">
+                    Share Or Export Instantly
+                  </h3>
                   <p className="mt-2 text-sm leading-6 text-slate-500">
-                    Copy a shareable link, or embed the guide in your docs, wikis, or help desk tools. 
-                    Your guide is ready to use in just seconds.
+                    Copy a shareable link, or embed the guide in your docs,
+                    wikis, or help desk tools. Your guide is ready to use in
+                    just seconds.
                   </p>
                 </div>
               </div>
@@ -314,7 +337,8 @@ export default function Page() {
             </div>
 
             <p className="mt-4 text-slate-400 max-w-xl mx-auto text-sm md:text-base">
-              Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting Industry.
+              Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting
+              Industry.
             </p>
           </div>
 
@@ -389,7 +413,7 @@ export default function Page() {
         </div>
       </section>
 
-        {/* ===== CREATE & SHARE (FEATURES GRID) ===== */}
+      {/* ===== CREATE & SHARE (FEATURES GRID) ===== */}
       <section id="features" className="bg-white">
         <div className="mx-auto max-w-[1200px] px-6 py-16 md:py-20">
           <h2 className="text-center text-3xl md:text-[32px] font-extrabold text-slate-800">
@@ -401,38 +425,32 @@ export default function Page() {
               {
                 img: "/assets/landingpage/Captureweb.png",
                 title: "Capture Any Web Process",
-                desc:
-                  "Record any browser-based workflow with just one click — no setup, no friction.",
+                desc: "Record any browser-based workflow with just one click — no setup, no friction.",
               },
               {
                 img: "/assets/landingpage/Stepswritten.png",
                 title: "Steps Written For You",
-                desc:
-                  "Automatically turns your clicks into clear, editable instructions — no typing needed.",
+                desc: "Automatically turns your clicks into clear, editable instructions — no typing needed.",
               },
               {
                 img: "/assets/landingpage/Aigenerated.png",
                 title: "AI-Generated",
-                desc:
-                  "Instantly generate structured SOPs, how-tos, or onboarding docs using smart automation.",
+                desc: "Instantly generate structured SOPs, how-tos, or onboarding docs using smart automation.",
               },
               {
                 img: "/assets/landingpage/Sensitiveinfo.png",
                 title: "Sensitive Info Redaction",
-                desc:
-                  "Blur out emails, names, and private data automatically to stay secure and compliant.",
+                desc: "Blur out emails, names, and private data automatically to stay secure and compliant.",
               },
               {
                 img: "/assets/landingpage/Edit.png",
                 title: "Edit Anytime",
-                desc:
-                  "Tweak steps, rearrange flow, or update screenshots with just a few clicks.",
+                desc: "Tweak steps, rearrange flow, or update screenshots with just a few clicks.",
               },
               {
                 img: "/assets/landingpage/Easysharing.png",
                 title: "Easy Sharing & Export",
-                desc:
-                  "Copy a link, embed in Notion or Confluence, or export as branded PDFs in one click.",
+                desc: "Copy a link, embed in Notion or Confluence, or export as branded PDFs in one click.",
               },
             ].map(({ img, title, desc }) => (
               <div
@@ -450,7 +468,9 @@ export default function Page() {
                 {/* text */}
                 <div className="p-5">
                   <h3 className="font-semibold text-slate-800">{title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">{desc}</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                    {desc}
+                  </p>
                 </div>
               </div>
             ))}
@@ -458,71 +478,76 @@ export default function Page() {
         </div>
       </section>
 
-{/* ===== FOOTER ===== */}
-<footer className="w-full bg-gradient-to-r from-[#6878CA] to-[#344982] text-white">
-  <div className="max-w-[1440px] mx-auto px-8 py-12 flex flex-col md:flex-row justify-between items-start gap-12">
-    
-    {/* Left: Logo + Blurb */}
-    <div className="flex-1">
-      <Image
-        src="/assets/landingpage/Stepturewhite.png"
-        alt="Stepture Logo"
-        width={150}
-        height={36}
-        priority
-      />
-      <p className="mt-6 text-sm leading-6 opacity-90 max-w-md">
-        Lorem Ipsum is simply dummy text of the printing and typesetting
-        industry. Lorem Ipsum has been the industry’s standard dummy text ever
-        since the 1500s.
-      </p>
-    </div>
+      {/* ===== FOOTER ===== */}
+      <footer className="w-full bg-gradient-to-r from-[#6878CA] to-[#344982] text-white">
+        <div className="max-w-[1440px] mx-auto px-8 py-12 flex flex-col md:flex-row justify-between items-start gap-12">
+          {/* Left: Logo + Blurb */}
+          <div className="flex-1">
+            <Image
+              src="/assets/landingpage/Stepturewhite.png"
+              alt="Stepture Logo"
+              width={150}
+              height={36}
+              priority
+            />
+            <p className="mt-6 text-sm leading-6 opacity-90 max-w-md">
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry’s standard dummy text
+              ever since the 1500s.
+            </p>
+          </div>
 
-    {/* Right Section */}
-    <div className="flex flex-col md:flex-row items-start gap-45">
-      {/* Links + Contacts */}
-      <div className="flex gap-45">
-        {/* Quick Links */}
-        <div>
-          <h3 className="font-semibold mb-3">Quick Links</h3>
-          <ul className="space-y-2 text-sm opacity-90">
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Why Us</a></li>
-            <li><a href="#">How it works</a></li>
-          </ul>
+          {/* Right Section */}
+          <div className="flex flex-col md:flex-row items-start gap-45">
+            {/* Links + Contacts */}
+            <div className="flex gap-45">
+              {/* Quick Links */}
+              <div>
+                <h3 className="font-semibold mb-3">Quick Links</h3>
+                <ul className="space-y-2 text-sm opacity-90">
+                  <li>
+                    <a href="#">About Us</a>
+                  </li>
+                  <li>
+                    <a href="#">Why Us</a>
+                  </li>
+                  <li>
+                    <a href="#">How it works</a>
+                  </li>
+                </ul>
+              </div>
+              {/* Contacts */}
+              <div>
+                <h3 className="font-semibold mb-3">Contacts</h3>
+                <ul className="space-y-2 text-sm opacity-90">
+                  <li>+660828011111</li>
+                  <li>BangNa, Thailand</li>
+                  <li>awesome@MBtraid.com</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Download button */}
+            <a
+              href="#download"
+              className="rounded-full bg-white text-[#344982] px-7 py-2 font-medium hover:opacity-90 transition"
+            >
+              Download
+            </a>
+          </div>
         </div>
-        {/* Contacts */}
-        <div>
-          <h3 className="font-semibold mb-3">Contacts</h3>
-          <ul className="space-y-2 text-sm opacity-90">
-            <li>+660828011111</li>
-            <li>BangNa, Thailand</li>
-            <li>awesome@MBtraid.com</li>
-          </ul>
+
+        {/* bottom bar */}
+        <div className="max-w-[1440px] mx-auto mt-10 border-t border-white/20 pt-4 text-sm flex flex-col md:flex-row items-center md:items-start justify-between gap-4 text-white/85 px-8">
+          <p>©2024 MBTraid All Rights Reserved</p>
+          <div className="flex gap-5">
+            <a href="#">Terms of Use</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Disclaimer</a>
+          </div>
+          <p>Site by MB Traid</p>
         </div>
-      </div>
-
-      {/* Download button */}
-      <a
-        href="#download"
-        className="rounded-full bg-white text-[#344982] px-7 py-2 font-medium hover:opacity-90 transition"
-      >
-        Download
-      </a>
-    </div>
-  </div>
-
-  {/* bottom bar */}
-  <div className="max-w-[1440px] mx-auto mt-10 border-t border-white/20 pt-4 text-sm flex flex-col md:flex-row items-center md:items-start justify-between gap-4 text-white/85 px-8">
-    <p>©2024 MBTraid All Rights Reserved</p>
-    <div className="flex gap-5">
-      <a href="#">Terms of Use</a>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Disclaimer</a>
-    </div>
-    <p>Site by MB Traid</p>
-  </div>
-</footer>
+      </footer>
     </main>
   );
 }
