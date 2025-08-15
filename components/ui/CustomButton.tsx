@@ -3,7 +3,7 @@ import Image from "next/image";
 
 type Props = {
   label?: string;
-  icon: string;
+  icon?: string | undefined;
   onClick?: () => void;
   variant?: "default" | "primary" | "secondary";
   size?: "small" | "medium" | "large";
@@ -52,12 +52,14 @@ const CustomButton = (props: Props) => {
         ${getSizeStyles()}
       `}
     >
-      <Image
-        src={props.icon}
-        alt={`${props.label} button icon`}
-        width={20}
-        height={20}
-      />
+      {props.icon && (
+        <Image
+          src={props.icon}
+          alt={`${props.label} button icon`}
+          width={20}
+          height={20}
+        />
+      )}
       {props.label && <span>{props.label}</span>}
       {props.icon2 && (
         <div className="flex items-end justify-end border-l border-blue-800 pl-2">

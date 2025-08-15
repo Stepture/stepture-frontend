@@ -6,11 +6,15 @@ import TimeIcon from "@/public/time.svg";
 import StepsIcon from "@/public/steps.svg";
 import PersonIcon from "@/public/person.svg";
 import Logo from "@/public/AUlogo.png";
-import Link from "next/link";
+import { Plus } from "lucide-react";
+import CustomButton from "@/components/ui/CustomButton";
+import { useRouter } from "next/navigation";
 
 interface ScreenshotViewerProps {
   initialCaptures: CaptureData[];
   metadata: DocumentMetadata;
+  mode: string;
+  id: string;
 }
 
 interface CaptureData {
@@ -45,10 +49,12 @@ const ResponsiveScreenshotItem = ({
   img,
   index,
   info,
+  mode,
 }: {
   img: string;
   index: number;
   info: ElementInfo;
+  mode: string;
 }) => {
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
@@ -207,23 +213,48 @@ const ResponsiveScreenshotItem = ({
       ref={containerRef}
       className="screenshot-item border border-gray-200 rounded-lg p-4 bg-white flex flex-col items-start gap-3 shadow-sm"
     >
-      <div className="flex items-center gap-2 text-sm font-medium">
-        <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100">
+      <div className="flex items-center gap-2 text-sm font-medium w-full">
+        <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100 min-w-24 text-center">
           Step {index + 1}
         </span>
         {img ? (
-          <p className="text-gray-800">
-            Click:
-            <span className="font-semibold"> {info.textContent} </span>
+          <p className="text-gray-800 w-full">
+            <input
+              className={`rounded-md ${
+                mode === "edit"
+                  ? "border-blue-300 bg-white w-full p-2 cursor-pointer border-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  : "font-semibold w-full"
+              }`}
+              type="text"
+              disabled={mode !== "edit"}
+              value={"Click: " + info.textContent}
+              readOnly={mode !== "edit"}
+              onChange={(e) => {
+                if (mode === "edit") {
+                  info.textContent = e.target.value;
+                }
+              }}
+            />
           </p>
         ) : (
-          <Link href={info.textContent || "#"}>
-            Navigate to:
-            <span className="text-blue-800 cursor-pointer font-semibold">
-              {" "}
-              {info.textContent}
-            </span>
-          </Link>
+          <p className="text-gray-800 w-full">
+            <input
+              className={`rounded-md ${
+                mode === "edit"
+                  ? "border-blue-300 bg-white w-full p-2 cursor-pointer border-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  : "font-semibold w-full"
+              }`}
+              type="text"
+              disabled={mode !== "edit"}
+              value={"Navigate to: " + info.textContent}
+              readOnly={mode !== "edit"}
+              onChange={(e) => {
+                if (mode === "edit") {
+                  info.textContent = e.target.value;
+                }
+              }}
+            />
+          </p>
         )}
       </div>
       {img && (
@@ -266,12 +297,27 @@ const ResponsiveScreenshotItem = ({
 export default function ScreenshotViewer({
   initialCaptures,
   metadata,
+  mode,
+  id,
 }: ScreenshotViewerProps) {
   const [captures] = useState(initialCaptures);
+  const router = useRouter();
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-8 space-y-6">
+    <div className="w-full max-w-4xl mx-auto px-4 py-8 space-y-6 relative">
       {/* Header Section */}
+      <div className="sticky top-0 left-0 z-9999 w-full flex items-center justify-end p-4">
+        {mode === "edit" && (
+          <CustomButton
+            label="Done Editing"
+            onClick={() => {
+              router.push(`/document/${id}`);
+            }}
+            variant={mode === "edit" ? "primary" : "secondary"}
+            size="small"
+          />
+        )}
+      </div>
       <div className="flex items-start gap-4 mb-4">
         <div className="w-16 h-16 rounded-xl bg-gradient-to-b from-[#E3EAFC] to-white flex items-center justify-center">
           <Image src={Logo} alt="Logo" width={48} height={48} />
@@ -301,12 +347,28 @@ export default function ScreenshotViewer({
       {/* Screenshots Section */}
       <div className="flex flex-col gap-6 mt-12">
         {captures.map((capture, index) => (
-          <ResponsiveScreenshotItem
-            key={`${index}-${capture.screenshot.substring(0, 20)}`}
-            img={capture.screenshot}
-            index={index}
-            info={capture.info}
-          />
+          <div key={`${index}-${capture.screenshot.substring(0, 20)}`}>
+            <ResponsiveScreenshotItem
+              img={capture.screenshot}
+              index={index}
+              info={capture.info}
+              mode={mode}
+            />
+            {mode === "edit" && (
+              <div className="relative flex items-center justify-center my-8">
+                <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
+
+                <div className="relative z-10 flex justify-center w-full">
+                  <button
+                    type="button"
+                    className="bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center mx-auto transition hover:bg-gray-50"
+                  >
+                    <Plus size={20} className="text-gray-400 cursor-pointer" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         ))}
       </div>
       {/* Footer Section */}

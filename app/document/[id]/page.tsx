@@ -7,6 +7,7 @@ type Props = {
   params: Promise<{
     id: string;
   }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 interface CaptureData {
@@ -105,8 +106,10 @@ const fetchDocument = async (
   }
 };
 
-const Page = async ({ params }: Props) => {
+const Page = async ({ params, searchParams }: Props) => {
   const { id } = await params;
+  const searchParamsObj = await searchParams;
+  const mode = (searchParamsObj.mode as string) || "view";
   const cookieStore = await cookies();
   const allCookies = cookieStore.toString();
 
@@ -114,16 +117,18 @@ const Page = async ({ params }: Props) => {
     const { documentMetadata, captures } = await fetchDocument(id, allCookies);
 
     return (
-      <div className="w-full max-w-[800px] mx-auto p-4">
+      <div className="w-full mx-auto p-4">
         <ScreenshotViewer
           initialCaptures={captures}
           metadata={documentMetadata}
+          mode={mode}
+          id={id}
         />
       </div>
     );
   } catch (error) {
     return (
-      <div className="w-full max-w-[800px] mx-auto p-4">
+      <div className="w-full mx-auto p-4">
         <div className="text-center text-red-500 py-10">
           {error instanceof Error ? error.message : "Failed to load document"}
         </div>
