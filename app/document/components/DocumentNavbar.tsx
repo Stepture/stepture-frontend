@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import {
@@ -9,8 +11,14 @@ import {
 } from "@/public/constants/images";
 import Image from "next/image";
 import CustomButton from "@/components/ui/CustomButton";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 
 const DocumentNavbar = () => {
+  const router = useRouter();
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const mode = searchParams.get("mode") || "view";
+
   return (
     <header className="bg-white shadow-sm w-full">
       <nav className="flex items-center justify-between p-4 text-slate-700 max-w-[1200px] mx-auto">
@@ -28,12 +36,18 @@ const DocumentNavbar = () => {
           Dashboard
         </Link>
         <div className="flex items-center">
-          <CustomButton
-            label="Edit"
-            icon={edit_icon}
-            variant="secondary"
-            size="small"
-          />
+          {mode !== "edit" && (
+            <CustomButton
+              label="Edit"
+              icon={edit_icon}
+              variant="secondary"
+              size="small"
+              onClick={() => {
+                const id = params.id;
+                router.push(`/document/${id}?mode=edit`);
+              }}
+            />
+          )}
           <CustomButton
             label="Share"
             icon={arrow_share}
