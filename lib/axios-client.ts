@@ -1,3 +1,4 @@
+import { EditCaptureRequest } from "@/app/document/document.types";
 import axios from "axios";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -87,25 +88,6 @@ privateApi.interceptors.response.use(
 export const apiClient = {
   public: {
     // Add public endpoints here if needed
-    uploadImageToGoogleApi: async (file: File) => {
-      const formData = new FormData();
-      formData.append("file", file);
-      try {
-        const response = await publicApi.post(
-          "/google-drive/upload-image",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            withCredentials: true,
-          }
-        );
-        return response.data;
-      } catch (error) {
-        throw error;
-      }
-    },
   },
   protected: {
     getMe: async (options = {}) => {
@@ -116,6 +98,32 @@ export const apiClient = {
         if (axios.isAxiosError(error) && error.response?.status === 401) {
           return { user: null };
         }
+        throw error;
+      }
+    },
+    uploadImageToGoogleApi: async (file: File) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      try {
+        const response = await privateApi.post(
+          "/google-drive/upload-image",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    updateDocument: async (id: string, data: EditCaptureRequest) => {
+      try {
+        const response = await privateApi.put(`/documents/${id}`, data);
+        return response.data;
+      } catch (error) {
         throw error;
       }
     },

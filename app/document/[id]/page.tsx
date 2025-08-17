@@ -2,6 +2,7 @@ import React from "react";
 import { getServerApi } from "@/lib/axios-server";
 import ScreenshotViewer from "../components/ScreenshotViewer";
 import { cookies } from "next/headers";
+import { CaptureResponse } from "../document.types";
 
 type Props = {
   params: Promise<{
@@ -9,47 +10,6 @@ type Props = {
   }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-interface Screenshot {
-  id: string;
-  googleImageId: string;
-  url: string;
-  viewportX: number;
-  viewportY: number;
-  viewportHeight: number;
-  viewportWidth: number;
-  devicePixelRatio: number;
-  createdAt: string;
-  stepId: string;
-}
-
-interface Step {
-  id: string;
-  stepDescription: string;
-  stepNumber: number;
-  type: string;
-  createdAt: string;
-  updatedAt: string;
-  documentId: string;
-  screenshot: Screenshot | null;
-}
-interface CaptureResponse {
-  id: string;
-  title: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-  userId: string;
-  isDeleted: boolean;
-  deletedAt: string | null;
-  steps: Step[];
-  user: User;
-}
 
 const fetchDocument = async (
   id: string,
