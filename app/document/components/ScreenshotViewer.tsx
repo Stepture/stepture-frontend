@@ -11,38 +11,49 @@ import CustomButton from "@/components/ui/CustomButton";
 import { useRouter } from "next/navigation";
 
 interface ScreenshotViewerProps {
-  initialCaptures: CaptureData[];
-  metadata: DocumentMetadata;
+  captures: CaptureResponse;
   mode: string;
   id: string;
 }
 
-interface CaptureData {
-  tab: string;
-  screenshot: string;
-  info: ElementInfo;
+interface User {
+  id: string; // UUID
+  name: string;
+  email: string;
 }
-
-interface ElementInfo {
-  textContent: string;
-  coordinates: {
-    viewport: { x: number; y: number };
-  };
-  captureContext?: {
-    devicePixelRatio: number;
-    viewportWidth: number;
-    viewportHeight: number;
-    screenWidth?: number;
-    screenHeight?: number;
-  };
+interface Screenshot {
+  id: string; // UUID
+  googleImageId: string;
+  url: string;
+  viewportX: number;
+  viewportY: number;
+  viewportHeight: number;
+  viewportWidth: number;
+  devicePixelRatio: number;
+  createdAt: string; // ISO 8601 date string
+  stepId: string; // UUID
 }
-
-interface DocumentMetadata {
+interface Step {
+  id: string; // UUID
+  stepDescription: string;
+  stepNumber: number;
+  type: string; // Could be "STEP" or other types
+  createdAt: string; // ISO 8601 date string
+  updatedAt: string; // ISO 8601 date string
+  documentId: string; // UUID
+  screenshot: Screenshot | null;
+}
+interface CaptureResponse {
+  id: string; // UUID
   title: string;
   description: string;
-  author: string;
-  stepCount: number;
-  estimatedTime: string;
+  createdAt: string; // ISO 8601 date string
+  updatedAt: string; // ISO 8601 date string
+  userId: string; // UUID
+  isDeleted: boolean;
+  deletedAt: string | null;
+  steps: Step[];
+  user: User;
 }
 
 const ResponsiveScreenshotItem = ({
@@ -50,11 +61,19 @@ const ResponsiveScreenshotItem = ({
   index,
   info,
   mode,
+  stepDescription,
+  stepNumber,
+  stepType,
+  stepId,
 }: {
   img: string;
   index: number;
-  info: ElementInfo;
+  info: Screenshot | null;
   mode: string;
+  stepDescription: string;
+  stepNumber: number;
+  stepType: string;
+  stepId: string;
 }) => {
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
@@ -94,16 +113,19 @@ const ResponsiveScreenshotItem = ({
   }, []);
 
   const getResponsivePosition = useCallback(() => {
-    if (
-      !info?.coordinates ||
-      imageDimensions.width === 0 ||
-      displayDimensions.width === 0
-    ) {
+    if (imageDimensions.width === 0 || displayDimensions.width === 0) {
       return { left: "50%", top: "50%" };
     }
 
-    const captureContext = info.captureContext;
-    const coords = info.coordinates.viewport;
+    const captureContext = {
+      devicePixelRatio: info?.devicePixelRatio || 1,
+      viewportWidth: info?.viewportWidth || imageDimensions.width,
+      viewportHeight: info?.viewportHeight || imageDimensions.height,
+    };
+    const coords = {
+      x: info?.viewportX || 0,
+      y: info?.viewportY || 0,
+    };
 
     if (captureContext) {
       const {
@@ -227,11 +249,11 @@ const ResponsiveScreenshotItem = ({
               }`}
               type="text"
               disabled={mode !== "edit"}
-              value={"Click: " + info.textContent}
+              value={"Click: " + stepDescription}
               readOnly={mode !== "edit"}
               onChange={(e) => {
                 if (mode === "edit") {
-                  info.textContent = e.target.value;
+                  stepDescription = e.target.value;
                 }
               }}
             />
@@ -246,11 +268,11 @@ const ResponsiveScreenshotItem = ({
               }`}
               type="text"
               disabled={mode !== "edit"}
-              value={"Navigate to: " + info.textContent}
+              value={"Navigate to: " + stepDescription}
               readOnly={mode !== "edit"}
               onChange={(e) => {
                 if (mode === "edit") {
-                  info.textContent = e.target.value;
+                  stepDescription = e.target.value;
                 }
               }}
             />
@@ -263,8 +285,8 @@ const ResponsiveScreenshotItem = ({
             ref={imgRef}
             src={img}
             alt={`Screenshot ${index + 1}`}
-            width={info?.captureContext?.viewportWidth || 800}
-            height={info?.captureContext?.viewportHeight || 600}
+            width={info?.viewportWidth || 800}
+            height={info?.viewportHeight || 600}
             onLoad={handleImageLoad}
             className="w-full h-auto border rounded-md"
             style={{
@@ -273,7 +295,8 @@ const ResponsiveScreenshotItem = ({
             }}
           />
 
-          {info?.coordinates &&
+          {info?.viewportX &&
+            info?.viewportY &&
             imageDimensions.width > 0 &&
             displayDimensions.width > 0 && (
               <div
@@ -295,13 +318,16 @@ const ResponsiveScreenshotItem = ({
 };
 
 export default function ScreenshotViewer({
-  initialCaptures,
-  metadata,
+  // initialCaptures,
+  // metadata,
+  captures,
   mode,
   id,
 }: ScreenshotViewerProps) {
-  const [captures] = useState(initialCaptures);
+  const [capturesData] = useState(captures);
   const router = useRouter();
+
+  console.log("ScreenshotViewer capturesData:", capturesData);
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-8 space-y-6 relative">
@@ -324,21 +350,22 @@ export default function ScreenshotViewer({
         </div>
         <div className="flex-1">
           <h1 className="text-2xl font-semibold text-gray-900">
-            {metadata.title}
+            {capturesData?.title}
           </h1>
-          <p className="text-gray-700 mt-2">{metadata.description}</p>
+          <p className="text-gray-700 mt-2">{capturesData?.description}</p>
           <div className="flex items-center gap-4 text-sm text-gray-500 mt-3">
             <div className="flex items-center gap-1">
               <Image src={PersonIcon} alt="Author" width={16} height={16} />
-              {metadata.author}
+              {capturesData?.user?.name || "Unknown Author"}
             </div>
             <div className="flex items-center gap-1">
               <Image src={StepsIcon} alt="Steps" width={16} height={16} />
-              {metadata.stepCount} Steps
+              {capturesData?.steps?.length} Steps
             </div>
             <div className="flex items-center gap-1">
               <Image src={TimeIcon} alt="Time" width={16} height={16} />
-              {metadata.estimatedTime}
+              {/* To do: implement estimated time calculation  */}
+              {"N/A"}
             </div>
           </div>
         </div>
@@ -346,13 +373,17 @@ export default function ScreenshotViewer({
 
       {/* Screenshots Section */}
       <div className="flex flex-col gap-6 mt-12">
-        {captures.map((capture, index) => (
-          <div key={`${index}-${capture.screenshot.substring(0, 20)}`}>
+        {capturesData?.steps.map((capture, index) => (
+          <div key={`${index}-${capture.id}`} className="relative">
             <ResponsiveScreenshotItem
-              img={capture.screenshot}
+              img={capture.screenshot?.url || ""}
               index={index}
-              info={capture.info}
+              info={capture.screenshot}
               mode={mode}
+              stepDescription={capture.stepDescription || ""}
+              stepNumber={capture.stepNumber || 0}
+              stepType={capture.type || ""}
+              stepId={capture.id || ""}
             />
             {mode === "edit" && (
               <div className="relative flex items-center justify-center my-8">

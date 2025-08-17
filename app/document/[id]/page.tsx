@@ -10,49 +10,45 @@ type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-interface CaptureData {
-  tab: string;
-  screenshot: string;
-  info: ElementInfo;
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+interface Screenshot {
+  id: string;
+  googleImageId: string;
+  url: string;
+  viewportX: number;
+  viewportY: number;
+  viewportHeight: number;
+  viewportWidth: number;
+  devicePixelRatio: number;
+  createdAt: string;
+  stepId: string;
 }
 
+interface Step {
+  id: string;
+  stepDescription: string;
+  stepNumber: number;
+  type: string;
+  createdAt: string;
+  updatedAt: string;
+  documentId: string;
+  screenshot: Screenshot | null;
+}
 interface CaptureResponse {
-  documentMetadata: DocumentData;
-  captures: CaptureData[];
-}
-
-interface ElementInfo {
-  textContent: string;
-  coordinates: {
-    viewport: { x: number; y: number };
-  };
-  captureContext?: {
-    devicePixelRatio: number;
-    viewportWidth: number;
-    viewportHeight: number;
-    screenWidth?: number;
-    screenHeight?: number;
-  };
-}
-
-interface DocumentData {
+  id: string;
   title: string;
   description: string;
-  author: string;
-  stepCount: number;
-  estimatedTime: string;
-}
-
-interface StepData {
-  stepDescription: string;
-  screenshot?: {
-    url: string;
-    viewportX?: number;
-    viewportY?: number;
-    devicePixelRatio?: number;
-    viewportWidth?: number;
-    viewportHeight?: number;
-  };
+  createdAt: string;
+  updatedAt: string;
+  userId: string;
+  isDeleted: boolean;
+  deletedAt: string | null;
+  steps: Step[];
+  user: User;
 }
 
 const fetchDocument = async (
@@ -71,35 +67,7 @@ const fetchDocument = async (
       throw new Error("No steps found for this document");
     }
 
-    const documentMetadata: DocumentData = {
-      title: data.title || "",
-      description: data.description || "",
-      author: data?.user?.name || "",
-      stepCount: data.steps.length,
-      estimatedTime: data.estimatedTime || "N/A",
-    };
-
-    // Transform API steps to CaptureData[]
-    const mapped = data.steps.map((step: StepData) => ({
-      tab: null,
-      screenshot: step.screenshot?.url || "",
-      info: {
-        textContent: step.stepDescription || "",
-        coordinates: {
-          viewport: {
-            x: step.screenshot?.viewportX || 0,
-            y: step.screenshot?.viewportY || 0,
-          },
-        },
-        captureContext: {
-          devicePixelRatio: step.screenshot?.devicePixelRatio || 1,
-          viewportWidth: step.screenshot?.viewportWidth || 0,
-          viewportHeight: step.screenshot?.viewportHeight || 0,
-        },
-      },
-    }));
-
-    return { documentMetadata, captures: mapped };
+    return data;
   } catch (error) {
     console.error("Failed to fetch document:", error);
     throw error;
@@ -114,13 +82,12 @@ const Page = async ({ params, searchParams }: Props) => {
   const allCookies = cookieStore.toString();
 
   try {
-    const { documentMetadata, captures } = await fetchDocument(id, allCookies);
+    const data = await fetchDocument(id, allCookies);
 
     return (
       <div className="w-full mx-auto p-4">
         <ScreenshotViewer
-          initialCaptures={captures}
-          metadata={documentMetadata}
+          captures={data as CaptureResponse}
           mode={mode}
           id={id}
         />
