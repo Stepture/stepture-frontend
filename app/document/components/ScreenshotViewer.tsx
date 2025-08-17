@@ -16,7 +16,6 @@ import {
   Step,
   EditCaptureRequest,
 } from "../document.types";
-import axios from "axios";
 import { apiClient } from "@/lib/axios-client";
 
 interface ScreenshotViewerProps {
@@ -32,7 +31,6 @@ const ResponsiveScreenshotItem = ({
   mode,
   stepDescription,
   stepNumber,
-  stepType,
   stepId,
   onStepDescriptionChange,
   handleDeleteStep,
@@ -141,11 +139,7 @@ const ResponsiveScreenshotItem = ({
     };
 
     if (captureContext) {
-      const {
-        devicePixelRatio = 1,
-        viewportWidth,
-        viewportHeight,
-      } = captureContext;
+      const { viewportWidth, viewportHeight } = captureContext;
 
       if (viewportWidth && viewportHeight) {
         const xPercent = (coords.x / viewportWidth) * 100;
@@ -232,10 +226,6 @@ const ResponsiveScreenshotItem = ({
     };
   }, [updateDisplayDimensions]);
 
-  const displayText = img
-    ? `Click: ${stepDescription}`
-    : `Navigate to: ${stepDescription}`;
-
   return (
     <div
       ref={containerRef}
@@ -262,14 +252,16 @@ const ResponsiveScreenshotItem = ({
             placeholder={mode === "edit" ? "Enter step description..." : ""}
           />
         </div>
-        <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-slate-200 transition-colors">
-          <Trash
-            width={18}
-            height={18}
-            className="text-blue-500"
-            onClick={() => handleDeleteStep(stepId)}
-          />
-        </div>
+        {mode === "edit" && (
+          <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-slate-200 transition-colors">
+            <Trash
+              width={18}
+              height={18}
+              className="text-blue-500"
+              onClick={() => handleDeleteStep(stepId)}
+            />
+          </div>
+        )}
       </div>
 
       {img && (
@@ -405,9 +397,6 @@ export default function ScreenshotViewer({
       id,
       updateDate
     );
-    console.log("Updated document data:", updatedData);
-    console.log("Steps to delete:", stepsToDelete);
-    console.log("request data:", updateDate);
     router.push(`/document/${id}`);
   };
 
@@ -436,7 +425,6 @@ export default function ScreenshotViewer({
     }));
 
     setStepsToDelete((prev) => [...prev, stepId]);
-    console.log("Steps to delete:", stepsToDelete);
   };
 
   return (
