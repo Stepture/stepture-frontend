@@ -397,6 +397,8 @@ export default function ScreenshotViewer({
       id,
       updateDate
     );
+
+    console.log("Updated document:", updatedData);
     router.push(`/document/${id}`);
   };
 
