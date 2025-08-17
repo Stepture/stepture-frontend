@@ -6,7 +6,7 @@ import TimeIcon from "@/public/time.svg";
 import StepsIcon from "@/public/steps.svg";
 import PersonIcon from "@/public/person.svg";
 import Logo from "@/public/AUlogo.png";
-import { Plus } from "lucide-react";
+import { Plus, Trash } from "lucide-react";
 import CustomButton from "@/components/ui/CustomButton";
 import { useRouter } from "next/navigation";
 
@@ -35,6 +35,7 @@ const ResponsiveScreenshotItem = ({
   stepType,
   stepId,
   onStepDescriptionChange,
+  handleDeleteStep,
 }: {
   img: string;
   index: number;
@@ -45,6 +46,7 @@ const ResponsiveScreenshotItem = ({
   stepType: string;
   stepId: string;
   onStepDescriptionChange?: (stepId: string, newDescription: string) => void;
+  handleDeleteStep: (id: string) => void;
 }) => {
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
@@ -241,7 +243,7 @@ const ResponsiveScreenshotItem = ({
     >
       <div className="flex items-center gap-2 text-sm font-medium w-full">
         <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100 min-w-24 text-center">
-          Step {stepNumber}
+          Step {index + 1}
         </span>
         <div className="flex-1">
           <input
@@ -258,6 +260,14 @@ const ResponsiveScreenshotItem = ({
             onChange={handleDescriptionChange}
             onKeyDown={handleKeyDown}
             placeholder={mode === "edit" ? "Enter step description..." : ""}
+          />
+        </div>
+        <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-slate-200 transition-colors">
+          <Trash
+            width={18}
+            height={18}
+            className="text-blue-500"
+            onClick={() => handleDeleteStep(stepId)}
           />
         </div>
       </div>
@@ -306,6 +316,7 @@ export default function ScreenshotViewer({
   id,
 }: ScreenshotViewerProps) {
   const [capturesData, setCapturesData] = useState(captures);
+  const [stepsToDelete, setStepsToDelete] = useState<string[]>([]);
   const router = useRouter();
 
   const originalTitleRef = useRef<string>(captures.title);
@@ -387,7 +398,7 @@ export default function ScreenshotViewer({
       title: capturesData.title,
       description: capturesData.description,
       steps: capturesData.steps,
-      deleteStepIds: [],
+      deleteStepIds: stepsToDelete,
     };
 
     const updatedData = await apiClient.protected.updateDocument(
@@ -395,6 +406,8 @@ export default function ScreenshotViewer({
       updateDate
     );
     console.log("Updated document data:", updatedData);
+    console.log("Steps to delete:", stepsToDelete);
+    console.log("request data:", updateDate);
     router.push(`/document/${id}`);
   };
 
@@ -414,6 +427,16 @@ export default function ScreenshotViewer({
       behavior: "smooth",
       block: "start",
     });
+  };
+
+  const handleDeleteStep = (stepId: string) => {
+    setCapturesData((prev) => ({
+      ...prev,
+      steps: prev.steps.filter((step) => step.id !== stepId),
+    }));
+
+    setStepsToDelete((prev) => [...prev, stepId]);
+    console.log("Steps to delete:", stepsToDelete);
   };
 
   return (
@@ -521,6 +544,7 @@ export default function ScreenshotViewer({
               stepType={capture.type || ""}
               stepId={capture.id || ""}
               onStepDescriptionChange={handleStepDescriptionChange}
+              handleDeleteStep={handleDeleteStep}
             />
             {mode === "edit" && index < capturesData.steps.length - 1 && (
               <div className="relative flex items-center justify-center my-8">
