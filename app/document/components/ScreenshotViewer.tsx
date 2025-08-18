@@ -6,7 +6,7 @@ import TimeIcon from "@/public/time.svg";
 import StepsIcon from "@/public/steps.svg";
 import PersonIcon from "@/public/person.svg";
 import Logo from "@/public/AUlogo.png";
-import { Cross, Plus, Trash, X } from "lucide-react";
+import { Plus, Trash, X } from "lucide-react";
 import CustomButton from "@/components/ui/CustomButton";
 import { useRouter } from "next/navigation";
 

@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 import { MousePointer, Lightbulb, TriangleAlert, Heading } from "lucide-react";
 
 type Props = {
