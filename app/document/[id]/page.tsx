@@ -2,57 +2,14 @@ import React from "react";
 import { getServerApi } from "@/lib/axios-server";
 import ScreenshotViewer from "../components/ScreenshotViewer";
 import { cookies } from "next/headers";
+import { CaptureResponse } from "../document.types";
 
 type Props = {
   params: Promise<{
     id: string;
   }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
-
-interface CaptureData {
-  tab: string;
-  screenshot: string;
-  info: ElementInfo;
-}
-
-interface CaptureResponse {
-  documentMetadata: DocumentData;
-  captures: CaptureData[];
-}
-
-interface ElementInfo {
-  textContent: string;
-  coordinates: {
-    viewport: { x: number; y: number };
-  };
-  captureContext?: {
-    devicePixelRatio: number;
-    viewportWidth: number;
-    viewportHeight: number;
-    screenWidth?: number;
-    screenHeight?: number;
-  };
-}
-
-interface DocumentData {
-  title: string;
-  description: string;
-  author: string;
-  stepCount: number;
-  estimatedTime: string;
-}
-
-interface StepData {
-  stepDescription: string;
-  screenshot?: {
-    url: string;
-    viewportX?: number;
-    viewportY?: number;
-    devicePixelRatio?: number;
-    viewportWidth?: number;
-    viewportHeight?: number;
-  };
-}
 
 const fetchDocument = async (
   id: string,
@@ -70,60 +27,35 @@ const fetchDocument = async (
       throw new Error("No steps found for this document");
     }
 
-    const documentMetadata: DocumentData = {
-      title: data.title || "",
-      description: data.description || "",
-      author: data?.user?.name || "",
-      stepCount: data.steps.length,
-      estimatedTime: data.estimatedTime || "N/A",
-    };
-
-    // Transform API steps to CaptureData[]
-    const mapped = data.steps.map((step: StepData) => ({
-      tab: null,
-      screenshot: step.screenshot?.url || "",
-      info: {
-        textContent: step.stepDescription || "",
-        coordinates: {
-          viewport: {
-            x: step.screenshot?.viewportX || 0,
-            y: step.screenshot?.viewportY || 0,
-          },
-        },
-        captureContext: {
-          devicePixelRatio: step.screenshot?.devicePixelRatio || 1,
-          viewportWidth: step.screenshot?.viewportWidth || 0,
-          viewportHeight: step.screenshot?.viewportHeight || 0,
-        },
-      },
-    }));
-
-    return { documentMetadata, captures: mapped };
+    return data;
   } catch (error) {
     console.error("Failed to fetch document:", error);
     throw error;
   }
 };
 
-const Page = async ({ params }: Props) => {
+const Page = async ({ params, searchParams }: Props) => {
   const { id } = await params;
+  const searchParamsObj = await searchParams;
+  const mode = (searchParamsObj.mode as string) || "view";
   const cookieStore = await cookies();
   const allCookies = cookieStore.toString();
 
   try {
-    const { documentMetadata, captures } = await fetchDocument(id, allCookies);
+    const data = await fetchDocument(id, allCookies);
 
     return (
-      <div className="w-full max-w-[800px] mx-auto p-4">
+      <div className="w-full mx-auto p-4">
         <ScreenshotViewer
-          initialCaptures={captures}
-          metadata={documentMetadata}
+          captures={data as CaptureResponse}
+          mode={mode}
+          id={id}
         />
       </div>
     );
   } catch (error) {
     return (
-      <div className="w-full max-w-[800px] mx-auto p-4">
+      <div className="w-full mx-auto p-4">
         <div className="text-center text-red-500 py-10">
           {error instanceof Error ? error.message : "Failed to load document"}
         </div>

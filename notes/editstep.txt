@@ -1,0 +1,36 @@
+frontend logic
+
+update
+
+// payload needs to include steps id
+
+case 1:
+new step ->
+
+const newStep = {
+    text,
+    image -> upload -> url and image Id,
+    step_number (new step wont have an id yet)
+}
+
+[..., newstep]
+
+case 2:
+delete a step -> stepstodelete.append(stepId)
+
+case 3:
+delete an image in a step and also update an image ->
+const editStep = {
+    text,
+    image -> upload -> url and image Id,
+    step_number,
+    step_id,
+    coordinates : null
+}
+[..., editStep]
+
+case 4:
+delete an image in a step and doesn't replace (without an image) -> don't include screenshot in that existing step
+const existing_step.screenshot === null
+
+steps = [....]
