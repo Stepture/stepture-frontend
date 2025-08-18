@@ -22,7 +22,7 @@ const publicApi = axios.create({
 
 const privateApi = axios.create({
   baseURL: BASE_URL,
-  timeout: 10000,
+  timeout: 100000,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
