@@ -1,5 +1,5 @@
 "use client"; // needed for the small animation below
-// app/page.tsx
+
 import Image from "next/image";
 import { Raleway } from "next/font/google";
 import { useEffect, useState } from "react";

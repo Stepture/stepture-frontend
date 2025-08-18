@@ -20,7 +20,7 @@ export async function middleware(req: NextRequest) {
   const isPublic =
     req.nextUrl.pathname.startsWith("/login") ||
     req.nextUrl.pathname.startsWith("/auth/success") ||
-    req.nextUrl.pathname.startsWith("/test"); // ← Add test route here
+    req.nextUrl.pathname === "/";
 
   if (isPublic) {
     return NextResponse.next();
