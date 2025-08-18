@@ -6,7 +6,7 @@ import TimeIcon from "@/public/time.svg";
 import StepsIcon from "@/public/steps.svg";
 import PersonIcon from "@/public/person.svg";
 import Logo from "@/public/AUlogo.png";
-import { Plus, Trash } from "lucide-react";
+import { Cross, Plus, Trash, X } from "lucide-react";
 import CustomButton from "@/components/ui/CustomButton";
 import { useRouter } from "next/navigation";
 
@@ -17,6 +17,7 @@ import {
   EditCaptureRequest,
 } from "../document.types";
 import { apiClient } from "@/lib/axios-client";
+import ChooseStepType from "./ChooseStepType";
 
 interface ScreenshotViewerProps {
   captures: CaptureResponse;
@@ -429,6 +430,16 @@ export default function ScreenshotViewer({
     setStepsToDelete((prev) => [...prev, stepId]);
   };
 
+  const [showStepTypeModelAt, setShowStepTypeModelAt] = useState<number | null>(
+    null
+  );
+
+  const handleShowStepTypeModel = (stepIndex: number) => {
+    setShowStepTypeModelAt(
+      showStepTypeModelAt === stepIndex ? null : stepIndex
+    );
+  };
+
   return (
     <div
       ref={containerRef}
@@ -537,18 +548,42 @@ export default function ScreenshotViewer({
               handleDeleteStep={handleDeleteStep}
             />
             {mode === "edit" && index < capturesData.steps.length - 1 && (
-              <div className="relative flex items-center justify-center my-8">
-                <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
-                <div className="relative z-10 flex justify-center w-full">
-                  <button
-                    type="button"
-                    className="bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center mx-auto transition-colors hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    aria-label="Add new step"
-                  >
-                    <Plus size={20} className="text-gray-400" />
-                  </button>
+              <>
+                <div className="relative flex items-center justify-center my-8">
+                  <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
+                  <div className="relative z-10 flex justify-center w-full">
+                    <div
+                      className="bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center mx-auto transition-colors hover:bg-blue-100 cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      aria-label="Add new step"
+                    >
+                      {showStepTypeModelAt === index ? (
+                        <X
+                          size={20}
+                          className={`text-gray-400 ${
+                            showStepTypeModelAt === index ? "block" : "hidden"
+                          }`}
+                          onClick={() => handleShowStepTypeModel(index)}
+                        />
+                      ) : (
+                        <Plus
+                          size={20}
+                          className="text-gray-400"
+                          onClick={() => handleShowStepTypeModel(index)}
+                        />
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
+                <div className="w-full flex justify-center">
+                  {showStepTypeModelAt === index && (
+                    <ChooseStepType
+                      onStepTypeSelect={() => {
+                        setShowStepTypeModelAt(null);
+                      }}
+                    />
+                  )}
+                </div>
+              </>
             )}
           </div>
         ))}
