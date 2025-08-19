@@ -557,7 +557,7 @@ export default function ScreenshotViewer({
 
           setCapturesData((prev) => ({
             ...prev,
-            steps: prev.steps.map((step, index) =>
+            steps: prev.steps.map((step) =>
               step?.stepNumber === stepNumber
                 ? {
                     ...step,
