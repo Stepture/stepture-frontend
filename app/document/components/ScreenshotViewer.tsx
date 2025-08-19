@@ -700,7 +700,6 @@ export default function ScreenshotViewer({
             />
             {mode === "edit" && index <= capturesData.steps.length - 1 && (
               <>
-                <span></span>
                 <div className="relative flex items-center justify-center my-8">
                   <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
                   <div className="relative z-10 flex justify-center w-full">
@@ -744,7 +743,6 @@ export default function ScreenshotViewer({
           <>
             {mode === "edit" && (
               <>
-                <span></span>
                 <div className="relative flex items-center justify-center my-8">
                   <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
                   <div className="relative z-10 flex justify-center w-full">
