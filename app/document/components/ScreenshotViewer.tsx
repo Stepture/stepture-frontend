@@ -454,6 +454,59 @@ export default function ScreenshotViewer({
     );
   };
 
+  const calculateStepNumber = (
+    prevStepNumber: number,
+    afterStepNummber: number
+  ) => {
+    console.log(
+      "Calculating step number between:",
+      prevStepNumber,
+      "and",
+      afterStepNummber
+    );
+    const newStepNumber = (prevStepNumber + afterStepNummber) / 2;
+    return newStepNumber;
+  };
+
+  const handleAddNewStep = (selectedType: string, index: number) => {
+    let newStepNumber: number;
+
+    // if the new step is added at the end, just add 1 to the last step number
+    if (index === capturesData.steps.length - 1) {
+      newStepNumber = capturesData.steps.length
+        ? capturesData.steps[capturesData.steps.length - 1].stepNumber + 1
+        : 1;
+    } else {
+      // if not, calculate the new step number based on the previous and next step numbers
+      newStepNumber = calculateStepNumber(
+        capturesData.steps[index]?.stepNumber || 0,
+        capturesData.steps[index + 1]?.stepNumber || 0
+      );
+    }
+
+    const newStep: Step = {
+      stepDescription: "New step added",
+      stepNumber: newStepNumber,
+      type: selectedType,
+      documentId: capturesData.id,
+      screenshot: null,
+    };
+    setCapturesData((prev) => ({
+      ...prev,
+      steps: [
+        ...prev.steps.slice(0, index + 1),
+        newStep,
+        ...prev.steps.slice(index + 1),
+      ],
+    }));
+
+    console.log("New step added:", newStep);
+    setShowStepTypeModelAt(null);
+    showToast("success", <span>New step added successfully!</span>, {
+      autoClose: 2000,
+    });
+  };
+
   return (
     <div
       ref={containerRef}
@@ -554,7 +607,7 @@ export default function ScreenshotViewer({
       {/* Screenshots Section */}
       <div className="flex flex-col gap-6 mt-12">
         {capturesData?.steps.map((capture, index) => (
-          <div key={capture.id} className="relative">
+          <div key={capture.id || index} className="relative">
             <ResponsiveScreenshotItem
               img={capture.screenshot?.url || ""}
               index={index}
@@ -598,8 +651,8 @@ export default function ScreenshotViewer({
                 <div className="w-full flex justify-center">
                   {showStepTypeModelAt === index && (
                     <ChooseStepType
-                      onStepTypeSelect={() => {
-                        setShowStepTypeModelAt(null);
+                      onStepTypeSelect={(selectedType) => {
+                        handleAddNewStep(selectedType, index);
                       }}
                     />
                   )}

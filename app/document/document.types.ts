@@ -17,12 +17,12 @@ export interface Screenshot {
 }
 
 export interface Step {
-  id: string;
+  id?: string;
   stepDescription: string;
   stepNumber: number;
   type: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   documentId: string;
   screenshot: Screenshot | null;
 }
