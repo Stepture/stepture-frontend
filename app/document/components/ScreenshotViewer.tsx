@@ -273,7 +273,13 @@ const ResponsiveScreenshotItem = ({
               title="Delete Step"
               description={`Are you sure you want to delete step this step? `}
               onConfirm={() => handleDeleteStep(stepId)}
-              triggerDescription={<Trash className="w-4 h-4 text-red-600" />}
+              triggerDescription={
+                <Trash
+                  aria-label="Delete Step"
+                  role="button"
+                  className="w-6 h-6 text-red-500"
+                />
+              }
             />
           </div>
         )}
@@ -298,11 +304,15 @@ const ResponsiveScreenshotItem = ({
           />
           {mode === "edit" && (
             <CustomAlertDialog
-              title="Delete Step"
+              title="Delete Image"
               description={`Are you sure you want to delete the image from this step? `}
               onConfirm={() => handleDeleteImage?.(stepNumber)}
               triggerDescription={
-                <Trash className="w-8 h-8 text-slate-100 bg-red-300 p-2 group-hover:bg-red-400 group-hover:text-slate-50 rounded-full absolute top-1/2 right-1/2 cursor-pointer" />
+                <Trash
+                  aria-label="Delete image"
+                  role="button"
+                  className="hidden w-8 h-8  p-2 group-hover:block group-hover:bg-red-400 group-hover:text-slate-50 rounded-full absolute top-1/2 right-1/2 cursor-pointer"
+                />
               }
             />
           )}
