@@ -35,9 +35,8 @@ const CustomButton = (props: Props) => {
   };
 
   return (
-    <button
+    <div
       onClick={props.onClick}
-      disabled={props.disabled}
       className={`
         flex items-center justify-center
         rounded-md
@@ -71,7 +70,7 @@ const CustomButton = (props: Props) => {
           />
         </div>
       )}
-    </button>
+    </div>
   );
 };
 

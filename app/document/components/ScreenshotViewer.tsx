@@ -567,8 +567,9 @@ export default function ScreenshotViewer({
               onStepDescriptionChange={handleStepDescriptionChange}
               handleDeleteStep={handleDeleteStep}
             />
-            {mode === "edit" && index < capturesData.steps.length - 1 && (
+            {mode === "edit" && index <= capturesData.steps.length - 1 && (
               <>
+                <span></span>
                 <div className="relative flex items-center justify-center my-8">
                   <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
                   <div className="relative z-10 flex justify-center w-full">
@@ -607,6 +608,50 @@ export default function ScreenshotViewer({
             )}
           </div>
         ))}
+
+        {capturesData?.steps.length === 0 && (
+          <>
+            {mode === "edit" && (
+              <>
+                <span></span>
+                <div className="relative flex items-center justify-center my-8">
+                  <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
+                  <div className="relative z-10 flex justify-center w-full">
+                    <div
+                      className="bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center mx-auto transition-colors hover:bg-blue-100 cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      aria-label="Add new step"
+                    >
+                      {showStepTypeModelAt === 0 ? (
+                        <X
+                          size={20}
+                          className={`text-gray-400 ${
+                            showStepTypeModelAt === 0 ? "block" : "hidden"
+                          }`}
+                          onClick={() => handleShowStepTypeModel(0)}
+                        />
+                      ) : (
+                        <Plus
+                          size={20}
+                          className="text-gray-400"
+                          onClick={() => handleShowStepTypeModel(0)}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full flex justify-center">
+                  {showStepTypeModelAt === 0 && (
+                    <ChooseStepType
+                      onStepTypeSelect={() => {
+                        setShowStepTypeModelAt(null);
+                      }}
+                    />
+                  )}
+                </div>
+              </>
+            )}
+          </>
+        )}
       </div>
 
       {/* Footer Section */}
