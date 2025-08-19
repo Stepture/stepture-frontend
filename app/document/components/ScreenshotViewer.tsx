@@ -760,6 +760,8 @@ export default function ScreenshotViewer({
                         <div
                           className="bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center mx-auto transition-colors hover:bg-blue-100 cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                           aria-label="Add new step"
+                          role="button"
+                          onClick={() => handleShowStepTypeModel(index)}
                         >
                           {showStepTypeModelAt === index ? (
                             <X
