@@ -6,7 +6,7 @@ import TimeIcon from "@/public/time.svg";
 import StepsIcon from "@/public/steps.svg";
 import PersonIcon from "@/public/person.svg";
 import Logo from "@/public/AUlogo.png";
-import { Plus, Trash, X, GripVertical } from "lucide-react";
+import { Plus, Trash, X, GripVertical, ImagePlus, Loader } from "lucide-react";
 import CustomButton from "@/components/ui/Common/CustomButton";
 import { useRouter } from "next/navigation";
 
@@ -37,6 +37,8 @@ const ResponsiveScreenshotItem = ({
   stepId,
   onStepDescriptionChange,
   handleDeleteStep,
+  handleAddNewImage,
+  loading,
 }: {
   img: string;
   index: number;
@@ -46,8 +48,10 @@ const ResponsiveScreenshotItem = ({
   stepNumber: number;
   stepType: string;
   stepId: string;
+  loading?: boolean;
   onStepDescriptionChange?: (stepId: string, newDescription: string) => void;
   handleDeleteStep: (id: string) => void;
+  handleAddNewImage?: (stepNumber: number) => void;
 }) => {
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
@@ -273,7 +277,7 @@ const ResponsiveScreenshotItem = ({
         )}
       </div>
 
-      {img && (
+      {img ? (
         <div className="relative w-full">
           <Image
             ref={imgRef}
@@ -289,8 +293,8 @@ const ResponsiveScreenshotItem = ({
             }}
           />
 
-          {info?.viewportX &&
-            info?.viewportY &&
+          {info?.viewportX !== 0 &&
+            info?.viewportY !== 0 &&
             imageDimensions.width > 0 &&
             displayDimensions.width > 0 && (
               <div
@@ -306,6 +310,23 @@ const ResponsiveScreenshotItem = ({
               </div>
             )}
         </div>
+      ) : (
+        <>
+          {mode === "edit" && (
+            <div className="w-full h-96 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+              {loading ? (
+                <Loader className="w-12 h-12 text-blue-300 animate-spin" />
+              ) : (
+                <ImagePlus
+                  className="w-24 h-24 text-gray-400 cursor-pointer hover:text-blue-600 transition-colors"
+                  onClick={() => {
+                    handleAddNewImage?.(stepNumber);
+                  }}
+                />
+              )}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -318,6 +339,7 @@ export default function ScreenshotViewer({
 }: ScreenshotViewerProps) {
   const [capturesData, setCapturesData] = useState(captures);
   const [stepsToDelete, setStepsToDelete] = useState<string[]>([]);
+  const [imageUploadLoading, setImageUploadLoading] = useState(false);
   const router = useRouter();
 
   const originalTitleRef = useRef<string>(captures.title);
@@ -507,6 +529,60 @@ export default function ScreenshotViewer({
     });
   };
 
+  const handleAddNewImage = async (stepNumber: number) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.style.display = "none";
+
+    // Handle file selection
+    input.onchange = async (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      try {
+        setImageUploadLoading(true);
+        const response = await apiClient.protected.uploadImageToGoogleApi(file);
+        setImageUploadLoading(false);
+        if (response) {
+          const newScreenshot: Screenshot = {
+            googleImageId: response.imgId,
+            url: response.publicUrl,
+            viewportX: 0,
+            viewportY: 0,
+            viewportHeight: 0,
+            viewportWidth: 0,
+            devicePixelRatio: window.devicePixelRatio,
+          };
+
+          setCapturesData((prev) => ({
+            ...prev,
+            steps: prev.steps.map((step, index) =>
+              step?.stepNumber === stepNumber
+                ? {
+                    ...step,
+                    screenshot: newScreenshot,
+                  }
+                : step
+            ),
+          }));
+        }
+
+        showToast("success", <span>Image added successfully!</span>, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        console.error("Failed to upload image:", error);
+        showToast("error", <span>Failed to add image</span>, {
+          autoClose: 2000,
+        });
+      }
+    };
+
+    // Trigger file selection dialog
+    input.click();
+  };
+
   return (
     <div
       ref={containerRef}
@@ -619,6 +695,8 @@ export default function ScreenshotViewer({
               stepId={capture.id || ""}
               onStepDescriptionChange={handleStepDescriptionChange}
               handleDeleteStep={handleDeleteStep}
+              handleAddNewImage={handleAddNewImage}
+              loading={imageUploadLoading}
             />
             {mode === "edit" && index <= capturesData.steps.length - 1 && (
               <>

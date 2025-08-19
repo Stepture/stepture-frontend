@@ -4,7 +4,7 @@ export interface User {
   email: string;
 }
 export interface Screenshot {
-  id: string;
+  id?: string;
   googleImageId: string;
   url: string;
   viewportX: number;
@@ -12,8 +12,8 @@ export interface Screenshot {
   viewportHeight: number;
   viewportWidth: number;
   devicePixelRatio: number;
-  createdAt: string;
-  stepId: string;
+  createdAt?: string;
+  stepId?: string;
 }
 
 export interface Step {
