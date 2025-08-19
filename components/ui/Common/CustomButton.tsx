@@ -36,6 +36,14 @@ const CustomButton = (props: Props) => {
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={`Custom button for ${props.label || "action"} `}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          props.onClick?.();
+        }
+      }}
       onClick={props.onClick}
       className={`
         flex items-center justify-center
