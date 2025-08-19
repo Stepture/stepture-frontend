@@ -38,6 +38,7 @@ const ResponsiveScreenshotItem = ({
   onStepDescriptionChange,
   handleDeleteStep,
   handleAddNewImage,
+  handleDeleteImage,
   loading,
 }: {
   img: string;
@@ -52,6 +53,7 @@ const ResponsiveScreenshotItem = ({
   onStepDescriptionChange?: (stepId: string, newDescription: string) => void;
   handleDeleteStep: (id: string) => void;
   handleAddNewImage?: (stepNumber: number) => void;
+  handleDeleteImage?: (stepNumber: number) => void;
 }) => {
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
@@ -278,7 +280,7 @@ const ResponsiveScreenshotItem = ({
       </div>
 
       {img ? (
-        <div className="relative w-full">
+        <div className="relative w-full group">
           <Image
             ref={imgRef}
             src={img}
@@ -286,19 +288,33 @@ const ResponsiveScreenshotItem = ({
             width={info?.viewportWidth || 800}
             height={info?.viewportHeight || 600}
             onLoad={handleImageLoad}
-            className="w-full h-auto border rounded-md"
+            className={`w-full h-auto border rounded-md transition-all duration-200 ${
+              mode === "edit" ? "group-hover:blur-sm" : ""
+            }`}
             style={{
               maxWidth: "100%",
               height: "auto",
             }}
           />
+          {mode === "edit" && (
+            <CustomAlertDialog
+              title="Delete Step"
+              description={`Are you sure you want to delete the image from this step? `}
+              onConfirm={() => handleDeleteImage?.(stepNumber)}
+              triggerDescription={
+                <Trash className="w-8 h-8 text-slate-100 bg-red-300 p-2 group-hover:bg-red-400 group-hover:text-slate-50 rounded-full absolute top-1/2 right-1/2 cursor-pointer" />
+              }
+            />
+          )}
 
           {info?.viewportX !== 0 &&
             info?.viewportY !== 0 &&
             imageDimensions.width > 0 &&
             displayDimensions.width > 0 && (
               <div
-                className="absolute opacity-50 rounded-full border-4 border-blue-300 bg-blue-500 bg-opacity-30 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-all duration-200"
+                className={`absolute opacity-50 rounded-full border-4 border-blue-300 bg-blue-500 bg-opacity-30 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-all duration-200 ${
+                  mode === "edit" ? "group-hover:blur-sm" : ""
+                }`}
                 style={{
                   ...getResponsivePosition(),
                   width: `${getIndicatorSize()}px`,
@@ -311,6 +327,7 @@ const ResponsiveScreenshotItem = ({
             )}
         </div>
       ) : (
+        // Your existing fallback content
         <>
           {mode === "edit" && (
             <div className="w-full h-96 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
@@ -340,6 +357,7 @@ export default function ScreenshotViewer({
   const [capturesData, setCapturesData] = useState(captures);
   const [stepsToDelete, setStepsToDelete] = useState<string[]>([]);
   const [imageUploadLoading, setImageUploadLoading] = useState(false);
+  const [documentUpdateLoading, setDocumentUpdateLoading] = useState(false);
   const router = useRouter();
 
   const originalTitleRef = useRef<string>(captures.title);
@@ -424,12 +442,17 @@ export default function ScreenshotViewer({
       deleteStepIds: stepsToDelete,
     };
 
+    setDocumentUpdateLoading(true);
+
     const updatedData = await apiClient.protected.updateDocument(
       id,
       updateDate
     );
 
-    console.log("Updated document:", updatedData);
+    console.log("Updated data:", updatedData);
+
+    setDocumentUpdateLoading(false);
+
     showToast("success", <span>Document updated successfully!</span>, {
       autoClose: 2000,
     });
@@ -529,6 +552,18 @@ export default function ScreenshotViewer({
     });
   };
 
+  const handleDeleteImage = (stepNumber: number) => {
+    setCapturesData((prev) => ({
+      ...prev,
+      steps: prev.steps.map((step) =>
+        step?.stepNumber === stepNumber ? { ...step, screenshot: null } : step
+      ),
+    }));
+    showToast("info", <span>Image deleted successfully!</span>, {
+      autoClose: 2000,
+    });
+  };
+
   const handleAddNewImage = async (stepNumber: number) => {
     const input = document.createElement("input");
     input.type = "file";
@@ -588,205 +623,223 @@ export default function ScreenshotViewer({
       ref={containerRef}
       className="w-full max-w-4xl mx-auto px-4 py-8 space-y-6 relative"
     >
-      {/* Enhanced Header Section */}
-      {mode === "edit" && (
-        <div
-          ref={headerRef}
-          className="sticky top-2 left-0 z-50 w-full flex items-center justify-between p-4 bg-blue-100 backdrop-blur-sm border-b border-gray-100 rounded-lg"
-        >
-          <button
-            onClick={scrollToTop}
-            className="text-sm text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
-          >
-            ↑ Scroll to top
-          </button>
-          <div className="flex gap-2">
-            <button
-              onClick={handleCancelEdit}
-              className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors cursor-pointer"
+      {documentUpdateLoading ? (
+        <div className="fixed inset-0 flex items-center justify-center bg-slate-200 backdrop-blur-md z-50">
+          <div className="absolute inset-0 bg-gray-900/10"></div>
+
+          <div className="relative z-10 flex flex-col items-center justify-center space-y-4">
+            <Loader className="w-12 h-12 text-blue-300 animate-spin" />
+
+            <div className="text-center">
+              <p className="text-gray-700 font-medium">Updating document...</p>
+              <p className="text-gray-500 text-sm mt-1">
+                Please wait for a moment
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          {mode === "edit" && (
+            <div
+              ref={headerRef}
+              className="sticky top-2 left-0 z-50 w-full flex items-center justify-between p-4 bg-blue-100 backdrop-blur-sm border-b border-gray-100 rounded-lg"
             >
-              Cancel
-            </button>
-            <CustomAlertDialog
-              title="Confirm Save"
-              description="Are you sure you want to save changes?"
-              onConfirm={handleEditSubmit}
-              triggerDescription={
-                <CustomButton
-                  label="Save Changes"
-                  variant="primary"
-                  size="small"
+              <button
+                onClick={scrollToTop}
+                className="text-sm text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+              >
+                ↑ Scroll to top
+              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleCancelEdit}
+                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <CustomAlertDialog
+                  title="Confirm Save"
+                  description="Are you sure you want to save changes?"
+                  onConfirm={handleEditSubmit}
+                  triggerDescription={
+                    <CustomButton
+                      label="Save Changes"
+                      variant="primary"
+                      size="small"
+                    />
+                  }
                 />
-              }
-            />
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-start gap-4 mb-4">
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-b from-[#E3EAFC] to-white flex items-center justify-center flex-shrink-0">
+              <Image src={Logo} alt="Logo" width={48} height={48} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <input
+                ref={titleInputRef}
+                className={`text-2xl font-semibold text-gray-900 w-full ${
+                  mode === "edit"
+                    ? "bg-transparent border-none outline-none ring-2 ring-blue-200 focus:ring-blue-500 focus:ring-offset-2 rounded p-2 mx-2"
+                    : ""
+                }`}
+                type="text"
+                value={capturesData?.title || "Untitled Document"}
+                readOnly={mode !== "edit"}
+                disabled={mode !== "edit"}
+                onChange={handleTitleChange}
+                onKeyDown={handleTitleKeyDown}
+                placeholder={mode === "edit" ? "Enter document title..." : ""}
+              />
+
+              <input
+                ref={descriptionInputRef}
+                className={`text-gray-700 mt-2 break-words w-full ${
+                  mode === "edit"
+                    ? "bg-transparent border-none outline-none ring-2 ring-blue-200 focus:ring-blue-500 focus:ring-offset-2 rounded p-2 mx-2"
+                    : "bg-transparent border-none cursor-default"
+                }`}
+                type="text"
+                value={capturesData?.description || "Untitled Document"}
+                readOnly={mode !== "edit"}
+                disabled={mode !== "edit"}
+                onChange={handleDocumentDescriptionChange}
+                onKeyDown={handleDocumentDescriptionKeyDown}
+                placeholder={mode === "edit" ? "Enter document title..." : ""}
+              />
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mt-3">
+                <div className="flex items-center gap-1">
+                  <Image src={PersonIcon} alt="Author" width={16} height={16} />
+                  <span>{capturesData?.user?.name || "Unknown Author"}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Image src={StepsIcon} alt="Steps" width={16} height={16} />
+                  <span>{capturesData?.steps?.length || 0} Steps</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Image src={TimeIcon} alt="Time" width={16} height={16} />
+                  <span>
+                    {capturesData?.steps?.length
+                      ? `~${Math.ceil(
+                          capturesData.steps.length * 0.5
+                        )} min read`
+                      : "N/A"}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+
+          {/* Screenshots Section */}
+          <div className="flex flex-col gap-6 mt-12">
+            {capturesData?.steps.map((capture, index) => (
+              <div key={capture.id || index} className="relative">
+                <ResponsiveScreenshotItem
+                  img={capture.screenshot?.url || ""}
+                  index={index}
+                  info={capture.screenshot}
+                  mode={mode}
+                  stepDescription={capture.stepDescription || ""}
+                  stepNumber={capture.stepNumber || 0}
+                  stepType={capture.type || ""}
+                  stepId={capture.id || ""}
+                  onStepDescriptionChange={handleStepDescriptionChange}
+                  handleDeleteStep={handleDeleteStep}
+                  handleAddNewImage={handleAddNewImage}
+                  handleDeleteImage={handleDeleteImage}
+                  loading={imageUploadLoading}
+                />
+                {mode === "edit" && index <= capturesData.steps.length - 1 && (
+                  <>
+                    <div className="relative flex items-center justify-center my-8">
+                      <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
+                      <div className="relative z-10 flex justify-center w-full">
+                        <div
+                          className="bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center mx-auto transition-colors hover:bg-blue-100 cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                          aria-label="Add new step"
+                        >
+                          {showStepTypeModelAt === index ? (
+                            <X
+                              size={20}
+                              className={`text-gray-400 ${
+                                showStepTypeModelAt === index
+                                  ? "block"
+                                  : "hidden"
+                              }`}
+                            />
+                          ) : (
+                            <Plus size={20} className="text-gray-400" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-full flex justify-center">
+                      {showStepTypeModelAt === index && (
+                        <ChooseStepType
+                          onStepTypeSelect={(selectedType) => {
+                            handleAddNewStep(selectedType, index);
+                          }}
+                        />
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+
+            {capturesData?.steps.length === 0 && (
+              <>
+                {mode === "edit" && (
+                  <>
+                    <div className="relative flex items-center justify-center my-8">
+                      <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
+                      <div className="relative z-10 flex justify-center w-full">
+                        <div
+                          className="bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center mx-auto transition-colors hover:bg-blue-100 cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                          aria-label="Add new step"
+                        >
+                          {showStepTypeModelAt === 0 ? (
+                            <X
+                              size={20}
+                              className={`text-gray-400 ${
+                                showStepTypeModelAt === 0 ? "block" : "hidden"
+                              }`}
+                              onClick={() => handleShowStepTypeModel(0)}
+                            />
+                          ) : (
+                            <Plus
+                              size={20}
+                              className="text-gray-400"
+                              onClick={() => handleShowStepTypeModel(0)}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-full flex justify-center">
+                      {showStepTypeModelAt === 0 && (
+                        <ChooseStepType
+                          onStepTypeSelect={() => {
+                            setShowStepTypeModelAt(null);
+                          }}
+                        />
+                      )}
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Footer Section */}
+          <footer className="text-center text-gray-500 text-sm mt-8 pt-8 border-t border-gray-100">
+            <p>© {new Date().getFullYear()} Stepture. All rights reserved.</p>
+          </footer>
+        </>
       )}
-
-      <div className="flex items-start gap-4 mb-4">
-        <div className="w-16 h-16 rounded-xl bg-gradient-to-b from-[#E3EAFC] to-white flex items-center justify-center flex-shrink-0">
-          <Image src={Logo} alt="Logo" width={48} height={48} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <input
-            ref={titleInputRef}
-            className={`text-2xl font-semibold text-gray-900 w-full ${
-              mode === "edit"
-                ? "bg-transparent border-none outline-none ring-2 ring-blue-200 focus:ring-blue-500 focus:ring-offset-2 rounded p-2 mx-2"
-                : ""
-            }`}
-            type="text"
-            value={capturesData?.title || "Untitled Document"}
-            readOnly={mode !== "edit"}
-            disabled={mode !== "edit"}
-            onChange={handleTitleChange}
-            onKeyDown={handleTitleKeyDown}
-            placeholder={mode === "edit" ? "Enter document title..." : ""}
-          />
-
-          <input
-            ref={descriptionInputRef}
-            className={`text-gray-700 mt-2 break-words w-full ${
-              mode === "edit"
-                ? "bg-transparent border-none outline-none ring-2 ring-blue-200 focus:ring-blue-500 focus:ring-offset-2 rounded p-2 mx-2"
-                : "bg-transparent border-none cursor-default"
-            }`}
-            type="text"
-            value={capturesData?.description || "Untitled Document"}
-            readOnly={mode !== "edit"}
-            disabled={mode !== "edit"}
-            onChange={handleDocumentDescriptionChange}
-            onKeyDown={handleDocumentDescriptionKeyDown}
-            placeholder={mode === "edit" ? "Enter document title..." : ""}
-          />
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mt-3">
-            <div className="flex items-center gap-1">
-              <Image src={PersonIcon} alt="Author" width={16} height={16} />
-              <span>{capturesData?.user?.name || "Unknown Author"}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Image src={StepsIcon} alt="Steps" width={16} height={16} />
-              <span>{capturesData?.steps?.length || 0} Steps</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Image src={TimeIcon} alt="Time" width={16} height={16} />
-              <span>
-                {capturesData?.steps?.length
-                  ? `~${Math.ceil(capturesData.steps.length * 0.5)} min read`
-                  : "N/A"}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Screenshots Section */}
-      <div className="flex flex-col gap-6 mt-12">
-        {capturesData?.steps.map((capture, index) => (
-          <div key={capture.id || index} className="relative">
-            <ResponsiveScreenshotItem
-              img={capture.screenshot?.url || ""}
-              index={index}
-              info={capture.screenshot}
-              mode={mode}
-              stepDescription={capture.stepDescription || ""}
-              stepNumber={capture.stepNumber || 0}
-              stepType={capture.type || ""}
-              stepId={capture.id || ""}
-              onStepDescriptionChange={handleStepDescriptionChange}
-              handleDeleteStep={handleDeleteStep}
-              handleAddNewImage={handleAddNewImage}
-              loading={imageUploadLoading}
-            />
-            {mode === "edit" && index <= capturesData.steps.length - 1 && (
-              <>
-                <div className="relative flex items-center justify-center my-8">
-                  <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
-                  <div className="relative z-10 flex justify-center w-full">
-                    <div
-                      className="bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center mx-auto transition-colors hover:bg-blue-100 cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      aria-label="Add new step"
-                    >
-                      {showStepTypeModelAt === index ? (
-                        <X
-                          size={20}
-                          className={`text-gray-400 ${
-                            showStepTypeModelAt === index ? "block" : "hidden"
-                          }`}
-                          onClick={() => handleShowStepTypeModel(index)}
-                        />
-                      ) : (
-                        <Plus
-                          size={20}
-                          className="text-gray-400"
-                          onClick={() => handleShowStepTypeModel(index)}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="w-full flex justify-center">
-                  {showStepTypeModelAt === index && (
-                    <ChooseStepType
-                      onStepTypeSelect={(selectedType) => {
-                        handleAddNewStep(selectedType, index);
-                      }}
-                    />
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        ))}
-
-        {capturesData?.steps.length === 0 && (
-          <>
-            {mode === "edit" && (
-              <>
-                <div className="relative flex items-center justify-center my-8">
-                  <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
-                  <div className="relative z-10 flex justify-center w-full">
-                    <div
-                      className="bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center mx-auto transition-colors hover:bg-blue-100 cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      aria-label="Add new step"
-                    >
-                      {showStepTypeModelAt === 0 ? (
-                        <X
-                          size={20}
-                          className={`text-gray-400 ${
-                            showStepTypeModelAt === 0 ? "block" : "hidden"
-                          }`}
-                          onClick={() => handleShowStepTypeModel(0)}
-                        />
-                      ) : (
-                        <Plus
-                          size={20}
-                          className="text-gray-400"
-                          onClick={() => handleShowStepTypeModel(0)}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="w-full flex justify-center">
-                  {showStepTypeModelAt === 0 && (
-                    <ChooseStepType
-                      onStepTypeSelect={() => {
-                        setShowStepTypeModelAt(null);
-                      }}
-                    />
-                  )}
-                </div>
-              </>
-            )}
-          </>
-        )}
-      </div>
-
-      {/* Footer Section */}
-      <footer className="text-center text-gray-500 text-sm mt-8 pt-8 border-t border-gray-100">
-        <p>© {new Date().getFullYear()} Stepture. All rights reserved.</p>
-      </footer>
     </div>
   );
 }

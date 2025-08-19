@@ -4,8 +4,8 @@ update
 
 // payload needs to include steps id
 
-case 1:
-new step ->
+case 1: done
+new step 
 
 const newStep = {
     text,
@@ -15,10 +15,10 @@ const newStep = {
 
 [..., newstep]
 
-case 2:
-delete a step -> stepstodelete.append(stepId)
+case 2: done
+delete a step -> stepstodelete.append(stepId) 
 
-case 3:
+case 3:  done
 delete an image in a step and also update an image ->
 const editStep = {
     text,
@@ -29,7 +29,7 @@ const editStep = {
 }
 [..., editStep]
 
-case 4:
+case 4: done
 delete an image in a step and doesn't replace (without an image) -> don't include screenshot in that existing step
 const existing_step.screenshot === null
 
