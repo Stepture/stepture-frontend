@@ -15,22 +15,22 @@ const ChooseStepType = (props: Props) => {
         <AddStepButton
           label="Step"
           variant="step"
-          onClick={() => props.onStepTypeSelect?.("step")}
+          onClick={() => props.onStepTypeSelect?.("STEP")}
         />
         <AddStepButton
           label="Tips"
           variant="tips"
-          onClick={() => props.onStepTypeSelect?.("tips")}
+          onClick={() => props.onStepTypeSelect?.("TIPS")}
         />
         <AddStepButton
           label="Danger"
           variant="danger"
-          onClick={() => props.onStepTypeSelect?.("danger")}
+          onClick={() => props.onStepTypeSelect?.("DANGER")}
         />
         <AddStepButton
           label="Header"
           variant="header"
-          onClick={() => props.onStepTypeSelect?.("header")}
+          onClick={() => props.onStepTypeSelect?.("HEADER")}
         />
       </div>
     </div>

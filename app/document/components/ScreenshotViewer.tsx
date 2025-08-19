@@ -6,8 +6,8 @@ import TimeIcon from "@/public/time.svg";
 import StepsIcon from "@/public/steps.svg";
 import PersonIcon from "@/public/person.svg";
 import Logo from "@/public/AUlogo.png";
-import { Plus, Trash, X } from "lucide-react";
-import CustomButton from "@/components/ui/CustomButton";
+import { Plus, Trash, X, GripVertical, ImagePlus, Loader } from "lucide-react";
+import CustomButton from "@/components/ui/Common/CustomButton";
 import { useRouter } from "next/navigation";
 
 import {
@@ -18,6 +18,8 @@ import {
 } from "../document.types";
 import { apiClient } from "@/lib/axios-client";
 import ChooseStepType from "./ChooseStepType";
+import { showToast } from "@/components/ui/Common/ShowToast";
+import CustomAlertDialog from "@/components/ui/Common/CustomAlertDialog";
 
 interface ScreenshotViewerProps {
   captures: CaptureResponse;
@@ -35,6 +37,8 @@ const ResponsiveScreenshotItem = ({
   stepId,
   onStepDescriptionChange,
   handleDeleteStep,
+  handleAddNewImage,
+  loading,
 }: {
   img: string;
   index: number;
@@ -44,8 +48,10 @@ const ResponsiveScreenshotItem = ({
   stepNumber: number;
   stepType: string;
   stepId: string;
+  loading?: boolean;
   onStepDescriptionChange?: (stepId: string, newDescription: string) => void;
   handleDeleteStep: (id: string) => void;
+  handleAddNewImage?: (stepNumber: number) => void;
 }) => {
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
@@ -233,9 +239,15 @@ const ResponsiveScreenshotItem = ({
       className="screenshot-item border border-gray-200 rounded-lg p-4 bg-white flex flex-col items-start gap-3 shadow-sm"
     >
       <div className="flex items-center gap-2 text-sm font-medium w-full">
-        <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100 min-w-24 text-center">
-          Step {index + 1}
-        </span>
+        {mode === "edit" ? (
+          <span className="cursor-pointer hover:text-blue-800">
+            <GripVertical className="w-4 h-4 inline-block" />
+          </span>
+        ) : (
+          <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100 min-w-24 text-center">
+            step {index + 1}
+          </span>
+        )}
         <div className="flex-1">
           <input
             ref={inputRef}
@@ -254,18 +266,18 @@ const ResponsiveScreenshotItem = ({
           />
         </div>
         {mode === "edit" && (
-          <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-slate-200 transition-colors">
-            <Trash
-              width={18}
-              height={18}
-              className="text-blue-500"
-              onClick={() => handleDeleteStep(stepId)}
+          <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-red-100 transition-colors">
+            <CustomAlertDialog
+              title="Delete Step"
+              description={`Are you sure you want to delete step this step? `}
+              onConfirm={() => handleDeleteStep(stepId)}
+              triggerDescription={<Trash className="w-4 h-4 text-red-600" />}
             />
           </div>
         )}
       </div>
 
-      {img && (
+      {img ? (
         <div className="relative w-full">
           <Image
             ref={imgRef}
@@ -281,8 +293,8 @@ const ResponsiveScreenshotItem = ({
             }}
           />
 
-          {info?.viewportX &&
-            info?.viewportY &&
+          {info?.viewportX !== 0 &&
+            info?.viewportY !== 0 &&
             imageDimensions.width > 0 &&
             displayDimensions.width > 0 && (
               <div
@@ -298,6 +310,23 @@ const ResponsiveScreenshotItem = ({
               </div>
             )}
         </div>
+      ) : (
+        <>
+          {mode === "edit" && (
+            <div className="w-full h-96 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+              {loading ? (
+                <Loader className="w-12 h-12 text-blue-300 animate-spin" />
+              ) : (
+                <ImagePlus
+                  className="w-24 h-24 text-gray-400 cursor-pointer hover:text-blue-600 transition-colors"
+                  onClick={() => {
+                    handleAddNewImage?.(stepNumber);
+                  }}
+                />
+              )}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -310,6 +339,7 @@ export default function ScreenshotViewer({
 }: ScreenshotViewerProps) {
   const [capturesData, setCapturesData] = useState(captures);
   const [stepsToDelete, setStepsToDelete] = useState<string[]>([]);
+  const [imageUploadLoading, setImageUploadLoading] = useState(false);
   const router = useRouter();
 
   const originalTitleRef = useRef<string>(captures.title);
@@ -400,6 +430,9 @@ export default function ScreenshotViewer({
     );
 
     console.log("Updated document:", updatedData);
+    showToast("success", <span>Document updated successfully!</span>, {
+      autoClose: 2000,
+    });
     router.push(`/document/${id}`);
   };
 
@@ -428,6 +461,9 @@ export default function ScreenshotViewer({
     }));
 
     setStepsToDelete((prev) => [...prev, stepId]);
+    showToast("info", <span>Step deleted successfully!</span>, {
+      autoClose: 2000,
+    });
   };
 
   const [showStepTypeModelAt, setShowStepTypeModelAt] = useState<number | null>(
@@ -438,6 +474,113 @@ export default function ScreenshotViewer({
     setShowStepTypeModelAt(
       showStepTypeModelAt === stepIndex ? null : stepIndex
     );
+  };
+
+  const calculateStepNumber = (
+    prevStepNumber: number,
+    afterStepNummber: number
+  ) => {
+    console.log(
+      "Calculating step number between:",
+      prevStepNumber,
+      "and",
+      afterStepNummber
+    );
+    const newStepNumber = (prevStepNumber + afterStepNummber) / 2;
+    return newStepNumber;
+  };
+
+  const handleAddNewStep = (selectedType: string, index: number) => {
+    let newStepNumber: number;
+
+    // if the new step is added at the end, just add 1 to the last step number
+    if (index === capturesData.steps.length - 1) {
+      newStepNumber = capturesData.steps.length
+        ? capturesData.steps[capturesData.steps.length - 1].stepNumber + 1
+        : 1;
+    } else {
+      // if not, calculate the new step number based on the previous and next step numbers
+      newStepNumber = calculateStepNumber(
+        capturesData.steps[index]?.stepNumber || 0,
+        capturesData.steps[index + 1]?.stepNumber || 0
+      );
+    }
+
+    const newStep: Step = {
+      stepDescription: "New step added",
+      stepNumber: newStepNumber,
+      type: selectedType,
+      documentId: capturesData.id,
+      screenshot: null,
+    };
+    setCapturesData((prev) => ({
+      ...prev,
+      steps: [
+        ...prev.steps.slice(0, index + 1),
+        newStep,
+        ...prev.steps.slice(index + 1),
+      ],
+    }));
+
+    console.log("New step added:", newStep);
+    setShowStepTypeModelAt(null);
+    showToast("success", <span>New step added successfully!</span>, {
+      autoClose: 2000,
+    });
+  };
+
+  const handleAddNewImage = async (stepNumber: number) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.style.display = "none";
+
+    // Handle file selection
+    input.onchange = async (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      try {
+        setImageUploadLoading(true);
+        const response = await apiClient.protected.uploadImageToGoogleApi(file);
+        setImageUploadLoading(false);
+        if (response) {
+          const newScreenshot: Screenshot = {
+            googleImageId: response.imgId,
+            url: response.publicUrl,
+            viewportX: 0,
+            viewportY: 0,
+            viewportHeight: 0,
+            viewportWidth: 0,
+            devicePixelRatio: window.devicePixelRatio,
+          };
+
+          setCapturesData((prev) => ({
+            ...prev,
+            steps: prev.steps.map((step) =>
+              step?.stepNumber === stepNumber
+                ? {
+                    ...step,
+                    screenshot: newScreenshot,
+                  }
+                : step
+            ),
+          }));
+        }
+
+        showToast("success", <span>Image added successfully!</span>, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        console.error("Failed to upload image:", error);
+        showToast("error", <span>Failed to add image</span>, {
+          autoClose: 2000,
+        });
+      }
+    };
+
+    // Trigger file selection dialog
+    input.click();
   };
 
   return (
@@ -464,11 +607,17 @@ export default function ScreenshotViewer({
             >
               Cancel
             </button>
-            <CustomButton
-              label="Done Editing"
-              variant="primary"
-              size="small"
-              onClick={handleEditSubmit}
+            <CustomAlertDialog
+              title="Confirm Save"
+              description="Are you sure you want to save changes?"
+              onConfirm={handleEditSubmit}
+              triggerDescription={
+                <CustomButton
+                  label="Save Changes"
+                  variant="primary"
+                  size="small"
+                />
+              }
             />
           </div>
         </div>
@@ -534,7 +683,7 @@ export default function ScreenshotViewer({
       {/* Screenshots Section */}
       <div className="flex flex-col gap-6 mt-12">
         {capturesData?.steps.map((capture, index) => (
-          <div key={capture.id} className="relative">
+          <div key={capture.id || index} className="relative">
             <ResponsiveScreenshotItem
               img={capture.screenshot?.url || ""}
               index={index}
@@ -546,8 +695,10 @@ export default function ScreenshotViewer({
               stepId={capture.id || ""}
               onStepDescriptionChange={handleStepDescriptionChange}
               handleDeleteStep={handleDeleteStep}
+              handleAddNewImage={handleAddNewImage}
+              loading={imageUploadLoading}
             />
-            {mode === "edit" && index < capturesData.steps.length - 1 && (
+            {mode === "edit" && index <= capturesData.steps.length - 1 && (
               <>
                 <div className="relative flex items-center justify-center my-8">
                   <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
@@ -577,8 +728,8 @@ export default function ScreenshotViewer({
                 <div className="w-full flex justify-center">
                   {showStepTypeModelAt === index && (
                     <ChooseStepType
-                      onStepTypeSelect={() => {
-                        setShowStepTypeModelAt(null);
+                      onStepTypeSelect={(selectedType) => {
+                        handleAddNewStep(selectedType, index);
                       }}
                     />
                   )}
@@ -587,6 +738,49 @@ export default function ScreenshotViewer({
             )}
           </div>
         ))}
+
+        {capturesData?.steps.length === 0 && (
+          <>
+            {mode === "edit" && (
+              <>
+                <div className="relative flex items-center justify-center my-8">
+                  <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
+                  <div className="relative z-10 flex justify-center w-full">
+                    <div
+                      className="bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center mx-auto transition-colors hover:bg-blue-100 cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      aria-label="Add new step"
+                    >
+                      {showStepTypeModelAt === 0 ? (
+                        <X
+                          size={20}
+                          className={`text-gray-400 ${
+                            showStepTypeModelAt === 0 ? "block" : "hidden"
+                          }`}
+                          onClick={() => handleShowStepTypeModel(0)}
+                        />
+                      ) : (
+                        <Plus
+                          size={20}
+                          className="text-gray-400"
+                          onClick={() => handleShowStepTypeModel(0)}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full flex justify-center">
+                  {showStepTypeModelAt === 0 && (
+                    <ChooseStepType
+                      onStepTypeSelect={() => {
+                        setShowStepTypeModelAt(null);
+                      }}
+                    />
+                  )}
+                </div>
+              </>
+            )}
+          </>
+        )}
       </div>
 
       {/* Footer Section */}
