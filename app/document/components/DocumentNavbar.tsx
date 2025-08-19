@@ -10,7 +10,7 @@ import {
   nav_save,
 } from "@/public/constants/images";
 import Image from "next/image";
-import CustomButton from "@/components/ui/CustomButton";
+import CustomButton from "@/components/ui/Common/CustomButton";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 
 const DocumentNavbar = () => {

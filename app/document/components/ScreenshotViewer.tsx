@@ -6,8 +6,8 @@ import TimeIcon from "@/public/time.svg";
 import StepsIcon from "@/public/steps.svg";
 import PersonIcon from "@/public/person.svg";
 import Logo from "@/public/AUlogo.png";
-import { Plus, Trash, X } from "lucide-react";
-import CustomButton from "@/components/ui/CustomButton";
+import { Plus, Trash, X, GripVertical } from "lucide-react";
+import CustomButton from "@/components/ui/Common/CustomButton";
 import { useRouter } from "next/navigation";
 
 import {
@@ -18,6 +18,8 @@ import {
 } from "../document.types";
 import { apiClient } from "@/lib/axios-client";
 import ChooseStepType from "./ChooseStepType";
+import { showToast } from "@/components/ui/Common/ShowToast";
+import CustomAlertDialog from "@/components/ui/Common/CustomAlertDialog";
 
 interface ScreenshotViewerProps {
   captures: CaptureResponse;
@@ -233,9 +235,15 @@ const ResponsiveScreenshotItem = ({
       className="screenshot-item border border-gray-200 rounded-lg p-4 bg-white flex flex-col items-start gap-3 shadow-sm"
     >
       <div className="flex items-center gap-2 text-sm font-medium w-full">
-        <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100 min-w-24 text-center">
-          Step {index + 1}
-        </span>
+        {mode === "edit" ? (
+          <span className="cursor-pointer hover:text-blue-800">
+            <GripVertical className="w-4 h-4 inline-block" />
+          </span>
+        ) : (
+          <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100 min-w-24 text-center">
+            step {index + 1}
+          </span>
+        )}
         <div className="flex-1">
           <input
             ref={inputRef}
@@ -254,12 +262,12 @@ const ResponsiveScreenshotItem = ({
           />
         </div>
         {mode === "edit" && (
-          <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-slate-200 transition-colors">
-            <Trash
-              width={18}
-              height={18}
-              className="text-blue-500"
-              onClick={() => handleDeleteStep(stepId)}
+          <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-red-100 transition-colors">
+            <CustomAlertDialog
+              title="Delete Step"
+              description={`Are you sure you want to delete step this step? `}
+              onConfirm={() => handleDeleteStep(stepId)}
+              triggerDescription={<Trash className="w-4 h-4 text-red-600" />}
             />
           </div>
         )}
@@ -400,6 +408,9 @@ export default function ScreenshotViewer({
     );
 
     console.log("Updated document:", updatedData);
+    showToast("success", <span>Document updated successfully!</span>, {
+      autoClose: 2000,
+    });
     router.push(`/document/${id}`);
   };
 
@@ -428,6 +439,9 @@ export default function ScreenshotViewer({
     }));
 
     setStepsToDelete((prev) => [...prev, stepId]);
+    showToast("info", <span>Step deleted successfully!</span>, {
+      autoClose: 2000,
+    });
   };
 
   const [showStepTypeModelAt, setShowStepTypeModelAt] = useState<number | null>(
@@ -464,11 +478,17 @@ export default function ScreenshotViewer({
             >
               Cancel
             </button>
-            <CustomButton
-              label="Done Editing"
-              variant="primary"
-              size="small"
-              onClick={handleEditSubmit}
+            <CustomAlertDialog
+              title="Confirm Save"
+              description="Are you sure you want to save changes?"
+              onConfirm={handleEditSubmit}
+              triggerDescription={
+                <CustomButton
+                  label="Save Changes"
+                  variant="primary"
+                  size="small"
+                />
+              }
             />
           </div>
         </div>
