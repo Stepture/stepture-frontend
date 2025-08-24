@@ -23,12 +23,12 @@ export default function PrivacyPolicyPage() {
               Introduction
             </h2>
             <p className="text-gray-700 leading-relaxed">
-              At Stepture ("we," "our," or "us"), we are committed to protecting
-              your privacy and ensuring the security of your personal
-              information. This Privacy Policy explains how we collect, use,
-              disclose, and safeguard your information when you use our browser
-              extension, web application, and related services (collectively,
-              the "Services").
+              At Stepture (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;),
+              we are committed to protecting your privacy and ensuring the
+              security of your personal information. This Privacy Policy
+              explains how we collect, use, disclose, and safeguard your
+              information when you use our browser extension, web application,
+              and related services (collectively, the &quot;Services&quot;).
             </p>
           </section>
 
@@ -106,43 +106,6 @@ export default function PrivacyPolicyPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-              How We Use Your Information
-            </h2>
-            <ul className="list-disc pl-6 mb-4 text-gray-700">
-              <li>
-                <strong>Service Provision:</strong> To provide, maintain, and
-                improve our step-by-step documentation creation services.
-              </li>
-              <li>
-                <strong>Authentication:</strong> To verify your identity and
-                maintain secure access to your account across sessions.
-              </li>
-              <li>
-                <strong>Content Management:</strong> To store, organize, and
-                retrieve your created documentation and screenshots.
-              </li>
-              <li>
-                <strong>Google Drive Integration:</strong> To upload and manage
-                your screenshots and documents in your designated Google Drive
-                folder.
-              </li>
-              <li>
-                <strong>Feature Enhancement:</strong> To develop new features,
-                improve user experience, and optimize service performance.
-              </li>
-              <li>
-                <strong>Communication:</strong> To send important service
-                updates, security alerts, and respond to support inquiries.
-              </li>
-              <li>
-                <strong>Compliance:</strong> To comply with legal obligations
-                and protect against fraudulent or unauthorized use.
-              </li>
-            </ul>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
               Data Storage and Third-Party Services
             </h2>
 
@@ -155,8 +118,8 @@ export default function PrivacyPolicyPage() {
             </p>
             <ul className="list-disc pl-6 mb-4 text-gray-700">
               <li>
-                We create a dedicated folder named "Stepture - [Your Name]" in
-                your Google Drive
+                We create a dedicated folder named &quot;Stepture - [Your
+                Name]&quot; in your Google Drive
               </li>
               <li>
                 All captured screenshots are uploaded to this folder with public
@@ -226,7 +189,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibond text-gray-900 mb-4">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
               Information Sharing and Disclosure
             </h2>
             <p className="text-gray-700 mb-4">
@@ -347,39 +310,15 @@ export default function PrivacyPolicyPage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-              International Data Transfers
-            </h2>
-            <p className="text-gray-700 mb-4">
-              Your information may be processed and stored in countries other
-              than your country of residence. We ensure appropriate safeguards
-              are in place to protect your data in accordance with applicable
-              privacy laws and regulations.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-              Children's Privacy
-            </h2>
-            <p className="text-gray-700 mb-4">
-              Our Services are not intended for individuals under the age of 13.
-              We do not knowingly collect personal information from children
-              under 13. If you become aware that a child has provided us with
-              personal information, please contact us immediately.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
               Changes to This Privacy Policy
             </h2>
             <p className="text-gray-700 mb-4">
               We may update this Privacy Policy from time to time to reflect
               changes in our practices or applicable laws. We will notify you of
               any material changes by posting the new Privacy Policy on this
-              page and updating the "Last updated" date. Your continued use of
-              our Services after such changes constitutes acceptance of the
-              updated policy.
+              page and updating the &quot;Last updated&quot; date. Your
+              continued use of our Services after such changes constitutes
+              acceptance of the updated policy.
             </p>
           </section>
 
@@ -393,9 +332,9 @@ export default function PrivacyPolicyPage() {
             </p>
             <div className="bg-gray-50 p-6 rounded-lg">
               <p className="text-gray-700">
-                <strong>Email:</strong>steptureabac@gmail.com
+                <strong>Email:</strong> steptureabac@gmail.com
                 <br />
-                <strong>Support:</strong>steptureabac@gmail.com
+                <strong>Support:</strong> steptureabac@gmail.com
                 <br />
                 <strong>Address:</strong> Stepture Privacy Team
                 <br />
