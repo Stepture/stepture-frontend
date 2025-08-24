@@ -20,7 +20,8 @@ export async function middleware(req: NextRequest) {
   const isPublic =
     req.nextUrl.pathname.startsWith("/login") ||
     req.nextUrl.pathname.startsWith("/auth/success") ||
-    req.nextUrl.pathname === "/";
+    req.nextUrl.pathname === "/" ||
+    req.nextUrl.pathname === "/privacy-policy";
 
   if (isPublic) {
     return NextResponse.next();
