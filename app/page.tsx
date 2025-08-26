@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Raleway } from "next/font/google";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const raleway = Raleway({
   subsets: ["latin"],
@@ -336,10 +337,10 @@ export default function Page() {
               </div>
             </div>
 
-            <p className="mt-4 text-slate-400 max-w-xl mx-auto text-sm md:text-base">
+            {/* <p className="mt-4 text-slate-400 max-w-xl mx-auto text-sm md:text-base">
               Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting
               Industry.
-            </p>
+            </p> */}
           </div>
 
           {/* Centered demo frame — gradient clearly visible around the image */}
@@ -490,11 +491,11 @@ export default function Page() {
               height={36}
               priority
             />
-            <p className="mt-6 text-sm leading-6 opacity-90 max-w-md">
+            {/* <p className="mt-6 text-sm leading-6 opacity-90 max-w-md">
               Lorem Ipsum is simply dummy text of the printing and typesetting
               industry. Lorem Ipsum has been the industry’s standard dummy text
               ever since the 1500s.
-            </p>
+            </p> */}
           </div>
 
           {/* Right Section */}
@@ -520,9 +521,9 @@ export default function Page() {
               <div>
                 <h3 className="font-semibold mb-3">Contacts</h3>
                 <ul className="space-y-2 text-sm opacity-90">
-                  <li>+660828011111</li>
+                  <li>+660651086400</li>
                   <li>BangNa, Thailand</li>
-                  <li>awesome@MBtraid.com</li>
+                  <li>steptureabac@gmail.com</li>
                 </ul>
               </div>
             </div>
@@ -538,14 +539,16 @@ export default function Page() {
         </div>
 
         {/* bottom bar */}
-        <div className="max-w-[1440px] mx-auto mt-10 border-t border-white/20 pt-4 text-sm flex flex-col md:flex-row items-center md:items-start justify-between gap-4 text-white/85 px-8">
-          <p>©2024 MBTraid All Rights Reserved</p>
+        <div className="max-w-[1440px] mx-auto mt-10 border-t border-white/20 pt-4 text-sm flex flex-col md:flex-row items-center md:items-start justify-between gap-4 text-white/85 px-8 py-4">
+          <p>©2025 MBTraid All Rights Reserved</p>
           <div className="flex gap-5">
-            <a href="#">Terms of Use</a>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Disclaimer</a>
+            {/* <a href="#">Terms of Use</a> */}
+            <Link className="hover:text-blue-400" href="/privacy-policy">
+              Privacy Policy
+            </Link>
+
+            {/* <a href="#">Disclaimer</a> */}
           </div>
-          <p>Site by MB Traid</p>
         </div>
       </footer>
     </main>

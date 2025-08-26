@@ -14,7 +14,7 @@ export default function PrivacyPolicyPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Privacy Policy
           </h1>
-          <p className="text-gray-600">Last updated: December 24, 2024</p>
+          <p className="text-gray-600">Last updated: August 26, 2025</p>
         </div>
 
         <div className="prose prose-lg max-w-none">
@@ -92,10 +92,7 @@ export default function PrivacyPolicyPage() {
                 <strong>Device Information:</strong> Browser type, operating
                 system, device specifications, and extension version.
               </li>
-              <li>
-                <strong>Usage Analytics:</strong> Service interaction patterns,
-                feature usage statistics, and performance metrics.
-              </li>
+
               <li>
                 <strong>Cookies and Local Storage:</strong> Authentication
                 cookies, session tokens, and browser local storage for offline
@@ -301,10 +298,10 @@ export default function PrivacyPolicyPage() {
                 <strong>Authentication Tokens:</strong> Regularly refreshed and
                 expired tokens are securely deleted
               </li>
-              <li>
+              {/* <li>
                 <strong>Usage Data:</strong> Aggregated usage statistics may be
                 retained for service improvement purposes
-              </li>
+              </li> */}
             </ul>
           </section>
 
