@@ -11,6 +11,9 @@ import back_arrow from "../assets/images/back_arrow.svg";
 import arrow_share from "../assets/images/arrow_share.svg";
 import link_share from "../assets/images/link-share.svg";
 import edit_icon from "../assets/images/pen-edit.svg";
+import pdf_icon from "../pdf.svg";
+import markdown_icon from "../markdown.svg";
+
 export {
   record,
   stepture,
@@ -25,4 +28,6 @@ export {
   arrow_share,
   link_share,
   edit_icon,
+  pdf_icon,
+  markdown_icon,
 };

@@ -145,6 +145,24 @@ export const apiClient = {
         throw error;
       }
     },
+    getDocumentById: async (id: string) => {
+      try {
+        const response = await privateApi.get(`/documents/${id}`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    updateDocumentShareStatus: async (id: string, isPublic: boolean) => {
+      try {
+        const response = await privateApi.patch(`/documents/${id}/sharing`, {
+          isPublic,
+        });
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
     logout: async () => {
       await privateApi.post("/auth/logout");
     },

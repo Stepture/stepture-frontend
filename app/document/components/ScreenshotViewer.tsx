@@ -302,6 +302,7 @@ const ResponsiveScreenshotItem = ({
               height: "auto",
             }}
           />
+
           {mode === "edit" && (
             <CustomAlertDialog
               title="Delete Image"
@@ -732,10 +733,13 @@ export default function ScreenshotViewer({
                 <div className="flex items-center gap-1">
                   <Image src={TimeIcon} alt="Time" width={16} height={16} />
                   <span>
-                    {capturesData?.steps?.length
-                      ? `~${Math.ceil(
-                          capturesData.steps.length * 0.5
-                        )} min read`
+                    {capturesData?.estimatedCompletionTime
+                      ? (() => {
+                          const mins = Math.ceil(
+                            capturesData.estimatedCompletionTime / 60
+                          );
+                          return `~${mins} min${mins !== 1 ? "s" : ""} read`;
+                        })()
                       : "N/A"}
                   </span>
                 </div>

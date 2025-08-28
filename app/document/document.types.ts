@@ -36,6 +36,8 @@ export interface CaptureResponse {
   userId: string;
   isDeleted: boolean;
   deletedAt: string | null;
+  isPublic?: boolean;
+  estimatedCompletionTime?: number;
   steps: Step[];
   user: User;
 }
@@ -45,4 +47,30 @@ export interface EditCaptureRequest {
   description: string;
   steps: (Step | null)[];
   deleteStepIds?: string[];
+}
+
+export interface ShareExportModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  captures?: CaptureResponse;
+  documentTitle?: string;
+  documentId?: string;
+}
+
+export type TabType = "share" | "export";
+
+export interface ShareTabProps {
+  documentId?: string;
+  isPublic: boolean;
+  isUpdatingShareStatus: boolean;
+  onToggleShareStatus: () => Promise<void>;
+  onCopyLink: () => Promise<void>;
+}
+
+export interface ExportTabProps {
+  captures?: CaptureResponse;
+  documentTitle: string;
+  isLoadingPDF: boolean;
+  onPDFExport: () => Promise<void>;
+  onMarkdownExport: () => void;
 }
