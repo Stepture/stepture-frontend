@@ -40,7 +40,7 @@ export default function Page() {
                 </a>
                 <a
                   href="/privacy-policy"
-                  className="hover:text-white font-medium"
+                  className="hover:text-white font-semibold border border-white/30 px-3 py-1 rounded-full"
                 >
                   Privacy Policy
                 </a>
@@ -49,9 +49,9 @@ export default function Page() {
             <div className="flex items-center gap-4">
               <a
                 href="/privacy-policy"
-                className="md:hidden text-white/90 hover:text-white text-sm"
+                className="md:hidden text-white/90 hover:text-white text-sm border border-white/30 px-2 py-1 rounded-full font-medium"
               >
-                Privacy
+                Privacy Policy
               </a>
               <a
                 href="https://chromewebstore.google.com/detail/stepture-automated-docume/mjefhbjefkfflljnddillegbhmfiahmi"
@@ -130,6 +130,16 @@ export default function Page() {
               className="px-6 py-3 font-semibold text-white hover:bg-white/10"
             >
               See how it works →
+            </a>
+          </div>
+
+          {/* Privacy policy link for OAuth verification */}
+          <div className="mt-4 text-center">
+            <a
+              href="/privacy-policy"
+              className="text-white/80 hover:text-white text-sm underline"
+            >
+              Privacy Policy
             </a>
           </div>
         </div>
@@ -493,7 +503,7 @@ export default function Page() {
                   <li>
                     <a
                       href="/privacy-policy"
-                      className="hover:text-white font-medium"
+                      className="hover:text-white font-semibold text-blue-200"
                     >
                       Privacy Policy
                     </a>
@@ -528,7 +538,7 @@ export default function Page() {
             <p>©2025 MBTraid All Rights Reserved</p>
             <div className="flex gap-5">
               <a
-                className="hover:text-blue-300 font-medium underline"
+                className="hover:text-blue-300 font-semibold underline text-blue-200"
                 href="/privacy-policy"
               >
                 Privacy Policy
