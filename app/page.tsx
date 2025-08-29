@@ -1,52 +1,11 @@
-"use client"; // needed for the small animation below
-
 import Image from "next/image";
 import { Raleway } from "next/font/google";
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import RotatingWord from "../components/RotatingWord";
 
 const raleway = Raleway({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
 });
-
-// rotates the highlighted word every 8s with a quick fade
-function RotatingWord() {
-  const words = [
-    "workflows",
-    "processes",
-    "tutorials",
-    "guidelines",
-    "reports",
-  ];
-  const [idx, setIdx] = useState(0);
-  const [visible, setVisible] = useState(true);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // fade out, swap word, fade in
-      setVisible(false);
-      const t = setTimeout(() => {
-        setIdx((i) => (i + 1) % words.length);
-        setVisible(true);
-      }, 300); // fade-out duration
-      return () => clearTimeout(t);
-    }, 3000); // 8s interval
-    return () => clearInterval(interval);
-  }, [words.length]);
-
-  return (
-    <span
-      className={[
-        "bg-white/90 text-[#5368AC] px-3 py-1 rounded-md align-baseline inline-block",
-        "transition-opacity duration-300", // match the 300ms above
-        visible ? "opacity-100" : "opacity-0",
-      ].join(" ")}
-    >
-      {words[idx]}
-    </span>
-  );
-}
 
 export default function Page() {
   return (
@@ -58,8 +17,8 @@ export default function Page() {
 
         {/* NAVBAR (100px side margin on lg) */}
         <div className="absolute inset-x-0 top-0 z-20">
-          <div className="mx-auto max-w-[1400px] px-6 lg:px-[40px] py-5 grid grid-cols-3 items-center">
-            <div className="justify-self-start">
+          <div className="mx-auto max-w-[1400px] px-6 lg:px-[40px] py-5 flex items-center justify-between">
+            <div>
               <Image
                 src="/assets/landingpage/Stepturewhite.png"
                 alt="Stepture"
@@ -68,21 +27,36 @@ export default function Page() {
                 priority
               />
             </div>
-            <nav className="hidden md:flex justify-center gap-10 text-white/90 text-sm">
-              <a href="#why" className="hover:text-white">
-                Why Us
-              </a>
-              <a href="#how" className="hover:text-white">
-                How It Works
-              </a>
-              <a href="#features" className="hover:text-white">
-                Instruction
-              </a>
-            </nav>
-            <div className="justify-self-end">
+            <div className="w-full">
+              <nav className="hidden md:flex justify-center gap-10 text-white/90 text-sm w-full">
+                <a href="#why" className="hover:text-white">
+                  Why Us
+                </a>
+                <a href="#how" className="hover:text-white">
+                  How It Works
+                </a>
+                <a href="#features" className="hover:text-white">
+                  Instruction
+                </a>
+                <a
+                  href="/privacy-policy"
+                  className="hover:text-white font-medium"
+                >
+                  Privacy Policy
+                </a>
+              </nav>
+            </div>
+            <div className="flex items-center gap-4">
               <a
-                href="#cta"
-                className="hidden md:inline-block rounded-full bg-white/90 text-[#5368AC] px-5 py-2 text-sm font-semibold hover:bg-white"
+                href="/privacy-policy"
+                className="md:hidden text-white/90 hover:text-white text-sm"
+              >
+                Privacy
+              </a>
+              <a
+                href="https://chromewebstore.google.com/detail/stepture-automated-docume/mjefhbjefkfflljnddillegbhmfiahmi"
+                className="rounded-full bg-white/90 text-[#5368AC] px-5 py-2 text-sm font-semibold hover:bg-white"
+                target="_blank"
               >
                 Download
               </a>
@@ -145,8 +119,9 @@ export default function Page() {
 
           <div className="mt-8 flex flex-wrap gap-4 justify-center">
             <a
-              href="#cta"
+              href="https://chromewebstore.google.com/detail/stepture-automated-docume/mjefhbjefkfflljnddillegbhmfiahmi"
               className="rounded-full bg-white text-[#5368AC] px-6 py-3 font-semibold shadow-md hover:opacity-90"
+              target="_blank"
             >
               Download
             </a>
@@ -493,15 +468,15 @@ export default function Page() {
             />
             {/* <p className="mt-6 text-sm leading-6 opacity-90 max-w-md">
               Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry’s standard dummy text
+              industry. Lorem Ipsum has been the industry's standard dummy text
               ever since the 1500s.
             </p> */}
           </div>
 
           {/* Right Section */}
-          <div className="flex flex-col md:flex-row items-start gap-45">
+          <div className="flex flex-col md:flex-row items-start gap-12">
             {/* Links + Contacts */}
-            <div className="flex gap-45">
+            <div className="flex gap-12">
               {/* Quick Links */}
               <div>
                 <h3 className="font-semibold mb-3">Quick Links</h3>
@@ -510,10 +485,18 @@ export default function Page() {
                     <a href="#">About Us</a>
                   </li>
                   <li>
-                    <a href="#">Why Us</a>
+                    <a href="#why">Why Us</a>
                   </li>
                   <li>
-                    <a href="#">How it works</a>
+                    <a href="#how">How it works</a>
+                  </li>
+                  <li>
+                    <a
+                      href="/privacy-policy"
+                      className="hover:text-white font-medium"
+                    >
+                      Privacy Policy
+                    </a>
                   </li>
                 </ul>
               </div>
@@ -530,8 +513,9 @@ export default function Page() {
 
             {/* Download button */}
             <a
-              href="#download"
+              href="https://chromewebstore.google.com/detail/stepture-automated-docume/mjefhbjefkfflljnddillegbhmfiahmi"
               className="rounded-full bg-white text-[#344982] px-7 py-2 font-medium hover:opacity-90 transition"
+              target="_blank"
             >
               Download
             </a>
@@ -540,14 +524,19 @@ export default function Page() {
 
         {/* bottom bar */}
         <div className="max-w-[1440px] mx-auto mt-10 border-t border-white/20 pt-4 text-sm flex flex-col md:flex-row items-center md:items-start justify-between gap-4 text-white/85 px-8 py-4">
-          <p>©2025 MBTraid All Rights Reserved</p>
-          <div className="flex gap-5">
-            {/* <a href="#">Terms of Use</a> */}
-            <Link className="hover:text-blue-400" href="/privacy-policy">
-              Privacy Policy
-            </Link>
-
-            {/* <a href="#">Disclaimer</a> */}
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <p>©2025 MBTraid All Rights Reserved</p>
+            <div className="flex gap-5">
+              <a
+                className="hover:text-blue-300 font-medium underline"
+                href="/privacy-policy"
+              >
+                Privacy Policy
+              </a>
+              <a href="#" className="hover:text-blue-300">
+                Terms of Service
+              </a>
+            </div>
           </div>
         </div>
       </footer>
