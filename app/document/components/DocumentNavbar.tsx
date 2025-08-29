@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   back_arrow,
@@ -12,12 +12,32 @@ import {
 import Image from "next/image";
 import CustomButton from "@/components/ui/Common/CustomButton";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
+import ShareExportModal from "./ShareExportModal";
+import { apiClient } from "@/lib/axios-client";
+import { CaptureResponse } from "@/app/document/document.types";
 
 const DocumentNavbar = () => {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode") || "view";
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [captures, setCaptures] = useState<CaptureResponse | null>(null);
+
+  useEffect(() => {
+    const fetchDocument = async () => {
+      if (params.id && typeof params.id === "string") {
+        try {
+          const response = await apiClient.protected.getDocumentById(params.id);
+          setCaptures(response);
+        } catch (error) {
+          console.error("Error fetching document:", error);
+        }
+      }
+    };
+
+    fetchDocument();
+  }, [params.id]);
 
   return (
     <header className="bg-white shadow-sm w-full">
@@ -54,10 +74,20 @@ const DocumentNavbar = () => {
             icon2={link_share}
             variant="primary"
             size="small"
+            onClick={() => setIsShareModalOpen(true)}
           />
           <CustomButton icon={nav_save} variant="secondary" />
         </div>
       </nav>
+
+      {/* Share Export Modal */}
+      <ShareExportModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        documentTitle={captures?.title || "Document"}
+        documentId={typeof params.id === "string" ? params.id : undefined}
+        captures={captures || undefined}
+      />
     </header>
   );
 };

@@ -46,11 +46,13 @@ const Page = async ({ params, searchParams }: Props) => {
 
     return (
       <div className="w-full mx-auto p-4">
-        <ScreenshotViewer
-          captures={data as CaptureResponse}
-          mode={mode}
-          id={id}
-        />
+        <div data-print-target="screenshot-viewer">
+          <ScreenshotViewer
+            captures={data as CaptureResponse}
+            mode={mode}
+            id={id}
+          />
+        </div>
       </div>
     );
   } catch (error) {
