@@ -21,7 +21,8 @@ export async function middleware(req: NextRequest) {
     req.nextUrl.pathname.startsWith("/login") ||
     req.nextUrl.pathname.startsWith("/auth/success") ||
     req.nextUrl.pathname === "/" ||
-    req.nextUrl.pathname === "/privacy-policy";
+    req.nextUrl.pathname === "/privacy-policy" ||
+    req.nextUrl.pathname.startsWith("/document/");
 
   if (isPublic) {
     return NextResponse.next();

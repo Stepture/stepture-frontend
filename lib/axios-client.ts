@@ -106,6 +106,14 @@ export const apiClient = {
         throw error;
       }
     },
+    getDocumentById: async (id: string) => {
+      try {
+        const response = await publicApi.get(`/documents/${id}`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
   },
   protected: {
     getMe: async (options = {}) => {
