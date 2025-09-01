@@ -3,6 +3,7 @@ import { getServerApi } from "@/lib/axios-server";
 import ScreenshotViewer from "../components/ScreenshotViewer";
 import { cookies } from "next/headers";
 import { CaptureResponse } from "../document.types";
+import { AxiosError } from "axios";
 
 type Props = {
   params: Promise<{
@@ -27,7 +28,7 @@ const fetchDocument = async (
     try {
       userData = await serverApi.protected.getMe();
       isAuthenticated = !!userData?.user;
-    } catch (authError) {
+    } catch {
       console.log("User not authenticated, will try public endpoint");
       isAuthenticated = false;
     }
@@ -41,8 +42,11 @@ const fetchDocument = async (
         // Use public endpoint for non-authenticated users
         data = await serverApi.public.getDocumentById(id);
       }
-    } catch (fetchError: any) {
-      if (fetchError?.response?.status === 400) {
+    } catch (fetchError: unknown) {
+      if (
+        fetchError instanceof AxiosError &&
+        fetchError.response?.status === 400
+      ) {
         console.log("Document is private or does not exist");
         return null;
       }

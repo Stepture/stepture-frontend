@@ -16,6 +16,7 @@ import { useRouter, useParams, useSearchParams } from "next/navigation";
 import ShareExportModal from "./ShareExportModal";
 import { apiClient } from "@/lib/axios-client";
 import { CaptureResponse } from "@/app/document/document.types";
+import { AxiosError } from "axios";
 
 const DocumentNavbar = () => {
   const router = useRouter();
@@ -26,7 +27,6 @@ const DocumentNavbar = () => {
   const [captures, setCaptures] = useState<CaptureResponse | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const [canEdit, setCanEdit] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -41,10 +41,13 @@ const DocumentNavbar = () => {
           user = userData.user;
           loggedIn = !!user;
           setIsLoggedIn(loggedIn);
-        } catch (userError: any) {
+        } catch (userError: unknown) {
           console.error("Error fetching user:", userError);
           // Only set logged in to false for authentication errors (401)
-          if (userError?.response?.status === 401) {
+          if (
+            userError instanceof AxiosError &&
+            userError.response?.status === 401
+          ) {
             setIsLoggedIn(false);
             loggedIn = false;
           }
@@ -63,14 +66,11 @@ const DocumentNavbar = () => {
           setCaptures(response);
 
           const owner = loggedIn && user && user.userId === response.user.id;
-          const edit = owner;
           setIsOwner(owner);
-          setCanEdit(edit);
-        } catch (docError: any) {
+        } catch (docError: unknown) {
           console.log("Error fetching document:", docError);
           setCaptures(null);
           setIsOwner(false);
-          setCanEdit(false);
 
           // If document fetch fails and user is not logged in,
           // it could be a private document requiring authentication
