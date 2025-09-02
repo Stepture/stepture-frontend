@@ -7,6 +7,7 @@ const ShareTab: React.FC<ShareTabProps> = ({
   isUpdatingShareStatus,
   onToggleShareStatus,
   onCopyLink,
+  isOwner,
 }) => {
   return (
     <div className="space-y-6">
@@ -36,21 +37,23 @@ const ShareTab: React.FC<ShareTabProps> = ({
               </p>
             </div>
           </div>
-          <button
-            onClick={onToggleShareStatus}
-            disabled={isUpdatingShareStatus}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-              isPublic
-                ? "bg-green-100 text-green-700 hover:bg-green-200"
-                : "bg-blue-100 text-blue-700 hover:bg-blue-200"
-            } disabled:opacity-50 disabled:cursor-not-allowed`}
-          >
-            {isUpdatingShareStatus
-              ? "Updating..."
-              : isPublic
-              ? "Make Private"
-              : "Make Public"}
-          </button>
+          {isOwner && (
+            <button
+              onClick={onToggleShareStatus}
+              disabled={isUpdatingShareStatus}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                isPublic
+                  ? "bg-green-100 text-green-700 hover:bg-green-200"
+                  : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              {isUpdatingShareStatus
+                ? "Updating..."
+                : isPublic
+                ? "Make Private"
+                : "Make Public"}
+            </button>
+          )}
         </div>
       </div>
 

@@ -55,6 +55,7 @@ export interface ShareExportModalProps {
   captures?: CaptureResponse;
   documentTitle?: string;
   documentId?: string;
+  isOwner?: boolean;
 }
 
 export type TabType = "share" | "export";
@@ -65,6 +66,7 @@ export interface ShareTabProps {
   isUpdatingShareStatus: boolean;
   onToggleShareStatus: () => Promise<void>;
   onCopyLink: () => Promise<void>;
+  isOwner: boolean;
 }
 
 export interface ExportTabProps {

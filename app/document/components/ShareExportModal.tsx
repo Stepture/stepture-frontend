@@ -15,6 +15,7 @@ const ShareExportModal: React.FC<ShareExportModalProps> = ({
   captures,
   documentTitle = "Document",
   documentId,
+  isOwner = false,
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>("share");
   const [isLoadingPDF, setIsLoadingPDF] = useState(false);
@@ -121,6 +122,7 @@ const ShareExportModal: React.FC<ShareExportModalProps> = ({
               isUpdatingShareStatus={isUpdatingShareStatus}
               onToggleShareStatus={onToggleShareStatus}
               onCopyLink={handleCopyLink}
+              isOwner={isOwner}
             />
           )}
 
