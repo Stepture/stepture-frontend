@@ -446,10 +446,19 @@ export default function ScreenshotViewer({
 
   // Handle edit submission
   const handleEditSubmit = async () => {
+    // remove temporary IDs from new steps - temp id are required for editing newly added steps
+    const steps = capturesData.steps.map((step) => {
+      if (step.id && step.id.startsWith("temp-")) {
+        const { id, ...rest } = step;
+        return rest;
+      }
+      return step;
+    });
+
     const updateDate: EditCaptureRequest = {
       title: capturesData.title,
       description: capturesData.description,
-      steps: capturesData.steps,
+      steps: steps,
       deleteStepIds: stepsToDelete,
     };
 
@@ -539,8 +548,12 @@ export default function ScreenshotViewer({
         capturesData.steps[index + 1]?.stepNumber || 0
       );
     }
+    const tempId = `temp-${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2, 9)}`;
 
     const newStep: Step = {
+      id: tempId,
       stepDescription: "New step added",
       stepNumber: newStepNumber,
       type: selectedType,
@@ -556,7 +569,6 @@ export default function ScreenshotViewer({
       ],
     }));
 
-    console.log("New step added:", newStep);
     setShowStepTypeModelAt(null);
     showToast("success", <span>New step added successfully!</span>, {
       autoClose: 2000,
@@ -698,7 +710,7 @@ export default function ScreenshotViewer({
                     : ""
                 }`}
                 type="text"
-                value={capturesData?.title || "Untitled Document"}
+                value={capturesData?.title || ""}
                 readOnly={mode !== "edit"}
                 disabled={mode !== "edit"}
                 onChange={handleTitleChange}
@@ -714,7 +726,7 @@ export default function ScreenshotViewer({
                     : "bg-transparent border-none cursor-default"
                 }`}
                 type="text"
-                value={capturesData?.description || "Untitled Document"}
+                value={capturesData?.description || ""}
                 readOnly={mode !== "edit"}
                 disabled={mode !== "edit"}
                 onChange={handleDocumentDescriptionChange}
