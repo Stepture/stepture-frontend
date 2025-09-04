@@ -14,7 +14,7 @@ export interface GeminiResponse {
 
 export class GeminiAPIService {
   private readonly BASE_URL =
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent";
 
   async refineSteps(
     apiKey: string,
@@ -51,7 +51,7 @@ export class GeminiAPIService {
             temperature: 0.7,
             topK: 40,
             topP: 0.95,
-            maxOutputTokens: 2048,
+            maxOutputTokens: 8192, // Increased for 2.0 Flash
           },
         }),
       });
@@ -79,15 +79,6 @@ export class GeminiAPIService {
       }
       throw new Error("Failed to refine steps");
     }
-  }
-
-  async estimateTokenCost(steps: string[]): Promise<number> {
-    // Rough estimation: ~4 characters per token for English text
-    const totalChars = steps.join(" ").length;
-    const estimatedTokens = Math.ceil(totalChars / 4);
-
-    // Add overhead for prompt and response
-    return estimatedTokens + 200;
   }
 
   private buildRefinementPrompt(steps: string[], type: RefinementType): string {
@@ -223,7 +214,7 @@ Summary:`;
             temperature: 0.7,
             topK: 40,
             topP: 0.95,
-            maxOutputTokens: 1024,
+            maxOutputTokens: 2048,
           },
         }),
       });
@@ -249,6 +240,108 @@ Summary:`;
         throw error;
       }
       throw new Error("Failed to summarize document");
+    }
+  }
+
+  async refineDocumentDescription(
+    apiKey: string,
+    description: string,
+    documentText: string
+  ): Promise<string> {
+    if (!apiKey) {
+      throw new Error("API key is required");
+    }
+
+    if (!description.trim()) {
+      throw new Error("Description is required");
+    }
+
+    const refinementPrompt = `You are tasked with improving a document description. Based on the document content below, write a single, clear, and concise description that accurately summarizes what users will learn or accomplish.
+
+Document Content:
+${documentText}
+
+Current Description: "${description}"
+
+Requirements:
+- Write only ONE improved description
+- Keep it concise (1-2 sentences maximum)
+- Focus on what the user will learn or accomplish
+- Be specific about the main actions or outcomes
+- Do not provide multiple options or ask questions
+
+Improved description:`;
+
+    try {
+      const response = await fetch(`${this.BASE_URL}?key=${apiKey}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: refinementPrompt,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.3,
+            topK: 20,
+            topP: 0.8,
+            maxOutputTokens: 200,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          `Gemini API error: ${response.status} - ${
+            errorData.error?.message || "Unknown error"
+          }`
+        );
+      }
+
+      const data: GeminiResponse = await response.json();
+
+      if (!data.candidates || !data.candidates[0]) {
+        throw new Error("No response from Gemini API");
+      }
+
+      let refinedDescription = data.candidates[0].content.parts[0].text.trim();
+
+      // Clean up the response - remove common unwanted patterns
+      refinedDescription = refinedDescription
+        .replace(
+          /^(Improved description:|Refined description:|Description:)/i,
+          ""
+        )
+        .replace(/\*\*Option \d+.*?\*\*/g, "")
+        .replace(/^>\s*/gm, "")
+        .replace(/\*\*/g, "")
+        .replace(/\n\n+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      // If the response contains multiple options or questions, take only the first sentence
+      if (
+        refinedDescription.includes("Option") ||
+        refinedDescription.includes("?")
+      ) {
+        const sentences = refinedDescription.split(/[.!?]+/);
+        refinedDescription = sentences[0]?.trim() + ".";
+      }
+
+      return refinedDescription || description;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("Failed to refine document description");
     }
   }
 }

@@ -4,14 +4,7 @@
 import React, { useState, useEffect } from "react";
 import { useAPIKeyManager } from "../hooks/useAPIKeyManager";
 import { Button } from "./ui/button";
-import {
-  Lock,
-  Unlock,
-  AlertCircle,
-  Settings,
-  RotateCcw,
-  Clock,
-} from "lucide-react";
+import { Lock, Unlock, Settings, RotateCcw, Clock } from "lucide-react";
 
 interface SessionStatusProps {
   onUnlockClick?: () => void;

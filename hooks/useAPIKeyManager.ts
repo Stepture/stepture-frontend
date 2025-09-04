@@ -166,80 +166,12 @@ export const useAPIKeyManager = (): APIKeyManager => {
       }
 
       try {
-        // Create a better prompt that includes document context for description refinement
-        const refinementPrompt = `You are tasked with improving a document description. Based on the document content below, write a single, clear, and concise description that accurately summarizes what users will learn or accomplish.
-
-Document Content:
-${documentText}
-
-Current Description: "${description}"
-
-Requirements:
-- Write only ONE improved description
-- Keep it concise (1-2 sentences maximum)
-- Focus on what the user will learn or accomplish
-- Be specific about the main actions or outcomes
-- Do not provide multiple options or ask questions
-
-Improved description:`;
-
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${decryptedKeyCache.current}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              contents: [
-                {
-                  parts: [
-                    {
-                      text: refinementPrompt,
-                    },
-                  ],
-                },
-              ],
-              generationConfig: {
-                temperature: 0.3,
-                topK: 20,
-                topP: 0.8,
-                maxOutputTokens: 200,
-              },
-            }),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        let refinedDescription =
-          data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ||
-          description;
-
-        // Clean up the response - remove common unwanted patterns
-        refinedDescription = refinedDescription
-          .replace(
-            /^(Improved description:|Refined description:|Description:)/i,
-            ""
-          )
-          .replace(/\*\*Option \d+.*?\*\*/g, "")
-          .replace(/^>\s*/gm, "")
-          .replace(/\*\*/g, "")
-          .replace(/\n\n+/g, " ")
-          .replace(/\s+/g, " ")
-          .trim();
-
-        // If the response contains multiple options or questions, take only the first sentence
-        if (
-          refinedDescription.includes("Option") ||
-          refinedDescription.includes("?")
-        ) {
-          const sentences = refinedDescription.split(/[.!?]+/);
-          refinedDescription = sentences[0]?.trim() + ".";
-        }
+        const refinedDescription =
+          await geminiService.current.refineDocumentDescription(
+            decryptedKeyCache.current,
+            description,
+            documentText
+          );
 
         // Extend session on successful use
         extendSession();

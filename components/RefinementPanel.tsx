@@ -10,7 +10,7 @@ import {
   AlertDialogTitle,
   AlertDialogDescription,
 } from "./ui/alert-dialog";
-import { Sparkles, Loader, AlertCircle, CheckCircle, X } from "lucide-react";
+import { Sparkles, Loader, AlertCircle, CheckCircle } from "lucide-react";
 
 interface RefinementPanelProps {
   isOpen: boolean;

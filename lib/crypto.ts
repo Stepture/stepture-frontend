@@ -102,16 +102,6 @@ export class CryptoUtils {
     return crypto.getRandomValues(new Uint8Array(this.SALT_LENGTH));
   }
 
-  static secureCleanup(sensitiveString: string): void {
-    // Best-effort memory cleanup by overwriting the string
-    if (sensitiveString) {
-      const length = sensitiveString.length;
-      const cleanup = "x".repeat(length);
-      // Note: This is not guaranteed to work in all JavaScript engines
-      // but provides some protection against memory dumps
-    }
-  }
-
   static async encryptKey(
     apiKey: string,
     password: string
