@@ -42,3 +42,5 @@ next-env.d.ts
 notes.txt
 .vscode/launch.json
 /.vscode
+*notes.txt
+*_llm.md

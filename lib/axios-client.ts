@@ -174,5 +174,26 @@ export const apiClient = {
     logout: async () => {
       await privateApi.post("/auth/logout");
     },
+    // BYOK API Key management
+    storeApiKey: async (payload: {
+      encryptedKey: string;
+      salt: string;
+      iv: string;
+      hash: string;
+    }) => {
+      const response = await privateApi.post("/users/api-key", payload);
+      return response.data;
+    },
+    getApiKey: async () => {
+      const response = await privateApi.get("/users/api-key");
+      return response.data;
+    },
+    getApiKeyStatus: async () => {
+      const response = await privateApi.get("/users/api-key/status");
+      return response.data;
+    },
+    deleteApiKey: async () => {
+      await privateApi.delete("/users/api-key");
+    },
   },
 };

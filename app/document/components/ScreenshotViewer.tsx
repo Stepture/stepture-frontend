@@ -6,7 +6,15 @@ import TimeIcon from "@/public/time.svg";
 import StepsIcon from "@/public/steps.svg";
 import PersonIcon from "@/public/person.svg";
 import Logo from "@/public/AUlogo.png";
-import { Plus, Trash, X, GripVertical, ImagePlus, Loader } from "lucide-react";
+import {
+  Plus,
+  Trash,
+  X,
+  GripVertical,
+  ImagePlus,
+  Loader,
+  Sparkles,
+} from "lucide-react";
 import CustomButton from "@/components/ui/Common/CustomButton";
 import { useRouter } from "next/navigation";
 
@@ -20,6 +28,11 @@ import { apiClient } from "@/lib/axios-client";
 import ChooseStepType from "./ChooseStepType";
 import { showToast } from "@/components/ui/Common/ShowToast";
 import CustomAlertDialog from "@/components/ui/Common/CustomAlertDialog";
+
+// BYOK imports
+import { PasswordAuthModal } from "@/components/PasswordAuthModal";
+import { RefinementPanel } from "@/components/RefinementPanel";
+import { useAPIKeyManager } from "@/hooks/useAPIKeyManager";
 
 interface ScreenshotViewerProps {
   captures: CaptureResponse;
@@ -268,19 +281,21 @@ const ResponsiveScreenshotItem = ({
           />
         </div>
         {mode === "edit" && (
-          <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-red-100 transition-colors">
-            <CustomAlertDialog
-              title="Delete Step"
-              description={`Are you sure you want to delete step this step? `}
-              onConfirm={() => handleDeleteStep(stepId)}
-              triggerDescription={
-                <Trash
-                  aria-label="Delete Step"
-                  role="button"
-                  className="w-6 h-6 text-red-500"
-                />
-              }
-            />
+          <div className="flex items-center gap-2">
+            <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-red-100 transition-colors">
+              <CustomAlertDialog
+                title="Delete Step"
+                description={`Are you sure you want to delete step this step? `}
+                onConfirm={() => handleDeleteStep(stepId)}
+                triggerDescription={
+                  <Trash
+                    aria-label="Delete Step"
+                    role="button"
+                    className="w-6 h-6 text-red-500"
+                  />
+                }
+              />
+            </div>
           </div>
         )}
       </div>
@@ -371,6 +386,15 @@ export default function ScreenshotViewer({
   const [documentUpdateLoading, setDocumentUpdateLoading] = useState(false);
   const router = useRouter();
 
+  // BYOK state
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showRefinementPanel, setShowRefinementPanel] = useState(false);
+  const [authPurpose, setAuthPurpose] = useState<"setup" | "unlock" | "change">(
+    "unlock"
+  );
+
+  const keyManager = useAPIKeyManager();
+
   const originalTitleRef = useRef<string>(captures.title);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -455,12 +479,7 @@ export default function ScreenshotViewer({
 
     setDocumentUpdateLoading(true);
 
-    const updatedData = await apiClient.protected.updateDocument(
-      id,
-      updateDate
-    );
-
-    console.log("Updated data:", updatedData);
+    await apiClient.protected.updateDocument(id, updateDate);
 
     setDocumentUpdateLoading(false);
 
@@ -514,12 +533,6 @@ export default function ScreenshotViewer({
     prevStepNumber: number,
     afterStepNummber: number
   ) => {
-    console.log(
-      "Calculating step number between:",
-      prevStepNumber,
-      "and",
-      afterStepNummber
-    );
     const newStepNumber = (prevStepNumber + afterStepNummber) / 2;
     return newStepNumber;
   };
@@ -556,7 +569,6 @@ export default function ScreenshotViewer({
       ],
     }));
 
-    console.log("New step added:", newStep);
     setShowStepTypeModelAt(null);
     showToast("success", <span>New step added successfully!</span>, {
       autoClose: 2000,
@@ -629,6 +641,148 @@ export default function ScreenshotViewer({
     input.click();
   };
 
+  // BYOK handlers
+  const handleRefineSteps = async () => {
+    const hasStoredKey = await keyManager.hasStoredKey();
+
+    if (!hasStoredKey) {
+      // User doesn't have a key, ask to set up
+      setAuthPurpose("setup");
+      setShowAuthModal(true);
+      return;
+    }
+
+    if (!keyManager.isSessionValid()) {
+      // User has key but session expired, ask for password
+      setAuthPurpose("unlock");
+      setShowAuthModal(true);
+      return;
+    }
+
+    // User has valid session, show refinement panel
+    setShowRefinementPanel(true);
+  };
+
+  const handleAuthSuccess = async (
+    password: string,
+    apiKey?: string
+  ): Promise<boolean> => {
+    try {
+      if (authPurpose === "setup") {
+        if (!apiKey) {
+          return false;
+        }
+        // Store the API key with the password
+        await keyManager.storeAPIKey(apiKey, password);
+        setShowAuthModal(false);
+        setShowRefinementPanel(true);
+        return true;
+      } else if (authPurpose === "change") {
+        if (!apiKey) {
+          return false;
+        }
+        // Delete the old key and store the new one
+        await keyManager.deleteApiKey();
+        await keyManager.storeAPIKey(apiKey, password);
+        setShowAuthModal(false);
+        setShowRefinementPanel(true);
+        return true;
+      } else {
+        // For unlock, just authenticate with existing key
+        const success = await keyManager.authenticateSession(password);
+        if (success) {
+          setShowAuthModal(false);
+          setShowRefinementPanel(true);
+        }
+        return success;
+      }
+    } catch (error) {
+      console.error("Authentication error:", error);
+      return false;
+    }
+  };
+
+  const handleStepsRefined = (refinedSteps: string[]) => {
+    // Update the steps in the document
+    setCapturesData((prev) => ({
+      ...prev,
+      steps: prev.steps.map((step, index) => ({
+        ...step,
+        stepDescription: refinedSteps[index] || step.stepDescription,
+      })),
+    }));
+
+    showToast("success", <span>Steps refined successfully!</span>, {
+      autoClose: 3000,
+    });
+  };
+
+  const handleRefineBulkSteps = async () => {
+    const stepDescriptions = capturesData.steps.map(
+      (step) => step.stepDescription || ""
+    );
+    const refinedSteps = await keyManager.refineSteps(
+      stepDescriptions,
+      "clarity"
+    );
+    handleStepsRefined(refinedSteps);
+    setShowRefinementPanel(false);
+  };
+
+  const handleChangeApiKey = () => {
+    setAuthPurpose("change");
+    setShowAuthModal(true);
+  };
+
+  const handleRefineDocumentDescription = async () => {
+    const hasStoredKey = await keyManager.hasStoredKey();
+
+    if (!hasStoredKey) {
+      setAuthPurpose("setup");
+      setShowAuthModal(true);
+      return;
+    }
+
+    if (!keyManager.isSessionValid()) {
+      setAuthPurpose("unlock");
+      setShowAuthModal(true);
+      return;
+    }
+
+    // Refine the document description with full context
+    if (capturesData.description) {
+      try {
+        const documentText = `Title: ${capturesData.title}\nDescription: ${
+          capturesData.description
+        }\n\nSteps:\n${capturesData.steps
+          .map((step, idx) => `${idx + 1}. ${step.stepDescription}`)
+          .join("\n")}`;
+
+        const refinedDescription = await keyManager.refineDocumentDescription(
+          capturesData.description,
+          documentText
+        );
+
+        setCapturesData((prev) => ({
+          ...prev,
+          description: refinedDescription,
+        }));
+
+        showToast(
+          "success",
+          <span>Document description refined successfully!</span>,
+          {
+            autoClose: 2000,
+          }
+        );
+      } catch {
+        showToast("error", <span>Failed to refine document description</span>, {
+          autoClose: 2000,
+        });
+      }
+    }
+  };
+
   return (
     <div
       ref={containerRef}
@@ -685,6 +839,23 @@ export default function ScreenshotViewer({
             </div>
           )}
 
+          {mode === "edit" && (
+            <div className="flex justify-end mb-4 gap-2">
+              <CustomButton
+                label="Change API Key"
+                variant="default"
+                size="small"
+                onClick={handleChangeApiKey}
+              />
+              <CustomButton
+                label="Refine with AI"
+                variant="secondary"
+                size="small"
+                onClick={handleRefineSteps}
+              />
+            </div>
+          )}
+
           <div className="flex items-start gap-4 mb-4">
             <div className="w-16 h-16 rounded-xl bg-gradient-to-b from-[#E3EAFC] to-white flex items-center justify-center flex-shrink-0">
               <Image src={Logo} alt="Logo" width={48} height={48} />
@@ -706,21 +877,32 @@ export default function ScreenshotViewer({
                 placeholder={mode === "edit" ? "Enter document title..." : ""}
               />
 
-              <input
-                ref={descriptionInputRef}
-                className={`text-gray-700 mt-2 break-words w-full ${
-                  mode === "edit"
-                    ? "bg-transparent border-none outline-none ring-2 ring-blue-200 focus:ring-blue-500 focus:ring-offset-2 rounded p-2 mx-2"
-                    : "bg-transparent border-none cursor-default"
-                }`}
-                type="text"
-                value={capturesData?.description || "Untitled Document"}
-                readOnly={mode !== "edit"}
-                disabled={mode !== "edit"}
-                onChange={handleDocumentDescriptionChange}
-                onKeyDown={handleDocumentDescriptionKeyDown}
-                placeholder={mode === "edit" ? "Enter document title..." : ""}
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  ref={descriptionInputRef}
+                  className={`text-gray-700 mt-2 break-words w-full ${
+                    mode === "edit"
+                      ? "bg-transparent border-none outline-none ring-2 ring-blue-200 focus:ring-blue-500 focus:ring-offset-2 rounded p-2 mx-2"
+                      : "bg-transparent border-none cursor-default"
+                  }`}
+                  type="text"
+                  value={capturesData?.description || "Untitled Document"}
+                  readOnly={mode !== "edit"}
+                  disabled={mode !== "edit"}
+                  onChange={handleDocumentDescriptionChange}
+                  onKeyDown={handleDocumentDescriptionKeyDown}
+                  placeholder={mode === "edit" ? "Enter document title..." : ""}
+                />
+                {mode === "edit" && keyManager.isSessionValid() && (
+                  <button
+                    onClick={handleRefineDocumentDescription}
+                    className="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                    title="Refine document description with AI"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
               <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mt-3">
                 <div className="flex items-center gap-1">
                   <Image src={PersonIcon} alt="Author" width={16} height={16} />
@@ -856,6 +1038,21 @@ export default function ScreenshotViewer({
           </footer>
         </>
       )}
+
+      {/* BYOK Modals */}
+      <PasswordAuthModal
+        isOpen={showAuthModal}
+        onAuthenticate={handleAuthSuccess}
+        onClose={() => setShowAuthModal(false)}
+        purpose={authPurpose}
+      />
+
+      <RefinementPanel
+        isOpen={showRefinementPanel}
+        onClose={() => setShowRefinementPanel(false)}
+        onRefineSteps={handleRefineBulkSteps}
+        steps={capturesData.steps.map((step) => step.stepDescription || "")}
+      />
     </div>
   );
 }
