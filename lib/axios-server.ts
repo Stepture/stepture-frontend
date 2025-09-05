@@ -173,6 +173,21 @@ export function getServerApi(cookie?: string) {
           throw error;
         }
       },
+      getHomeDocumentsByUser: async () => {
+        try {
+          if (cookie) {
+            const response = await privateApi.get("/documents/home", {
+              headers: { Cookie: cookie },
+            });
+
+            return response.data;
+          }
+          throw new Error("No cookie provided for home documents retrieval");
+        } catch (error) {
+          console.error("Error fetching home documents:", error);
+          throw error;
+        }
+      },
     },
   };
 }

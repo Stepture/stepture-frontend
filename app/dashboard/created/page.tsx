@@ -34,7 +34,7 @@ const page = async () => {
 
   return (
     <div className="p-12 max-w-[1200px] lg:mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Documents Created by Me</h1>
+      <h1 className="text-xl font-bold mb-6">Documents Created by Me</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {documents.map((doc) => (
           <DocumentCard
