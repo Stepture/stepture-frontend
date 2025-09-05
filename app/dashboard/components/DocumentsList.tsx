@@ -35,7 +35,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
     setDocuments((prev) => prev.filter((doc) => doc.id !== deletedId));
   };
 
-  const hanldeDeleteDocumentPermanently = (deletedId: string) => {
+  const handleDeleteDocumentPermanently = (deletedId: string) => {
     setDocuments((prev) => prev.filter((doc) => doc.id !== deletedId));
   };
 
@@ -56,7 +56,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
           onDelete={
             page === "created"
               ? handleDeleteDocument
-              : hanldeDeleteDocumentPermanently
+              : handleDeleteDocumentPermanently
           }
         />
       ))}

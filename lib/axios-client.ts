@@ -229,15 +229,6 @@ export const apiClient = {
       }
     },
 
-    restoreDeletedDocument: async (id: string) => {
-      try {
-        const response = await privateApi.post(`/documents/${id}/restore`);
-        return response.data;
-      } catch (error) {
-        throw error;
-      }
-    },
-
     deleteDocumentPermanently: async (id: string) => {
       try {
         const response = await privateApi.delete(`/documents/${id}/permanent`);
