@@ -8,38 +8,25 @@ interface DocumentData {
   id: string;
   title: string;
   description: string;
-  userId: string;
-  _count: {
-    steps: number;
-  };
   estimatedTime: string;
-  author?: string;
-}
-
-interface recentlyAccessed {
-  id: string;
-  title: string;
-  description: string;
-  estimatedCompletionTime: number;
   createdAt: string;
   updatedAt: string;
-  annotationColor: string;
   user: {
     id: string;
     name: string;
     email: string;
-  };
+  } | null;
   _count: {
     steps: number;
   };
-  lastAccessedAt: string;
+  lastAccessedAt?: string;
 }
 
 interface HomePageProps {
   totalCreated: number;
   shared: DocumentData[];
   private: DocumentData[];
-  recentlyAccessed: recentlyAccessed[];
+  recentlyAccessed: DocumentData[];
   message: string;
 }
 
@@ -92,7 +79,7 @@ const HomePage = async () => {
                 logoSrc={"/Stepture.png"}
                 websiteName="Stepture"
                 docTitle={doc.title}
-                author={doc.author || "bhone"}
+                author={doc?.user?.name || "bhone"}
                 stepCount={doc._count.steps || 5}
                 estimatedTime={doc.estimatedTime || "3 mins"}
                 href={`/document/${doc.id}`}
@@ -117,7 +104,7 @@ const HomePage = async () => {
                 logoSrc={"/Stepture.png"}
                 websiteName="Stepture"
                 docTitle={doc.title}
-                author={doc.author || "bhone"}
+                author={doc?.user?.name || "bhone"}
                 stepCount={doc._count.steps || 5}
                 estimatedTime={doc.estimatedTime || "3 mins"}
                 href={`/document/${doc.id}`}
@@ -144,12 +131,10 @@ const HomePage = async () => {
                 logoSrc={"/Stepture.png"}
                 websiteName="Stepture"
                 docTitle={doc.title}
-                author={doc.user.name || "bhone"}
-                stepCount={doc._count.steps || 0}
-                estimatedTime={`${Math.ceil(
-                  doc.estimatedCompletionTime / 60
-                )} mins`}
-                lastAccessedAt={doc.lastAccessedAt}
+                author={doc?.user?.name || "unknown Author"}
+                stepCount={doc._count.steps || 5}
+                estimatedTime={doc.estimatedTime || "3 mins"}
+                lastAccessedAt={doc.lastAccessedAt || doc.updatedAt}
                 href={`/document/${doc.id}`}
               />
             ))}

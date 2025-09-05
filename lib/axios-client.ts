@@ -190,5 +190,14 @@ export const apiClient = {
         throw error;
       }
     },
+
+    deleteDocument: async (id: string) => {
+      try {
+        const response = await privateApi.delete(`/documents/${id}`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
   },
 };
