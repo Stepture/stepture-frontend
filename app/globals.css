@@ -147,6 +147,13 @@ body {
   }
 }
 
+textarea {
+  resize: none;
+  overflow: hidden;
+  min-height: 40px;
+  field-sizing: content;
+}
+
 @layer utilities {
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {

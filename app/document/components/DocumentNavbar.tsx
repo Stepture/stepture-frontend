@@ -15,7 +15,7 @@ import { useRouter, useParams, useSearchParams } from "next/navigation";
 import ShareExportModal from "./ShareExportModal";
 import { apiClient } from "@/lib/axios-client";
 import { CaptureResponse } from "@/app/document/document.types";
-
+import { showToast } from "@/components/ui/Common/ShowToast";
 const DocumentNavbar = () => {
   const router = useRouter();
   const params = useParams();
@@ -38,6 +38,17 @@ const DocumentNavbar = () => {
 
     fetchDocument();
   }, [params.id]);
+
+  const saveDocument = async () => {
+    if (params.id && typeof params.id === "string") {
+      try {
+        await apiClient.protected.saveDocument(params.id);
+        showToast("success", "Document saved successfully.");
+      } catch (error) {
+        showToast("error", "Failed to save the document.");
+      }
+    }
+  };
 
   return (
     <header className="bg-white shadow-sm w-full">
@@ -76,7 +87,11 @@ const DocumentNavbar = () => {
             size="small"
             onClick={() => setIsShareModalOpen(true)}
           />
-          <CustomButton icon={nav_save} variant="secondary" />
+          <CustomButton
+            icon={nav_save}
+            variant="secondary"
+            onClick={saveDocument}
+          />
         </div>
       </nav>
 

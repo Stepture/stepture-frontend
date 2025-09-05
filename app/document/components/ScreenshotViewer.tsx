@@ -153,7 +153,7 @@ const ResponsiveScreenshotItem = ({
   // Enhanced useRef usage
   const imgRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const mutationObserverRef = useRef<MutationObserver | null>(null);
   const animationFrameRef = useRef<number | null>(null);
@@ -194,14 +194,16 @@ const ResponsiveScreenshotItem = ({
   }, []);
 
   // Handle input changes with proper state management
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     if (mode === "edit") {
       onStepDescriptionChange?.(stepId, e.target.value);
     }
   };
 
   // Handle keyboard shortcuts
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (mode !== "edit") return;
 
     if (e.key === "Escape") {
@@ -328,7 +330,7 @@ const ResponsiveScreenshotItem = ({
         isDragging ? "shadow-lg scale-105" : ""
       }`}
     >
-      <div className="flex items-center gap-2 text-sm font-medium w-full">
+      <div className="flex items-start gap-2 text-sm font-medium w-full">
         {mode === "edit" ? (
           <span
             className="cursor-grab active:cursor-grabbing hover:text-blue-800"
@@ -346,20 +348,27 @@ const ResponsiveScreenshotItem = ({
           </span>
         )}
         <div className="flex-1">
-          <input
+          <textarea
             ref={inputRef}
-            className={`rounded-md w-full ${
+            className={`rounded-md w-full h-auto overflow-hidden ${
               mode === "edit"
-                ? "border-blue-300 bg-white p-2 cursor-text border-none focus:outline-none ring-2 ring-blue-100 focus:ring-2 focus:ring-blue-500"
+                ? "border-blue-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-blue-100 focus:ring-2 focus:ring-blue-500"
                 : "font-semibold bg-transparent border-none cursor-default"
             }`}
-            type="text"
             value={stepDescription}
             readOnly={mode !== "edit"}
             disabled={mode !== "edit"}
             onChange={handleDescriptionChange}
             onKeyDown={handleKeyDown}
             placeholder={mode === "edit" ? "Enter step description..." : ""}
+            rows={1}
+            style={{ minHeight: "2.5rem" }}
+            onInput={(e) => {
+              // Auto-resize textarea based on content
+              const target = e.target as HTMLTextAreaElement;
+              target.style.height = "auto";
+              target.style.height = `${target.scrollHeight}px`;
+            }}
           />
         </div>
         {mode === "edit" && (

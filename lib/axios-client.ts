@@ -166,5 +166,13 @@ export const apiClient = {
     logout: async () => {
       await privateApi.post("/auth/logout");
     },
+    saveDocument: async (id: string) => {
+      try {
+        const response = await privateApi.post(`/documents/${id}/save`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
   },
 };
