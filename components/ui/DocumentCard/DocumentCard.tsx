@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash } from "lucide-react";
+import { Trash, RotateCcw } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FaUser } from "react-icons/fa";
@@ -154,33 +154,81 @@ export default function DocumentCard({
           </div>
         </div>
       </Link>
+      <div className="absolute top-3 right-3 flex">
+        {page === "trash" && (
+          <div className="bg-slate-100 rounded-lg">
+            <CustomAlertDialog
+              title="Restore Document"
+              description={`Are you sure you want to restore "${docTitle}" from trash?`}
+              onConfirm={async () => {
+                if (isDeleting) return;
+                const docId = documentId || href.split("/").pop() || "";
 
-      {(page === "created" || page === "trash") && (
-        <div className="absolute top-1 right-1 bg-slate-100 rounded-lg">
-          <CustomAlertDialog
-            title="Delete Document"
-            description={
-              page === "created"
-                ? `Are you sure you want to delete "${docTitle}"? This document will be moved to trash.`
-                : "Are you sure you want to permanently delete this document? This action cannot be undone."
-            }
-            onConfirm={
-              page === "created" ? deleteDocument : deleteDocumentPermanently
-            }
-            triggerDescription={
-              <Trash
-                aria-label="Delete document"
-                role="button"
-                className={`w-4 h-4 m-2 cursor-pointer transition-colors ${
-                  isDeleting
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-red-500 hover:text-red-700"
-                }`}
-              />
-            }
-          />
-        </div>
-      )}
+                if (!docId) {
+                  console.error("No document ID found");
+                  return;
+                }
+
+                try {
+                  setIsDeleting(true);
+                  await apiClient.protected.restoreDocument(docId);
+                  showToast("success", "Document restored successfully.");
+                  if (onDelete) {
+                    onDelete(docId);
+                  } else {
+                    window.location.reload();
+                  }
+                } catch (error) {
+                  console.error("Error restoring document:", error);
+                  showToast("error", "Failed to restore document.");
+                } finally {
+                  setIsDeleting(false);
+                }
+              }}
+              triggerDescription={
+                <RotateCcw
+                  aria-label="Restore document"
+                  role="button"
+                  className={`w-4 h-4 m-2 cursor-pointer transition-colors ${
+                    isDeleting
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-green-500 hover:text-green-700"
+                  }`}
+                />
+              }
+            />
+          </div>
+        )}
+
+        {(page === "created" || page === "trash") && (
+          <div className=" bg-slate-100 rounded-lg">
+            <CustomAlertDialog
+              title={
+                page === "created" ? "Delete Document" : "Delete Permanently"
+              }
+              description={
+                page === "created"
+                  ? `Are you sure you want to delete "${docTitle}"? This document will be moved to trash.`
+                  : "Are you sure you want to permanently delete this document? This action cannot be undone."
+              }
+              onConfirm={
+                page === "created" ? deleteDocument : deleteDocumentPermanently
+              }
+              triggerDescription={
+                <Trash
+                  aria-label="Delete document"
+                  role="button"
+                  className={`w-4 h-4 m-2 cursor-pointer transition-colors ${
+                    isDeleting
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-red-500 hover:text-red-700"
+                  }`}
+                />
+              }
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

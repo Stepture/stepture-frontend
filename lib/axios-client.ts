@@ -217,5 +217,13 @@ export const apiClient = {
         throw error;
       }
     },
+    restoreDocument: async (id: string) => {
+      try {
+        const response = await privateApi.put(`/documents/${id}/restore`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
   },
 };
