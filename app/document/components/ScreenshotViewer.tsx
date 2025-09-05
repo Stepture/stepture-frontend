@@ -372,7 +372,7 @@ const ResponsiveScreenshotItem = ({
                 <Trash
                   aria-label="Delete Step"
                   role="button"
-                  className="w-6 h-6 text-red-500"
+                  className="w-6 h-6 text-red-500 cursor-pointer hover:text-red-700 transition-colors"
                 />
               }
             />
@@ -390,7 +390,7 @@ const ResponsiveScreenshotItem = ({
             height={info?.viewportHeight || 600}
             onLoad={handleImageLoad}
             className={`w-full h-auto border rounded-md transition-all duration-200 ${
-              mode === "edit" ? "group-hover:blur-sm" : ""
+              mode === "edit" ? "group-hover:brightness-80 cursor-pointer" : ""
             }`}
             style={{
               maxWidth: "100%",
@@ -404,11 +404,14 @@ const ResponsiveScreenshotItem = ({
               description={`Are you sure you want to delete the image from this step? `}
               onConfirm={() => handleDeleteImage?.(stepNumber)}
               triggerDescription={
-                <Trash
-                  aria-label="Delete image"
-                  role="button"
-                  className="hidden w-8 h-8  p-2 group-hover:block group-hover:bg-red-400 group-hover:text-slate-50 rounded-full absolute top-1/2 right-1/2 cursor-pointer"
-                />
+                <div className="hidden group-hover:flex absolute top-2 right-2  items-center gap-2 bg-white p-1.5 rounded-md shadow-md cursor-pointer hover:shadow-lg transition-all">
+                  <Trash
+                    aria-label="Delete image"
+                    role="button"
+                    className="w-8 h-8  p-2  group-hover:bg-red-400 group-hover:text-slate-50 rounded-full  cursor-pointer"
+                  />
+                  <span>Delete image</span>
+                </div>
               }
             />
           )}
