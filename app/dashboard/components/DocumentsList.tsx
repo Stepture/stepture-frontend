@@ -22,12 +22,20 @@ interface DocumentData {
 
 interface DocumentsListProps {
   initialDocuments: DocumentData[];
+  page: string;
 }
 
-const DocumentsList: React.FC<DocumentsListProps> = ({ initialDocuments }) => {
+const DocumentsList: React.FC<DocumentsListProps> = ({
+  initialDocuments,
+  page,
+}) => {
   const [documents, setDocuments] = useState<DocumentData[]>(initialDocuments);
 
   const handleDeleteDocument = (deletedId: string) => {
+    setDocuments((prev) => prev.filter((doc) => doc.id !== deletedId));
+  };
+
+  const hanldeDeleteDocumentPermanently = (deletedId: string) => {
     setDocuments((prev) => prev.filter((doc) => doc.id !== deletedId));
   };
 
@@ -43,9 +51,13 @@ const DocumentsList: React.FC<DocumentsListProps> = ({ initialDocuments }) => {
           stepCount={doc._count.steps || 5}
           estimatedTime={doc.estimatedTime || "3 mins"}
           href={`/document/${doc.id}`}
-          page="created"
+          page={page}
           documentId={doc.id}
-          onDelete={handleDeleteDocument}
+          onDelete={
+            page === "created"
+              ? handleDeleteDocument
+              : hanldeDeleteDocumentPermanently
+          }
         />
       ))}
     </div>

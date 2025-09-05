@@ -40,7 +40,7 @@ const page = async () => {
   return (
     <div className="p-12 max-w-[1200px] lg:mx-auto">
       <h1 className="text-xl font-bold mb-6">Documents Created by Me</h1>
-      <DocumentsList initialDocuments={documents} />
+      <DocumentsList initialDocuments={documents} page="created" />
     </div>
   );
 };

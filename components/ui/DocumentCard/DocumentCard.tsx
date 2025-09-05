@@ -8,6 +8,7 @@ import { FaLayerGroup, FaClock } from "react-icons/fa6";
 import CustomAlertDialog from "../Common/CustomAlertDialog";
 import { apiClient } from "@/lib/axios-client";
 import { useState } from "react";
+import { showToast } from "../Common/ShowToast";
 
 interface DocumentData {
   id: string;
@@ -69,17 +70,41 @@ export default function DocumentCard({
     try {
       setIsDeleting(true);
       await apiClient.protected.deleteDocument(docId);
-
-      // Call the parent component's delete handler if available
+      showToast("success", "Document moved to trash.");
       if (onDelete) {
         onDelete(docId);
       } else {
-        // Fallback: Force page refresh if no onDelete handler
         window.location.reload();
       }
     } catch (error) {
       console.error("Error deleting document:", error);
-      // You might want to show a toast notification here
+      showToast("error", "Failed to delete document.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const deleteDocumentPermanently = async () => {
+    if (isDeleting) return;
+    const docId = documentId || href.split("/").pop() || "";
+
+    if (!docId) {
+      console.error("No document ID found");
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await apiClient.protected.deleteDocumentPermanently(docId);
+      showToast("success", "Document deleted permanently.");
+      if (onDelete) {
+        onDelete(docId);
+      } else {
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Error deleting document permanently:", error);
+      showToast("error", "Failed to delete document permanently.");
     } finally {
       setIsDeleting(false);
     }
@@ -130,12 +155,18 @@ export default function DocumentCard({
         </div>
       </Link>
 
-      {page === "created" && (
+      {(page === "created" || page === "trash") && (
         <div className="absolute top-1 right-1 bg-slate-100 rounded-lg">
           <CustomAlertDialog
             title="Delete Document"
-            description={`Are you sure you want to delete "${docTitle}"? This action cannot be undone.`}
-            onConfirm={deleteDocument}
+            description={
+              page === "created"
+                ? `Are you sure you want to delete "${docTitle}"? This document will be moved to trash.`
+                : "Are you sure you want to permanently delete this document? This action cannot be undone."
+            }
+            onConfirm={
+              page === "created" ? deleteDocument : deleteDocumentPermanently
+            }
             triggerDescription={
               <Trash
                 aria-label="Delete document"

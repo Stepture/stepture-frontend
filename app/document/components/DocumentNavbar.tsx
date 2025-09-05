@@ -125,6 +125,15 @@ const DocumentNavbar = () => {
             onClick={!savedStatus ? saveDocument : unsaveDocument}
             label={savedStatus ? "Saved" : "Save"}
           />
+
+          {/* <CustomButton
+            label=""
+            icon={arrow_share}
+            icon2={link_share}
+            variant="primary"
+            size="small"
+            onClick={() => setIsShareModalOpen(true)}
+          /> */}
         </div>
       </nav>
 

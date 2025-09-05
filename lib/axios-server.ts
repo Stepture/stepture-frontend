@@ -188,6 +188,21 @@ export function getServerApi(cookie?: string) {
           throw error;
         }
       },
+      getDeletedDocumentsByUser: async () => {
+        try {
+          if (cookie) {
+            const response = await privateApi.get("/documents/deleted/list", {
+              headers: { Cookie: cookie },
+            });
+
+            return response.data;
+          }
+          throw new Error("No cookie provided for deleted documents retrieval");
+        } catch (error) {
+          console.error("Error fetching deleted documents:", error);
+          throw error;
+        }
+      },
     },
   };
 }
