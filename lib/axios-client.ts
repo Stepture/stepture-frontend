@@ -174,5 +174,21 @@ export const apiClient = {
         throw error;
       }
     },
+    checkSavedStatus: async (id: string) => {
+      try {
+        const response = await privateApi.get(`/documents/${id}/save-status`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    unsaveDocument: async (id: string) => {
+      try {
+        const response = await privateApi.delete(`/documents/${id}/save`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
   },
 };

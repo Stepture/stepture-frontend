@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import { get } from "http";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -142,7 +143,6 @@ export function getServerApi(cookie?: string) {
         const response = await privateApi.get(`/documents/${id}`, config);
         return response.data;
       },
-
       getDocumentsByUser: async () => {
         try {
           if (cookie) {
@@ -155,6 +155,21 @@ export function getServerApi(cookie?: string) {
           throw new Error("No cookie provided for user documents retrieval");
         } catch (error) {
           console.error("Error fetching documents:", error);
+          throw error;
+        }
+      },
+      getSavedDocumentsByUser: async () => {
+        try {
+          if (cookie) {
+            const response = await privateApi.get("/documents/saved/list", {
+              headers: { Cookie: cookie },
+            });
+
+            return response.data;
+          }
+          throw new Error("No cookie provided for saved documents retrieval");
+        } catch (error) {
+          console.error("Error fetching saved documents:", error);
           throw error;
         }
       },

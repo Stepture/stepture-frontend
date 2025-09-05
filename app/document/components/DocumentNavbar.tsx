@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
@@ -8,6 +7,7 @@ import {
   link_share,
   arrow_share,
   nav_save,
+  nav_saved,
 } from "@/public/constants/images";
 import Image from "next/image";
 import CustomButton from "@/components/ui/Common/CustomButton";
@@ -16,6 +16,7 @@ import ShareExportModal from "./ShareExportModal";
 import { apiClient } from "@/lib/axios-client";
 import { CaptureResponse } from "@/app/document/document.types";
 import { showToast } from "@/components/ui/Common/ShowToast";
+
 const DocumentNavbar = () => {
   const router = useRouter();
   const params = useParams();
@@ -23,29 +24,59 @@ const DocumentNavbar = () => {
   const mode = searchParams.get("mode") || "view";
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [captures, setCaptures] = useState<CaptureResponse | null>(null);
+  const [savedStatus, setSavedStatus] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchDocument = async () => {
+    const fetchDocumentAndStatus = async () => {
       if (params.id && typeof params.id === "string") {
         try {
           const response = await apiClient.protected.getDocumentById(params.id);
           setCaptures(response);
+
+          const isSaved = await checkSavedStatus();
+          setSavedStatus(isSaved);
         } catch (error) {
           console.error("Error fetching document:", error);
         }
       }
     };
-
-    fetchDocument();
+    fetchDocumentAndStatus();
   }, [params.id]);
 
   const saveDocument = async () => {
     if (params.id && typeof params.id === "string") {
       try {
         await apiClient.protected.saveDocument(params.id);
+        setSavedStatus(true); // Update saved status after successful save
         showToast("success", "Document saved successfully.");
       } catch (error) {
         showToast("error", "Failed to save the document.");
+      }
+    }
+  };
+
+  const checkSavedStatus = async () => {
+    if (params.id && typeof params.id === "string") {
+      try {
+        const response = await apiClient.protected.checkSavedStatus(params.id);
+        return response.isSaved;
+      } catch (error) {
+        console.error("Error checking saved status:", error);
+        return false;
+      }
+    }
+    return false;
+  };
+
+  const unsaveDocument = async () => {
+    console.log("Unsave document called");
+    if (params.id && typeof params.id === "string") {
+      try {
+        await apiClient.protected.unsaveDocument(params.id);
+        setSavedStatus(false);
+        showToast("success", "Document unsaved successfully.");
+      } catch (error) {
+        showToast("error", "Failed to unsave the document.");
       }
     }
   };
@@ -87,10 +118,12 @@ const DocumentNavbar = () => {
             size="small"
             onClick={() => setIsShareModalOpen(true)}
           />
+
           <CustomButton
-            icon={nav_save}
+            icon={!savedStatus ? nav_save : nav_saved}
             variant="secondary"
-            onClick={saveDocument}
+            onClick={!savedStatus ? saveDocument : unsaveDocument}
+            label={savedStatus ? "Saved" : "Save"}
           />
         </div>
       </nav>
