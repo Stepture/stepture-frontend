@@ -28,6 +28,7 @@ export interface Step {
 }
 
 export interface CaptureResponse {
+  annotationColor?: string;
   id: string;
   title: string;
   description: string;

@@ -1,5 +1,4 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-import { get } from "http";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 

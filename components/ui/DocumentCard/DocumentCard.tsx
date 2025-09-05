@@ -50,7 +50,6 @@ export default function DocumentCard({
   estimatedTime,
   href,
   page,
-  docs,
   documentId,
   onDelete,
 }: DocumentCardProps) {

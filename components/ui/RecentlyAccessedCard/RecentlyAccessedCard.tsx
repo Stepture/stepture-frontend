@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface RecentlyAccessedCardProps {
   logoSrc: string;
@@ -27,7 +28,7 @@ const RecentlyAccessedCard: React.FC<RecentlyAccessedCardProps> = ({
       <div className="border rounded-lg p-4 shadow hover:shadow-md transition cursor-pointer">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
-            <img src={logoSrc} alt={websiteName} className="w-6 h-6" />
+            <Image src={logoSrc} alt={websiteName} className="w-6 h-6" />
             <span className="text-sm text-gray-600">{websiteName}</span>
           </div>
         </div>

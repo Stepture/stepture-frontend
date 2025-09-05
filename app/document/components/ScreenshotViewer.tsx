@@ -19,6 +19,7 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DraggableAttributes,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -28,6 +29,7 @@ import {
 } from "@dnd-kit/sortable";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
 import {
   Screenshot,
@@ -140,8 +142,8 @@ const ResponsiveScreenshotItem = ({
   handleAddNewImage?: (stepNumber: number) => void;
   handleDeleteImage?: (stepNumber: number) => void;
   // Drag and drop props
-  dragAttributes?: any;
-  dragListeners?: any;
+  dragAttributes?: unknown;
+  dragListeners?: unknown;
   isDragging?: boolean;
   annotationColor?: string;
 }) => {
@@ -351,8 +353,8 @@ const ResponsiveScreenshotItem = ({
         {mode === "edit" ? (
           <span
             className="cursor-grab active:cursor-grabbing hover:text-blue-800"
-            {...dragAttributes}
-            {...dragListeners}
+            {...(dragAttributes as DraggableAttributes)}
+            {...(dragListeners as SyntheticListenerMap)}
           >
             <GripVertical className="w-4 h-4 inline-block" />{" "}
             <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100 min-w-24 text-center">
@@ -613,6 +615,7 @@ export default function ScreenshotViewer({
   const handleEditSubmit = async () => {
     const steps = capturesData.steps.map((step) => {
       if (step.id && step.id.startsWith("temp-")) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id, ...rest } = step;
         return rest;
       }
@@ -624,7 +627,7 @@ export default function ScreenshotViewer({
       description: capturesData.description,
       steps: steps,
       deleteStepIds: stepsToDelete,
-      annotationColor: capturesData.annotationColor,
+      annotationColor: capturesData?.annotationColor || "BLUE",
     };
 
     setDocumentUpdateLoading(true);
@@ -826,11 +829,9 @@ export default function ScreenshotViewer({
       }
     };
 
-    // Trigger file selection dialog
     input.click();
   };
 
-  // Add this function after your other handler functions
   const handleAnnotationColorChange = (color: string) => {
     setCapturesData((prev) => ({
       ...prev,
@@ -871,17 +872,13 @@ export default function ScreenshotViewer({
                   ↑ Scroll to top
                 </button>
 
-                {/* Annotation Color Picker */}
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600 font-medium">
-                    Annotation Color:
-                  </span>
                   <div className="flex gap-1">
                     <button
                       onClick={() => handleAnnotationColorChange("blue")}
                       className={`w-6 h-6 rounded-full bg-blue-500 border-2 transition-all ${
                         capturesData.annotationColor?.toLowerCase() === "blue"
-                          ? "border-blue-700 ring-2 ring-blue-300"
+                          ? "border-blue-700 ring-2 ring-blue-500"
                           : "border-blue-300 hover:border-blue-600"
                       }`}
                       title="Blue"
@@ -890,7 +887,7 @@ export default function ScreenshotViewer({
                       onClick={() => handleAnnotationColorChange("green")}
                       className={`w-6 h-6 rounded-full bg-green-500 border-2 transition-all ${
                         capturesData.annotationColor?.toLowerCase() === "green"
-                          ? "border-green-700 ring-2 ring-green-300"
+                          ? "border-green-700 ring-2 ring-green-500"
                           : "border-green-300 hover:border-green-600"
                       }`}
                       title="Green"
@@ -899,7 +896,7 @@ export default function ScreenshotViewer({
                       onClick={() => handleAnnotationColorChange("yellow")}
                       className={`w-6 h-6 rounded-full bg-yellow-500 border-2 transition-all ${
                         capturesData.annotationColor?.toLowerCase() === "yellow"
-                          ? "border-yellow-700 ring-2 ring-yellow-300"
+                          ? "border-yellow-700 ring-2 ring-yellow-500"
                           : "border-yellow-300 hover:border-yellow-600"
                       }`}
                       title="Yellow"

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   back_arrow,
@@ -26,6 +26,19 @@ const DocumentNavbar = () => {
   const [captures, setCaptures] = useState<CaptureResponse | null>(null);
   const [savedStatus, setSavedStatus] = useState<boolean>(false);
 
+  const checkSavedStatus = useCallback(async () => {
+    if (params.id && typeof params.id === "string") {
+      try {
+        const response = await apiClient.protected.checkSavedStatus(params.id);
+        return response.isSaved;
+      } catch (error) {
+        console.error("Error checking saved status:", error);
+        return false;
+      }
+    }
+    return false;
+  }, [params.id]);
+
   useEffect(() => {
     const fetchDocumentAndStatus = async () => {
       if (params.id && typeof params.id === "string") {
@@ -41,7 +54,7 @@ const DocumentNavbar = () => {
       }
     };
     fetchDocumentAndStatus();
-  }, [params.id]);
+  }, [params.id, checkSavedStatus]);
 
   const saveDocument = async () => {
     if (params.id && typeof params.id === "string") {
@@ -49,23 +62,11 @@ const DocumentNavbar = () => {
         await apiClient.protected.saveDocument(params.id);
         setSavedStatus(true); // Update saved status after successful save
         showToast("success", "Document saved successfully.");
-      } catch (error) {
+      } catch (_error) {
+        console.error("Error saving document:", _error);
         showToast("error", "Failed to save the document.");
       }
     }
-  };
-
-  const checkSavedStatus = async () => {
-    if (params.id && typeof params.id === "string") {
-      try {
-        const response = await apiClient.protected.checkSavedStatus(params.id);
-        return response.isSaved;
-      } catch (error) {
-        console.error("Error checking saved status:", error);
-        return false;
-      }
-    }
-    return false;
   };
 
   const unsaveDocument = async () => {
@@ -75,7 +76,8 @@ const DocumentNavbar = () => {
         await apiClient.protected.unsaveDocument(params.id);
         setSavedStatus(false);
         showToast("success", "Document unsaved successfully.");
-      } catch (error) {
+      } catch (_error) {
+        console.error("Error unsaving document:", _error);
         showToast("error", "Failed to unsave the document.");
       }
     }
