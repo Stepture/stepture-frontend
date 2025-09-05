@@ -28,6 +28,7 @@ export interface Step {
 }
 
 export interface CaptureResponse {
+  annotationColor?: string;
   id: string;
   title: string;
   description: string;
@@ -47,6 +48,7 @@ export interface EditCaptureRequest {
   description: string;
   steps: (Step | null)[];
   deleteStepIds?: string[];
+  annotationColor?: string;
 }
 
 export interface ShareExportModalProps {

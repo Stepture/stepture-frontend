@@ -13,6 +13,7 @@ import link_share from "../assets/images/link-share.svg";
 import edit_icon from "../assets/images/pen-edit.svg";
 import pdf_icon from "../pdf.svg";
 import markdown_icon from "../markdown.svg";
+import nav_saved from "../assets/images/nav-saved.png";
 
 export {
   record,
@@ -30,4 +31,5 @@ export {
   edit_icon,
   pdf_icon,
   markdown_icon,
+  nav_saved,
 };

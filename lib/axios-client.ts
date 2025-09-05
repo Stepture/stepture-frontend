@@ -195,5 +195,55 @@ export const apiClient = {
     deleteApiKey: async () => {
       await privateApi.delete("/users/api-key");
     },
+    saveDocument: async (id: string) => {
+      try {
+        const response = await privateApi.post(`/documents/${id}/save`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    checkSavedStatus: async (id: string) => {
+      try {
+        const response = await privateApi.get(`/documents/${id}/save-status`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    unsaveDocument: async (id: string) => {
+      try {
+        const response = await privateApi.delete(`/documents/${id}/save`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+
+    deleteDocument: async (id: string) => {
+      try {
+        const response = await privateApi.delete(`/documents/${id}`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+
+    deleteDocumentPermanently: async (id: string) => {
+      try {
+        const response = await privateApi.delete(`/documents/${id}/permanent`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+    restoreDocument: async (id: string) => {
+      try {
+        const response = await privateApi.put(`/documents/${id}/restore`);
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
   },
 };

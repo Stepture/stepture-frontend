@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   back_arrow,
@@ -9,6 +8,7 @@ import {
   arrow_share,
   nav_save,
   stepture,
+  nav_saved,
 } from "@/public/constants/images";
 import Image from "next/image";
 import CustomButton from "@/components/ui/Common/CustomButton";
@@ -17,6 +17,7 @@ import ShareExportModal from "./ShareExportModal";
 import { apiClient } from "@/lib/axios-client";
 import { CaptureResponse } from "@/app/document/document.types";
 import { AxiosError } from "axios";
+import { showToast } from "@/components/ui/Common/ShowToast";
 
 const DocumentNavbar = () => {
   const router = useRouter();
@@ -28,9 +29,50 @@ const DocumentNavbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [savedStatus, setSavedStatus] = useState<boolean>(false);
+
+  const saveDocument = async () => {
+    if (params.id && typeof params.id === "string") {
+      try {
+        await apiClient.protected.saveDocument(params.id);
+        setSavedStatus(true); // Update saved status after successful save
+        showToast("success", "Document saved successfully.");
+      } catch (_error) {
+        console.error("Error saving document:", _error);
+        showToast("error", "Failed to save the document.");
+      }
+    }
+  };
+
+  const unsaveDocument = async () => {
+    console.log("Unsave document called");
+    if (params.id && typeof params.id === "string") {
+      try {
+        await apiClient.protected.unsaveDocument(params.id);
+        setSavedStatus(false);
+        showToast("success", "Document unsaved successfully.");
+      } catch (_error) {
+        console.error("Error unsaving document:", _error);
+        showToast("error", "Failed to unsave the document.");
+      }
+    }
+  };
+
+  const checkSavedStatus = useCallback(async () => {
+    if (params.id && typeof params.id === "string") {
+      try {
+        const response = await apiClient.protected.checkSavedStatus(params.id);
+        return response.isSaved;
+      } catch (error) {
+        console.error("Error checking saved status:", error);
+        return false;
+      }
+    }
+    return false;
+  }, [params.id]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDataAndStatus = async () => {
       if (params.id && typeof params.id === "string") {
         setIsLoading(true);
 
@@ -67,6 +109,9 @@ const DocumentNavbar = () => {
 
           const owner = loggedIn && user && user.userId === response.user.id;
           setIsOwner(owner);
+
+          const isSaved = await checkSavedStatus();
+          setSavedStatus(isSaved);
         } catch (docError: unknown) {
           console.log("Error fetching document:", docError);
           setCaptures(null);
@@ -89,8 +134,8 @@ const DocumentNavbar = () => {
       }
     };
 
-    fetchData();
-  }, [params.id]);
+    fetchDataAndStatus();
+  }, [params.id, checkSavedStatus]);
 
   return (
     <header className="bg-white shadow-sm w-full">
@@ -171,7 +216,22 @@ const DocumentNavbar = () => {
                   size="small"
                   onClick={() => setIsShareModalOpen(true)}
                 />
-                <CustomButton icon={nav_save} variant="secondary" />
+
+                <CustomButton
+                  icon={!savedStatus ? nav_save : nav_saved}
+                  variant="secondary"
+                  onClick={!savedStatus ? saveDocument : unsaveDocument}
+                  label={savedStatus ? "Saved" : "Save"}
+                />
+
+                {/* <CustomButton
+            label=""
+            icon={arrow_share}
+            icon2={link_share}
+            variant="primary"
+            size="small"
+            onClick={() => setIsShareModalOpen(true)}
+          /> */}
               </>
             ) : captures && captures.isPublic ? (
               // Logged-in non-owner with public document: can see Share and Save buttons
