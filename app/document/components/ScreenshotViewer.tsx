@@ -56,6 +56,7 @@ const SortableStepItem = ({
   handleAddNewImage,
   handleDeleteImage,
   loading,
+  annotationColor,
 }: {
   step: Step;
   index: number;
@@ -65,6 +66,7 @@ const SortableStepItem = ({
   handleAddNewImage?: (stepNumber: number) => void;
   handleDeleteImage?: (stepNumber: number) => void;
   loading?: boolean;
+  annotationColor?: string;
 }) => {
   const {
     attributes,
@@ -97,10 +99,10 @@ const SortableStepItem = ({
         handleAddNewImage={handleAddNewImage}
         handleDeleteImage={handleDeleteImage}
         loading={loading}
-        // Pass drag props
         dragAttributes={attributes}
         dragListeners={listeners}
         isDragging={isDragging}
+        annotationColor={annotationColor}
       />
     </div>
   );
@@ -122,6 +124,7 @@ const ResponsiveScreenshotItem = ({
   dragAttributes,
   dragListeners,
   isDragging,
+  annotationColor,
 }: {
   img: string;
   index: number;
@@ -140,6 +143,7 @@ const ResponsiveScreenshotItem = ({
   dragAttributes?: any;
   dragListeners?: any;
   isDragging?: boolean;
+  annotationColor?: string;
 }) => {
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
@@ -157,6 +161,19 @@ const ResponsiveScreenshotItem = ({
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const mutationObserverRef = useRef<MutationObserver | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+
+  const determineAnnotationColor = (annotationColor: string) => {
+    switch (annotationColor.toLowerCase()) {
+      case "green":
+        return "bg-green-500 border-green-300";
+      case "blue":
+        return "bg-blue-500 border-blue-300";
+      case "yellow":
+        return "bg-yellow-500 border-yellow-300";
+      default:
+        return "bg-blue-500 border-blue-300"; // Default to blue
+    }
+  };
 
   // Store the original description for cancel functionality
   const originalDescriptionRef = useRef<string>(stepDescription);
@@ -430,9 +447,9 @@ const ResponsiveScreenshotItem = ({
             imageDimensions.width > 0 &&
             displayDimensions.width > 0 && (
               <div
-                className={`absolute opacity-50 rounded-full border-4 border-blue-300 bg-blue-500 bg-opacity-30 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-all duration-200 ${
-                  mode === "edit" ? "group-hover:blur-sm" : ""
-                }`}
+                className={`absolute opacity-50 border-4 rounded-full bg-opacity-30 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-all duration-200 ${determineAnnotationColor(
+                  annotationColor || "BLUE"
+                )}`}
                 style={{
                   ...getResponsivePosition(),
                   width: `${getIndicatorSize()}px`,
@@ -440,7 +457,7 @@ const ResponsiveScreenshotItem = ({
                 }}
                 aria-label={`Click indicator for step ${stepNumber}`}
               >
-                <div className="absolute inset-0 animate-ping bg-blue-400 rounded-full opacity-50"></div>
+                <div className="absolute inset-0 bg-blue-400 rounded-full opacity-50"></div>
               </div>
             )}
         </div>
@@ -607,6 +624,7 @@ export default function ScreenshotViewer({
       description: capturesData.description,
       steps: steps,
       deleteStepIds: stepsToDelete,
+      annotationColor: capturesData.annotationColor,
     };
 
     setDocumentUpdateLoading(true);
@@ -812,6 +830,14 @@ export default function ScreenshotViewer({
     input.click();
   };
 
+  // Add this function after your other handler functions
+  const handleAnnotationColorChange = (color: string) => {
+    setCapturesData((prev) => ({
+      ...prev,
+      annotationColor: color.toUpperCase(),
+    }));
+  };
+
   return (
     <div
       ref={containerRef}
@@ -837,12 +863,51 @@ export default function ScreenshotViewer({
               ref={headerRef}
               className="sticky top-2 left-0 z-50 w-full flex items-center justify-between p-4 bg-blue-100 backdrop-blur-sm border-b border-gray-100 rounded-lg"
             >
-              <button
-                onClick={scrollToTop}
-                className="text-sm text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
-              >
-                ↑ Scroll to top
-              </button>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={scrollToTop}
+                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                >
+                  ↑ Scroll to top
+                </button>
+
+                {/* Annotation Color Picker */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600 font-medium">
+                    Annotation Color:
+                  </span>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => handleAnnotationColorChange("blue")}
+                      className={`w-6 h-6 rounded-full bg-blue-500 border-2 transition-all ${
+                        capturesData.annotationColor?.toLowerCase() === "blue"
+                          ? "border-blue-700 ring-2 ring-blue-300"
+                          : "border-blue-300 hover:border-blue-600"
+                      }`}
+                      title="Blue"
+                    />
+                    <button
+                      onClick={() => handleAnnotationColorChange("green")}
+                      className={`w-6 h-6 rounded-full bg-green-500 border-2 transition-all ${
+                        capturesData.annotationColor?.toLowerCase() === "green"
+                          ? "border-green-700 ring-2 ring-green-300"
+                          : "border-green-300 hover:border-green-600"
+                      }`}
+                      title="Green"
+                    />
+                    <button
+                      onClick={() => handleAnnotationColorChange("yellow")}
+                      className={`w-6 h-6 rounded-full bg-yellow-500 border-2 transition-all ${
+                        capturesData.annotationColor?.toLowerCase() === "yellow"
+                          ? "border-yellow-700 ring-2 ring-yellow-300"
+                          : "border-yellow-300 hover:border-yellow-600"
+                      }`}
+                      title="Yellow"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div className="flex gap-2">
                 <button
                   onClick={handleCancelEdit}
@@ -954,6 +1019,9 @@ export default function ScreenshotViewer({
                         handleAddNewImage={handleAddNewImage}
                         handleDeleteImage={handleDeleteImage}
                         loading={imageUploadLoading}
+                        annotationColor={
+                          capturesData?.annotationColor || "BLUE"
+                        }
                       />
                       {index <= capturesData.steps.length - 1 && (
                         <>
@@ -1014,6 +1082,7 @@ export default function ScreenshotViewer({
                   handleAddNewImage={handleAddNewImage}
                   handleDeleteImage={handleDeleteImage}
                   loading={imageUploadLoading}
+                  annotationColor={capturesData?.annotationColor || "BLUE"}
                 />
               ))
             )}
