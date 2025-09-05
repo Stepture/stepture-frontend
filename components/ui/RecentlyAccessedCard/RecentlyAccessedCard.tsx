@@ -28,7 +28,7 @@ const RecentlyAccessedCard: React.FC<RecentlyAccessedCardProps> = ({
       <div className="border rounded-lg p-4 shadow hover:shadow-md transition cursor-pointer">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Image src={logoSrc} alt={websiteName} className="w-6 h-6" />
+            <Image src={logoSrc} alt={websiteName} width={36} height={36} />
             <span className="text-sm text-gray-600">{websiteName}</span>
           </div>
         </div>

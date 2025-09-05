@@ -135,7 +135,7 @@ const DocumentNavbar = () => {
     };
 
     fetchDataAndStatus();
-  }, [params.id]);
+  }, [params.id, checkSavedStatus]);
 
   return (
     <header className="bg-white shadow-sm w-full">
