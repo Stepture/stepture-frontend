@@ -114,6 +114,10 @@ export function getServerApi(cookie?: string) {
         );
         return response.data;
       },
+      getDocumentById: async (id: string, options: AxiosRequestConfig = {}) => {
+        const response = await publicApi.get(`/documents/${id}`, options);
+        return response.data;
+      },
     },
     protected: {
       getMe: async (options: AxiosRequestConfig = {}) => {
