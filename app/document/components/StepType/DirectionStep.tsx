@@ -233,7 +233,7 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
         <div className="flex-1 ml-4 mt-1">
           <textarea
             ref={inputRef}
-            className={`rounded-md w-full h-auto overflow-hidden ${
+            className={`rounded-md w-full h-auto overflow-hidden text-md ${
               mode === "edit"
                 ? "border-blue-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-blue-100 focus:ring-2 focus:ring-blue-500"
                 : "font-semibold bg-transparent border-none cursor-default"
@@ -258,7 +258,7 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
             <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-red-100 transition-colors">
               <CustomAlertDialog
                 title="Delete Step"
-                description={`Are you sure you want to delete step this step? `}
+                description={`Are you sure you want to delete this step? `}
                 onConfirm={() => handleDeleteStep(stepId)}
                 triggerDescription={
                   <Trash

@@ -81,7 +81,6 @@ const StepRenderer = ({
 
   switch (step.type) {
     case "TIPS":
-      console.log("Rendering InfoStep for step:", step);
       return <InfoStep {...commonProps} />;
 
     case "ALERT":

@@ -81,7 +81,7 @@ const WarningStep: React.FC<WarningStepProps> = ({
         <div className="flex-1 ml-4 mt-1">
           <textarea
             ref={inputRef}
-            className={`rounded-md w-full h-auto overflow-hidden ${
+            className={`rounded-md w-full h-auto overflow-hidden text-md ${
               mode === "edit"
                 ? "border-red-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-red-100 focus:ring-2 focus:ring-red-500"
                 : "font-semibold bg-transparent border-none cursor-default text-red-800"
