@@ -1,6 +1,6 @@
 import React from "react";
 import { getServerApi } from "@/lib/axios-server";
-import ScreenshotViewer from "../components/ScreenshotViewer";
+import DocumentDetailsList from "../components/DocumentDetailsList";
 import { cookies } from "next/headers";
 import { CaptureResponse } from "../document.types";
 import { AxiosError } from "axios";
@@ -95,7 +95,7 @@ const Page = async ({ params, searchParams }: Props) => {
   return (
     <div className="w-full mx-auto p-4">
       <div data-print-target="screenshot-viewer">
-        <ScreenshotViewer
+        <DocumentDetailsList
           captures={data as CaptureResponse}
           mode={mode}
           id={id}
