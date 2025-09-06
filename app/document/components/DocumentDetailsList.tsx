@@ -55,7 +55,7 @@ import { PasswordAuthModal } from "@/components/PasswordAuthModal";
 import { RefinementPanel } from "@/components/RefinementPanel";
 import { useAPIKeyManager } from "@/hooks/useAPIKeyManager";
 
-interface ScreenshotViewerProps {
+interface DocumentDetailsListProps {
   captures: CaptureResponse;
   mode: string;
   id: string;
@@ -500,11 +500,11 @@ const ResponsiveScreenshotItem = ({
   );
 };
 
-export default function ScreenshotViewer({
+export default function DocumentDetailsList({
   captures,
   mode,
   id,
-}: ScreenshotViewerProps) {
+}: DocumentDetailsListProps) {
   const [capturesData, setCapturesData] = useState(captures);
   const [stepsToDelete, setStepsToDelete] = useState<string[]>([]);
   const [imageUploadLoading, setImageUploadLoading] = useState(false);
