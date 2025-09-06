@@ -12,7 +12,6 @@ interface HandleAddNewStepProps {
 }
 
 const HandleAddNewStep: React.FC<HandleAddNewStepProps> = ({
-  steps,
   mode,
   stepIndex,
   onAddNewStep,

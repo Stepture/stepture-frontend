@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { Trash, GripVertical } from "lucide-react";
+import { Trash, GripVertical, Info } from "lucide-react";
 import CustomAlertDialog from "@/components/ui/Common/CustomAlertDialog";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { DraggableAttributes } from "@dnd-kit/core";
@@ -21,7 +21,6 @@ const InfoStep: React.FC<InfoStepProps> = ({
   index,
   mode,
   stepDescription,
-  stepNumber,
   stepId,
   onStepDescriptionChange,
   handleDeleteStep,
@@ -57,7 +56,7 @@ const InfoStep: React.FC<InfoStepProps> = ({
 
   return (
     <div
-      className={`screenshot-item border border-blue-200 rounded-lg p-4 bg-blue-50 flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
+      className={`screenshot-item border border-green-200 rounded-lg p-4 bg-green-50 flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
         isDragging ? "shadow-lg scale-105" : ""
       }`}
     >
@@ -69,16 +68,17 @@ const InfoStep: React.FC<InfoStepProps> = ({
             {...(dragListeners as SyntheticListenerMap)}
           >
             <GripVertical className="w-4 h-4 inline-block" />{" "}
-            <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-200 min-w-24 text-center">
-              info {index + 1}
-            </span>
           </span>
         ) : (
-          <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-200 min-w-24 text-center">
-            info {index + 1}
-          </span>
+          <div className="flex items-center gap-2 justify-center">
+            <div className="w-6 h-6 rounded-full font-semibold text-blue-600 bg-slate-200 p-4 flex items-center justify-center text-center">
+              {index + 1}
+            </div>
+
+            <Info className="w-4 h-4 text-green-600" />
+          </div>
         )}
-        <div className="flex-1">
+        <div className="flex-1 ml-4 mt-1">
           <textarea
             ref={inputRef}
             className={`rounded-md w-full h-auto overflow-hidden ${

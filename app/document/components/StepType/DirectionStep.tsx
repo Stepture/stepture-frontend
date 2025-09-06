@@ -1,6 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Trash, ImagePlus, Loader, GripVertical } from "lucide-react";
+import {
+  Trash,
+  ImagePlus,
+  Loader,
+  GripVertical,
+  MousePointer,
+} from "lucide-react";
 import CustomAlertDialog from "@/components/ui/Common/CustomAlertDialog";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { DraggableAttributes } from "@dnd-kit/core";
@@ -56,7 +62,6 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
-  const mutationObserverRef = useRef<MutationObserver | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const originalDescriptionRef = useRef<string>(stepDescription);
 
@@ -203,7 +208,7 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`screenshot-item border border-gray-200 rounded-lg p-4 bg-white flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
+      className={`screenshot-item border border-blue-200 rounded-lg p-4 bg-blue-50 flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
         isDragging ? "shadow-lg scale-105" : ""
       }`}
     >
@@ -215,16 +220,17 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
             {...(dragListeners as SyntheticListenerMap)}
           >
             <GripVertical className="w-4 h-4 inline-block" />{" "}
-            <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100 min-w-24 text-center">
-              step {index + 1}
-            </span>
           </span>
         ) : (
-          <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100 min-w-24 text-center">
-            step {index + 1}
-          </span>
+          <div className="flex items-center gap-2 justify-center">
+            <div className="w-6 h-6 rounded-full font-semibold text-blue-600 bg-slate-200 p-4 flex items-center justify-center text-center">
+              {index + 1}
+            </div>
+
+            <MousePointer className="w-4 h-4 text-blue-600" />
+          </div>
         )}
-        <div className="flex-1">
+        <div className="flex-1 ml-4 mt-1">
           <textarea
             ref={inputRef}
             className={`rounded-md w-full h-auto overflow-hidden ${
@@ -322,16 +328,19 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
       ) : (
         <>
           {mode === "edit" && (
-            <div className="w-full h-96 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+            <div className="w-full h-24 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
               {loading ? (
                 <Loader className="w-12 h-12 text-blue-300 animate-spin" />
               ) : (
-                <ImagePlus
-                  className="w-24 h-24 text-gray-400 cursor-pointer hover:text-blue-600 transition-colors"
-                  onClick={() => {
-                    handleAddNewImage?.(stepNumber);
-                  }}
-                />
+                <div className="flex flex-col items-center gap-2 text-gray-400">
+                  <ImagePlus
+                    className="w-12 h-12 text-gray-400 cursor-pointer hover:text-blue-600 transition-colors"
+                    onClick={() => {
+                      handleAddNewImage?.(stepNumber);
+                    }}
+                  />
+                  <span>Add new image to the step</span>
+                </div>
               )}
             </div>
           )}

@@ -21,7 +21,6 @@ const WarningStep: React.FC<WarningStepProps> = ({
   index,
   mode,
   stepDescription,
-  stepNumber,
   stepId,
   onStepDescriptionChange,
   handleDeleteStep,
@@ -69,18 +68,17 @@ const WarningStep: React.FC<WarningStepProps> = ({
             {...(dragListeners as SyntheticListenerMap)}
           >
             <GripVertical className="w-4 h-4 inline-block" />{" "}
-            <span className="px-3 py-1 rounded-md font-semibold text-red-600 bg-red-200 min-w-24 text-center flex items-center gap-1">
-              <AlertTriangle className="w-4 h-4" />
-              warning
-            </span>
           </span>
         ) : (
-          <span className="px-3 py-1 rounded-md font-semibold text-red-600 bg-red-200 min-w-24 text-center flex items-center gap-1">
-            <AlertTriangle className="w-4 h-4" />
-            warning
-          </span>
+          <div className="flex items-center gap-2 justify-center">
+            <div className="w-6 h-6 rounded-full font-semibold text-blue-600 bg-slate-200 p-4 flex items-center justify-center text-center">
+              {index + 1}
+            </div>
+
+            <AlertTriangle className="w-4 h-4 text-red-600" />
+          </div>
         )}
-        <div className="flex-1">
+        <div className="flex-1 ml-4 mt-1">
           <textarea
             ref={inputRef}
             className={`rounded-md w-full h-auto overflow-hidden ${

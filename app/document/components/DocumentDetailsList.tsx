@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import TimeIcon from "@/public/time.svg";
 import StepsIcon from "@/public/steps.svg";
@@ -17,7 +17,6 @@ import {
   EditCaptureRequest,
 } from "../document.types";
 import { apiClient } from "@/lib/axios-client";
-import HandleAddNewStep from "./HandleAddNewStep";
 import { showToast } from "@/components/ui/Common/ShowToast";
 import CustomAlertDialog from "@/components/ui/Common/CustomAlertDialog";
 

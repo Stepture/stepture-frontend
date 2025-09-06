@@ -18,10 +18,8 @@ interface HeaderStepProps {
 }
 
 const HeaderStep: React.FC<HeaderStepProps> = ({
-  index,
   mode,
   stepDescription,
-  stepNumber,
   stepId,
   onStepDescriptionChange,
   handleDeleteStep,
@@ -57,43 +55,36 @@ const HeaderStep: React.FC<HeaderStepProps> = ({
 
   return (
     <div
-      className={`screenshot-item border border-gray-300 rounded-lg p-6 bg-gray-100 flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
+      className={`screenshot-item bg-gray-50 py-4 px-6 transition-all duration-200 ${
         isDragging ? "shadow-lg scale-105" : ""
       }`}
     >
-      <div className="flex items-start gap-2 text-sm font-medium w-full">
-        {mode === "edit" ? (
+      <div className="flex items-center gap-3 w-full">
+        {mode === "edit" && (
           <span
-            className="cursor-grab active:cursor-grabbing hover:text-gray-800"
+            className="cursor-grab active:cursor-grabbing hover:text-gray-600 flex-shrink-0"
             {...(dragAttributes as DraggableAttributes)}
             {...(dragListeners as SyntheticListenerMap)}
           >
-            <GripVertical className="w-4 h-4 inline-block" />{" "}
-            <span className="px-3 py-1 rounded-md font-semibold text-gray-700 bg-gray-300 min-w-24 text-center">
-              header
-            </span>
-          </span>
-        ) : (
-          <span className="px-3 py-1 rounded-md font-semibold text-gray-700 bg-gray-300 min-w-24 text-center">
-            header
+            <GripVertical className="w-4 h-4" />
           </span>
         )}
         <div className="flex-1">
           <textarea
             ref={inputRef}
-            className={`rounded-md w-full h-auto overflow-hidden text-xl font-bold ${
+            className={`w-full h-auto overflow-hidden resize-none font-bold text-lg text-gray-700 underline text-center  ${
               mode === "edit"
-                ? "border-gray-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-gray-100 focus:ring-2 focus:ring-gray-500"
-                : "bg-transparent border-none cursor-default text-gray-800"
+                ? "bg-white border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                : "bg-transparent border-none cursor-default"
             }`}
             value={stepDescription}
             readOnly={mode !== "edit"}
             disabled={mode !== "edit"}
             onChange={handleDescriptionChange}
             onKeyDown={handleKeyDown}
-            placeholder={mode === "edit" ? "Enter header text..." : ""}
+            placeholder={mode === "edit" ? "Enter header title..." : ""}
             rows={1}
-            style={{ minHeight: "3rem" }}
+            style={{ minHeight: "2rem" }}
             onInput={(e) => {
               const target = e.target as HTMLTextAreaElement;
               target.style.height = "auto";
@@ -102,21 +93,21 @@ const HeaderStep: React.FC<HeaderStepProps> = ({
           />
         </div>
         {mode === "edit" && (
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-red-100 transition-colors">
-              <CustomAlertDialog
-                title="Delete Header Step"
-                description={`Are you sure you want to delete this header step? `}
-                onConfirm={() => handleDeleteStep(stepId)}
-                triggerDescription={
+          <div className="flex-shrink-0">
+            <CustomAlertDialog
+              title="Delete Header Step"
+              description={`Are you sure you want to delete this header step?`}
+              onConfirm={() => handleDeleteStep(stepId)}
+              triggerDescription={
+                <div className="p-1 hover:bg-red-50 rounded cursor-pointer transition-colors">
                   <Trash
                     aria-label="Delete Step"
                     role="button"
-                    className="w-6 h-6 text-red-500 cursor-pointer hover:text-red-700 transition-colors"
+                    className="w-4 h-4 text-red-500 hover:text-red-700"
                   />
-                }
-              />
-            </div>
+                </div>
+              }
+            />
           </div>
         )}
       </div>
