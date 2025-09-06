@@ -5,7 +5,7 @@ type Props = {
   label?: string;
 
   onClick?: () => void;
-  variant?: "step" | "tips" | "danger" | "header";
+  variant?: "step" | "tips" | "ALERT" | "header";
 };
 
 const AddStepButton = (props: Props) => {
@@ -15,7 +15,7 @@ const AddStepButton = (props: Props) => {
         return "bg-purple-100 hover:bg-purple-200 text-purple-800";
       case "tips":
         return "bg-yellow-100 hover:bg-yellow-200 text-yellow-800";
-      case "danger":
+      case "ALERT":
         return "bg-red-100 hover:bg-red-200 text-red-800";
       case "header":
         return "bg-gray-100 hover:bg-gray-200 text-gray-800";
@@ -30,7 +30,7 @@ const AddStepButton = (props: Props) => {
         return <MousePointer size={20} className="text-purple-600" />;
       case "tips":
         return <Lightbulb size={20} className="text-yellow-600" />;
-      case "danger":
+      case "ALERT":
         return <TriangleAlert size={20} className="text-red-600" />;
       case "header":
         return <Heading size={20} className="text-gray-600" />;

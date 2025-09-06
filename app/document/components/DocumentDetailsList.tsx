@@ -6,38 +6,9 @@ import TimeIcon from "@/public/time.svg";
 import StepsIcon from "@/public/steps.svg";
 import PersonIcon from "@/public/person.svg";
 import Logo from "@/public/AUlogo.png";
-import {
-  Plus,
-  Trash,
-  X,
-  GripVertical,
-  ImagePlus,
-  Loader,
-  Sparkles,
-} from "lucide-react";
+import { Loader, Sparkles } from "lucide-react";
 import CustomButton from "@/components/ui/Common/CustomButton";
 import { useRouter } from "next/navigation";
-
-// DnD Kit imports
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-  DraggableAttributes,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
 import {
   Screenshot,
@@ -46,7 +17,7 @@ import {
   EditCaptureRequest,
 } from "../document.types";
 import { apiClient } from "@/lib/axios-client";
-import ChooseStepType from "./ChooseStepType";
+import HandleAddNewStep from "./HandleAddNewStep";
 import { showToast } from "@/components/ui/Common/ShowToast";
 import CustomAlertDialog from "@/components/ui/Common/CustomAlertDialog";
 
@@ -54,451 +25,13 @@ import CustomAlertDialog from "@/components/ui/Common/CustomAlertDialog";
 import { PasswordAuthModal } from "@/components/PasswordAuthModal";
 import { RefinementPanel } from "@/components/RefinementPanel";
 import { useAPIKeyManager } from "@/hooks/useAPIKeyManager";
+import StepViewer from "./StepViewer";
 
 interface DocumentDetailsListProps {
   captures: CaptureResponse;
   mode: string;
   id: string;
 }
-
-// Sortable wrapper component for drag and drop
-const SortableStepItem = ({
-  step,
-  index,
-  mode,
-  onStepDescriptionChange,
-  handleDeleteStep,
-  handleAddNewImage,
-  handleDeleteImage,
-  loading,
-  annotationColor,
-}: {
-  step: Step;
-  index: number;
-  mode: string;
-  onStepDescriptionChange?: (stepId: string, newDescription: string) => void;
-  handleDeleteStep: (id: string) => void;
-  handleAddNewImage?: (stepNumber: number) => void;
-  handleDeleteImage?: (stepNumber: number) => void;
-  loading?: boolean;
-  annotationColor?: string;
-}) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: step.id || `step-${index}` });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} className="relative">
-      <ResponsiveScreenshotItem
-        img={step.screenshot?.url || ""}
-        index={index}
-        info={step.screenshot}
-        mode={mode}
-        stepDescription={step.stepDescription || ""}
-        stepNumber={step.stepNumber || 0}
-        stepType={step.type || ""}
-        stepId={step.id || ""}
-        onStepDescriptionChange={onStepDescriptionChange}
-        handleDeleteStep={handleDeleteStep}
-        handleAddNewImage={handleAddNewImage}
-        handleDeleteImage={handleDeleteImage}
-        loading={loading}
-        dragAttributes={attributes}
-        dragListeners={listeners}
-        isDragging={isDragging}
-        annotationColor={annotationColor}
-      />
-    </div>
-  );
-};
-
-const ResponsiveScreenshotItem = ({
-  img,
-  index,
-  info,
-  mode,
-  stepDescription,
-  stepNumber,
-  stepId,
-  onStepDescriptionChange,
-  handleDeleteStep,
-  handleAddNewImage,
-  handleDeleteImage,
-  loading,
-  dragAttributes,
-  dragListeners,
-  isDragging,
-  annotationColor,
-}: {
-  img: string;
-  index: number;
-  info: Screenshot | null;
-  mode: string;
-  stepDescription: string;
-  stepNumber: number;
-  stepType: string;
-  stepId: string;
-  loading?: boolean;
-  onStepDescriptionChange?: (stepId: string, newDescription: string) => void;
-  handleDeleteStep: (id: string) => void;
-  handleAddNewImage?: (stepNumber: number) => void;
-  handleDeleteImage?: (stepNumber: number) => void;
-  // Drag and drop props
-  dragAttributes?: unknown;
-  dragListeners?: unknown;
-  isDragging?: boolean;
-  annotationColor?: string;
-}) => {
-  const [imageDimensions, setImageDimensions] = useState({
-    width: 0,
-    height: 0,
-  });
-  const [displayDimensions, setDisplayDimensions] = useState({
-    width: 0,
-    height: 0,
-  });
-
-  // Enhanced useRef usage
-  const imgRef = useRef<HTMLImageElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-  const resizeObserverRef = useRef<ResizeObserver | null>(null);
-  const mutationObserverRef = useRef<MutationObserver | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
-
-  const determineAnnotationColor = (annotationColor: string) => {
-    switch (annotationColor.toLowerCase()) {
-      case "green":
-        return "bg-green-500 border-green-300";
-      case "blue":
-        return "bg-blue-500 border-blue-300";
-      case "yellow":
-        return "bg-yellow-500 border-yellow-300";
-      default:
-        return "bg-blue-500 border-blue-300"; // Default to blue
-    }
-  };
-
-  // Store the original description for cancel functionality
-  const originalDescriptionRef = useRef<string>(stepDescription);
-
-  // Handle image load to get original dimensions
-  const handleImageLoad = useCallback(() => {
-    const imgElement = imgRef.current;
-    if (imgElement) {
-      setImageDimensions({
-        width: imgElement.naturalWidth,
-        height: imgElement.naturalHeight,
-      });
-      setDisplayDimensions({
-        width: imgElement.clientWidth,
-        height: imgElement.clientHeight,
-      });
-    }
-  }, []);
-
-  // Optimized display dimensions update with RAF
-  const updateDisplayDimensions = useCallback(() => {
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-    }
-
-    animationFrameRef.current = requestAnimationFrame(() => {
-      const imgElement = imgRef.current;
-      if (imgElement) {
-        setDisplayDimensions({
-          width: imgElement.clientWidth,
-          height: imgElement.clientHeight,
-        });
-      }
-    });
-  }, []);
-
-  // Handle input changes with proper state management
-  const handleDescriptionChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    if (mode === "edit") {
-      onStepDescriptionChange?.(stepId, e.target.value);
-    }
-  };
-
-  // Handle keyboard shortcuts
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (mode !== "edit") return;
-
-    if (e.key === "Escape") {
-      // Reset to original description
-      onStepDescriptionChange?.(stepId, originalDescriptionRef.current);
-      inputRef.current?.blur();
-    } else if (e.key === "Enter") {
-      inputRef.current?.blur();
-    }
-  };
-
-  // Update original description ref when stepDescription prop changes
-  useEffect(() => {
-    originalDescriptionRef.current = stepDescription;
-  }, [stepDescription]);
-
-  const getResponsivePosition = useCallback(() => {
-    if (imageDimensions.width === 0 || displayDimensions.width === 0) {
-      return { left: "50%", top: "50%" };
-    }
-
-    const captureContext = {
-      devicePixelRatio: info?.devicePixelRatio || 1,
-      viewportWidth: info?.viewportWidth || imageDimensions.width,
-      viewportHeight: info?.viewportHeight || imageDimensions.height,
-    };
-    const coords = {
-      x: info?.viewportX || 0,
-      y: info?.viewportY || 0,
-    };
-
-    if (captureContext) {
-      const { viewportWidth, viewportHeight } = captureContext;
-
-      if (viewportWidth && viewportHeight) {
-        const xPercent = (coords.x / viewportWidth) * 100;
-        const yPercent = (coords.y / viewportHeight) * 100;
-
-        return {
-          left: `${Math.min(Math.max(xPercent, 0), 100)}%`,
-          top: `${Math.min(Math.max(yPercent, 0), 100)}%`,
-        };
-      }
-    }
-
-    const xPercent = (coords.x / imageDimensions.width) * 100;
-    const yPercent = (coords.y / imageDimensions.height) * 100;
-
-    return {
-      left: `${Math.min(Math.max(xPercent, 0), 100)}%`,
-      top: `${Math.min(Math.max(yPercent, 0), 100)}%`,
-    };
-  }, [info, imageDimensions, displayDimensions]);
-
-  const getIndicatorSize = useCallback(() => {
-    if (displayDimensions.width === 0) return 32;
-    const baseSize = 32;
-    const scaleFactor = Math.min(displayDimensions.width / 400, 1.5);
-    return Math.max(16, Math.min(48, baseSize * scaleFactor));
-  }, [displayDimensions.width]);
-
-  // Enhanced ResizeObserver setup
-  useEffect(() => {
-    const imgElement = imgRef.current;
-    if (!imgElement) return;
-
-    // Clean up existing observer
-    if (resizeObserverRef.current) {
-      resizeObserverRef.current.disconnect();
-    }
-
-    resizeObserverRef.current = new ResizeObserver(() => {
-      updateDisplayDimensions();
-    });
-
-    resizeObserverRef.current.observe(imgElement);
-
-    const handleResize = () => updateDisplayDimensions();
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect();
-      }
-      window.removeEventListener("resize", handleResize);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [updateDisplayDimensions]);
-
-  // Enhanced MutationObserver for sidebar changes
-  useEffect(() => {
-    const handleSidebarResize = () => {
-      setTimeout(updateDisplayDimensions, 100);
-    };
-
-    if (mutationObserverRef.current) {
-      mutationObserverRef.current.disconnect();
-    }
-
-    mutationObserverRef.current = new MutationObserver(() => {
-      handleSidebarResize();
-    });
-
-    if (document.body) {
-      mutationObserverRef.current.observe(document.body, {
-        attributes: true,
-        attributeFilter: ["style", "class"],
-      });
-    }
-
-    return () => {
-      if (mutationObserverRef.current) {
-        mutationObserverRef.current.disconnect();
-      }
-    };
-  }, [updateDisplayDimensions]);
-
-  return (
-    <div
-      ref={containerRef}
-      className={`screenshot-item border border-gray-200 rounded-lg p-4 bg-white flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
-        isDragging ? "shadow-lg scale-105" : ""
-      }`}
-    >
-      <div className="flex items-start gap-2 text-sm font-medium w-full">
-        {mode === "edit" ? (
-          <span
-            className="cursor-grab active:cursor-grabbing hover:text-blue-800"
-            {...(dragAttributes as DraggableAttributes)}
-            {...(dragListeners as SyntheticListenerMap)}
-          >
-            <GripVertical className="w-4 h-4 inline-block" />{" "}
-            <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100 min-w-24 text-center">
-              step {index + 1}
-            </span>
-          </span>
-        ) : (
-          <span className="px-3 py-1 rounded-md font-semibold text-blue-600 bg-blue-100 min-w-24 text-center">
-            step {index + 1}
-          </span>
-        )}
-        <div className="flex-1">
-          <textarea
-            ref={inputRef}
-            className={`rounded-md w-full h-auto overflow-hidden ${
-              mode === "edit"
-                ? "border-blue-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-blue-100 focus:ring-2 focus:ring-blue-500"
-                : "font-semibold bg-transparent border-none cursor-default"
-            }`}
-            value={stepDescription}
-            readOnly={mode !== "edit"}
-            disabled={mode !== "edit"}
-            onChange={handleDescriptionChange}
-            onKeyDown={handleKeyDown}
-            placeholder={mode === "edit" ? "Enter step description..." : ""}
-            rows={1}
-            style={{ minHeight: "2.5rem" }}
-            onInput={(e) => {
-              // Auto-resize textarea based on content
-              const target = e.target as HTMLTextAreaElement;
-              target.style.height = "auto";
-              target.style.height = `${target.scrollHeight}px`;
-            }}
-          />
-        </div>
-        {mode === "edit" && (
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-red-100 transition-colors">
-              <CustomAlertDialog
-                title="Delete Step"
-                description={`Are you sure you want to delete step this step? `}
-                onConfirm={() => handleDeleteStep(stepId)}
-                triggerDescription={
-                  <Trash
-                    aria-label="Delete Step"
-                    role="button"
-                    className="w-6 h-6 text-red-500 cursor-pointer hover:text-red-700 transition-colors"
-                  />
-                }
-              />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {img ? (
-        <div className="relative w-full group">
-          <Image
-            ref={imgRef}
-            src={img}
-            alt={`Screenshot ${stepNumber}`}
-            width={info?.viewportWidth || 800}
-            height={info?.viewportHeight || 600}
-            onLoad={handleImageLoad}
-            className={`w-full h-auto border rounded-md transition-all duration-200 ${
-              mode === "edit" ? "group-hover:brightness-80 cursor-pointer" : ""
-            }`}
-            style={{
-              maxWidth: "100%",
-              height: "auto",
-            }}
-          />
-
-          {mode === "edit" && (
-            <CustomAlertDialog
-              title="Delete Image"
-              description={`Are you sure you want to delete the image from this step? `}
-              onConfirm={() => handleDeleteImage?.(stepNumber)}
-              triggerDescription={
-                <div className="hidden group-hover:flex absolute top-2 right-2  items-center gap-2 bg-white p-1.5 rounded-md shadow-md cursor-pointer hover:shadow-lg transition-all">
-                  <Trash
-                    aria-label="Delete image"
-                    role="button"
-                    className="w-8 h-8  p-2  group-hover:bg-red-400 group-hover:text-slate-50 rounded-full  cursor-pointer"
-                  />
-                  <span>Delete image</span>
-                </div>
-              }
-            />
-          )}
-
-          {info?.viewportX !== 0 &&
-            info?.viewportY !== 0 &&
-            imageDimensions.width > 0 &&
-            displayDimensions.width > 0 && (
-              <div
-                className={`absolute opacity-50 border-4 rounded-full bg-opacity-30 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-all duration-200 ${determineAnnotationColor(
-                  annotationColor || "BLUE"
-                )}`}
-                style={{
-                  ...getResponsivePosition(),
-                  width: `${getIndicatorSize()}px`,
-                  height: `${getIndicatorSize()}px`,
-                }}
-                aria-label={`Click indicator for step ${stepNumber}`}
-              >
-                <div className="absolute inset-0 bg-blue-400 rounded-full opacity-50"></div>
-              </div>
-            )}
-        </div>
-      ) : (
-        <>
-          {mode === "edit" && (
-            <div className="w-full h-96 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
-              {loading ? (
-                <Loader className="w-12 h-12 text-blue-300 animate-spin" />
-              ) : (
-                <ImagePlus
-                  className="w-24 h-24 text-gray-400 cursor-pointer hover:text-blue-600 transition-colors"
-                  onClick={() => {
-                    handleAddNewImage?.(stepNumber);
-                  }}
-                />
-              )}
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  );
-};
 
 export default function DocumentDetailsList({
   captures,
@@ -529,48 +62,6 @@ export default function DocumentDetailsList({
   const containerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const originalStepsRef = useRef<Step[]>(captures.steps);
-
-  // DnD Kit sensors
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  // Handle drag end event
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (active.id !== over?.id) {
-      setCapturesData((prev) => {
-        const oldIndex = prev.steps.findIndex(
-          (step) =>
-            (step.id || `step-${prev.steps.indexOf(step)}`) === active.id
-        );
-        const newIndex = prev.steps.findIndex(
-          (step) => (step.id || `step-${prev.steps.indexOf(step)}`) === over?.id
-        );
-
-        const newSteps = arrayMove(prev.steps, oldIndex, newIndex);
-
-        // Update step numbers after reordering
-        const updatedSteps = newSteps.map((step, index) => ({
-          ...step,
-          stepNumber: index + 1,
-        }));
-
-        return {
-          ...prev,
-          steps: updatedSteps,
-        };
-      });
-
-      showToast("info", <span>Steps reordered successfully!</span>, {
-        autoClose: 2000,
-      });
-    }
-  };
 
   // Handle title changes
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -607,6 +98,18 @@ export default function DocumentDetailsList({
     },
     []
   );
+
+  // Handle steps reorder
+  const handleStepsReorder = useCallback((newSteps: Step[]) => {
+    setCapturesData((prev) => ({
+      ...prev,
+      steps: newSteps,
+    }));
+
+    showToast("info", <span>Steps reordered successfully!</span>, {
+      autoClose: 2000,
+    });
+  }, []);
 
   // Handle keyboard shortcuts for title
   const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -708,16 +211,6 @@ export default function DocumentDetailsList({
     });
   };
 
-  const [showStepTypeModelAt, setShowStepTypeModelAt] = useState<number | null>(
-    null
-  );
-
-  const handleShowStepTypeModel = (stepIndex: number) => {
-    setShowStepTypeModelAt(
-      showStepTypeModelAt === stepIndex ? null : stepIndex
-    );
-  };
-
   const calculateStepNumber = (
     prevStepNumber: number,
     afterStepNumber: number
@@ -785,7 +278,6 @@ export default function DocumentDetailsList({
       ],
     }));
 
-    setShowStepTypeModelAt(null);
     showToast("success", <span>New step added successfully!</span>, {
       autoClose: 2000,
     });
@@ -1184,138 +676,20 @@ export default function DocumentDetailsList({
             </div>
           </div>
 
-          {/* Screenshots Section with DnD */}
+          {/* Screenshots Section using StepViewer */}
           <div className="flex flex-col gap-6 mt-12">
-            {mode === "edit" ? (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext
-                  items={capturesData?.steps.map(
-                    (step) =>
-                      step.id || `step-${capturesData.steps.indexOf(step)}`
-                  )}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {capturesData?.steps.map((step, index) => (
-                    <div key={step.id || index}>
-                      <SortableStepItem
-                        step={step}
-                        index={index}
-                        mode={mode}
-                        onStepDescriptionChange={handleStepDescriptionChange}
-                        handleDeleteStep={handleDeleteStep}
-                        handleAddNewImage={handleAddNewImage}
-                        handleDeleteImage={handleDeleteImage}
-                        loading={imageUploadLoading}
-                        annotationColor={
-                          capturesData?.annotationColor || "BLUE"
-                        }
-                      />
-                      {index <= capturesData.steps.length - 1 && (
-                        <>
-                          <div className="relative flex items-center justify-center my-8">
-                            <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
-                            <div className="relative z-10 flex justify-center w-full">
-                              <div
-                                className="bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center mx-auto transition-colors hover:bg-blue-100 cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                                aria-label="Add new step"
-                                role="button"
-                                onClick={() => handleShowStepTypeModel(index)}
-                              >
-                                {showStepTypeModelAt === index ? (
-                                  <X
-                                    size={20}
-                                    className={`text-gray-400 ${
-                                      showStepTypeModelAt === index
-                                        ? "block"
-                                        : "hidden"
-                                    }`}
-                                  />
-                                ) : (
-                                  <Plus size={20} className="text-gray-400" />
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="w-full flex justify-center">
-                            {showStepTypeModelAt === index && (
-                              <ChooseStepType
-                                onStepTypeSelect={(selectedType) => {
-                                  handleAddNewStep(selectedType, index);
-                                }}
-                              />
-                            )}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </SortableContext>
-              </DndContext>
-            ) : (
-              // View mode - no drag and drop
-              capturesData?.steps.map((step, index) => (
-                <ResponsiveScreenshotItem
-                  key={step.id || index}
-                  img={step.screenshot?.url || ""}
-                  index={index}
-                  info={step.screenshot}
-                  mode={mode}
-                  stepDescription={step.stepDescription || ""}
-                  stepNumber={step.stepNumber || 0}
-                  stepType={step.type || ""}
-                  stepId={step.id || ""}
-                  onStepDescriptionChange={handleStepDescriptionChange}
-                  handleDeleteStep={handleDeleteStep}
-                  handleAddNewImage={handleAddNewImage}
-                  handleDeleteImage={handleDeleteImage}
-                  loading={imageUploadLoading}
-                  annotationColor={capturesData?.annotationColor || "BLUE"}
-                />
-              ))
-            )}
-
-            {capturesData?.steps.length === 0 && mode === "edit" && (
-              <>
-                <div className="relative flex items-center justify-center my-8">
-                  <div className="w-full border-t border-dotted border-gray-200 absolute top-1/2 left-0 z-0" />
-                  <div className="relative z-10 flex justify-center w-full">
-                    <div
-                      className="bg-white border border-gray-200 shadow-sm rounded-full w-10 h-10 flex items-center justify-center mx-auto transition-colors hover:bg-blue-100 cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      aria-label="Add new step"
-                    >
-                      {showStepTypeModelAt === 0 ? (
-                        <X
-                          size={20}
-                          className={`text-gray-400 ${
-                            showStepTypeModelAt === 0 ? "block" : "hidden"
-                          }`}
-                          onClick={() => handleShowStepTypeModel(0)}
-                        />
-                      ) : (
-                        <Plus
-                          size={20}
-                          className="text-gray-400"
-                          onClick={() => handleShowStepTypeModel(0)}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="w-full flex justify-center">
-                  {showStepTypeModelAt === 0 && (
-                    <ChooseStepType
-                      onStepTypeSelect={() => {
-                        setShowStepTypeModelAt(null);
-                      }}
-                    />
-                  )}
-                </div>
-              </>
-            )}
+            <StepViewer
+              steps={capturesData?.steps || []}
+              mode={mode}
+              onStepDescriptionChange={handleStepDescriptionChange}
+              onDeleteStep={handleDeleteStep}
+              onAddNewImage={handleAddNewImage}
+              onDeleteImage={handleDeleteImage}
+              onStepsReorder={handleStepsReorder}
+              onAddNewStep={handleAddNewStep}
+              loading={imageUploadLoading}
+              annotationColor={capturesData?.annotationColor || "BLUE"}
+            />
           </div>
 
           {/* Footer Section */}
