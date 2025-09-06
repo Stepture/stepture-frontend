@@ -40,7 +40,11 @@ const page = async () => {
   return (
     <div className="p-12 max-w-[1200px] lg:mx-auto">
       <h1 className="text-xl font-bold mb-6">Deleted Documents</h1>
-      <DocumentsList initialDocuments={documents} page="trash" />
+      {documents.length === 0 ? (
+        <p className="text-gray-600">You have no deleted documents.</p>
+      ) : (
+        <DocumentsList initialDocuments={documents} page="trash" />
+      )}
     </div>
   );
 };

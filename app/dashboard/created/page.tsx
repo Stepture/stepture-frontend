@@ -40,7 +40,11 @@ const page = async () => {
   return (
     <div className="p-12 max-w-[1200px] lg:mx-auto">
       <h1 className="text-xl font-bold mb-6">Documents Created by Me</h1>
-      <DocumentsList initialDocuments={documents} page="created" />
+      {documents.length === 0 ? (
+        <p className="text-gray-600">You have not created any documents yet.</p>
+      ) : (
+        <DocumentsList initialDocuments={documents} page="created" />
+      )}
     </div>
   );
 };
