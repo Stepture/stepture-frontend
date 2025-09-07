@@ -6,7 +6,6 @@ import {
   Loader,
   GripVertical,
   MousePointer,
-  Edit3,
 } from "lucide-react";
 import CustomAlertDialog from "@/components/ui/Common/CustomAlertDialog";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
