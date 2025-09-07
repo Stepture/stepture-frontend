@@ -317,8 +317,9 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
                   onClick={handleBlurAnnotation}
                   className="p-1.5  bg-blue-custom rounded text-white cursor-pointer"
                   title="Blur sensitive information"
+                  aria-label="Blur sensitive information from image"
                 >
-                  <span>Blur sensitive information</span>
+                  Blur sensitive information
                 </button>
 
                 {/* Delete image button */}

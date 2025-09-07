@@ -282,7 +282,6 @@ const BlurAnnotator: React.FC<BlurAnnotatorProps> = ({
   const handleUndo = () => {
     setBlurRegions((prev) => prev.slice(0, -1));
   };
-  console.log(imageUrl, "imageUrl");
 
   if (!isOpen) return null;
 
