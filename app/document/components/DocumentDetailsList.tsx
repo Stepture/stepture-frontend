@@ -347,6 +347,68 @@ export default function DocumentDetailsList({
     input.click();
   };
 
+  const addNewBlurredImage = async (
+    stepId: string,
+    dataUrl: string,
+    info: Screenshot | null
+  ) => {
+    try {
+      setImageUploadLoading(true);
+
+      // Convert data URL to blob
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+
+      // Convert blob to file for upload
+      const file = new File([blob], `blurred-step-${stepId}.png`, {
+        type: "image/png",
+      });
+
+      const uploadResponse = await apiClient.protected.uploadImageToGoogleApi(
+        file
+      );
+      setImageUploadLoading(false);
+
+      if (uploadResponse) {
+        const newScreenshot: Screenshot = {
+          googleImageId: uploadResponse.imgId,
+          url: uploadResponse.publicUrl,
+          viewportX: info?.viewportX || 0,
+          viewportY: info?.viewportY || 0,
+          viewportHeight: info?.viewportHeight || 0,
+          viewportWidth: info?.viewportWidth || 0,
+          devicePixelRatio: window.devicePixelRatio,
+        };
+
+        setCapturesData((prev) => ({
+          ...prev,
+          steps: prev.steps.map((step) =>
+            step.id === stepId
+              ? {
+                  ...step,
+                  screenshot: newScreenshot,
+                }
+              : step
+          ),
+        }));
+
+        showToast(
+          "success",
+          <span>Image blurred and updated successfully!</span>,
+          {
+            autoClose: 2000,
+          }
+        );
+      }
+    } catch (error) {
+      console.error("Failed to upload blurred image:", error);
+      setImageUploadLoading(false);
+      showToast("error", <span>Failed to update blurred image</span>, {
+        autoClose: 2000,
+      });
+    }
+  };
+
   // BYOK handlers
   const handleRefineSteps = async () => {
     const hasStoredKey = await keyManager.hasStoredKey();
@@ -688,6 +750,7 @@ export default function DocumentDetailsList({
               onAddNewStep={handleAddNewStep}
               loading={imageUploadLoading}
               annotationColor={capturesData?.annotationColor || "BLUE"}
+              onImageBlurred={addNewBlurredImage}
             />
           </div>
 

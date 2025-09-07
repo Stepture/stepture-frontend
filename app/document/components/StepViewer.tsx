@@ -24,6 +24,7 @@ import WarningStep from "./StepType/WarningStep";
 import HeaderStep from "./StepType/HeaderStep";
 import HandleAddNewStep from "./HandleAddNewStep";
 import InfoStep from "./StepType/InfoStep";
+import { Screenshot } from "../document.types";
 
 interface StepViewerProps {
   steps: Step[];
@@ -36,6 +37,11 @@ interface StepViewerProps {
   onAddNewStep?: (selectedType: string, index: number) => void;
   loading?: boolean;
   annotationColor?: string;
+  onImageBlurred: (
+    stepId: string,
+    dataUrl: string,
+    info: Screenshot | null
+  ) => Promise<void>;
 }
 
 // Step renderer component that decides which step type to render
@@ -52,6 +58,7 @@ const StepRenderer = ({
   dragListeners,
   isDragging,
   annotationColor,
+  onImageBlurred,
 }: {
   step: Step;
   index: number;
@@ -65,6 +72,11 @@ const StepRenderer = ({
   dragListeners?: unknown;
   isDragging?: boolean;
   annotationColor?: string;
+  onImageBlurred: (
+    stepId: string,
+    dataUrl: string,
+    info: Screenshot | null
+  ) => Promise<void>;
 }) => {
   const commonProps = {
     index,
@@ -100,6 +112,7 @@ const StepRenderer = ({
           handleDeleteImage={handleDeleteImage}
           loading={loading}
           annotationColor={annotationColor}
+          onImageBlurred={onImageBlurred}
         />
       );
   }
@@ -118,6 +131,7 @@ const SortableStepItem = ({
   steps,
   loading,
   annotationColor,
+  onImageBlurred,
 }: {
   step: Step;
   index: number;
@@ -130,6 +144,11 @@ const SortableStepItem = ({
   steps: Step[];
   loading?: boolean;
   annotationColor?: string;
+  onImageBlurred: (
+    stepId: string,
+    dataUrl: string,
+    info: Screenshot | null
+  ) => Promise<void>;
 }) => {
   const {
     attributes,
@@ -161,6 +180,7 @@ const SortableStepItem = ({
         dragListeners={listeners}
         isDragging={isDragging}
         annotationColor={annotationColor}
+        onImageBlurred={onImageBlurred}
       />
       {onAddNewStep && (
         <HandleAddNewStep
@@ -185,6 +205,7 @@ const StepViewer: React.FC<StepViewerProps> = ({
   onAddNewStep,
   loading,
   annotationColor,
+  onImageBlurred,
 }) => {
   // DnD Kit sensors
   const sensors = useSensors(
@@ -246,6 +267,7 @@ const StepViewer: React.FC<StepViewerProps> = ({
                 steps={steps}
                 loading={loading}
                 annotationColor={annotationColor}
+                onImageBlurred={onImageBlurred}
               />
             ))}
           </SortableContext>
@@ -263,6 +285,7 @@ const StepViewer: React.FC<StepViewerProps> = ({
             handleDeleteImage={onDeleteImage}
             loading={loading}
             annotationColor={annotationColor}
+            onImageBlurred={onImageBlurred}
           />
         ))
       )}

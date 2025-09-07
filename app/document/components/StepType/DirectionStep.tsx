@@ -11,6 +11,7 @@ import CustomAlertDialog from "@/components/ui/Common/CustomAlertDialog";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { DraggableAttributes } from "@dnd-kit/core";
 import { Screenshot } from "../../document.types";
+import BlurAnnotator from "../BlurAnnotator"; // Import the BlurAnnotator component
 
 interface DirectionStepProps {
   img: string;
@@ -29,6 +30,11 @@ interface DirectionStepProps {
   dragListeners?: unknown;
   isDragging?: boolean;
   annotationColor?: string;
+  onImageBlurred: (
+    stepId: string,
+    dataUrl: string,
+    info: Screenshot | null
+  ) => Promise<void>;
 }
 
 const DirectionStep: React.FC<DirectionStepProps> = ({
@@ -43,6 +49,7 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
   handleDeleteStep,
   handleAddNewImage,
   handleDeleteImage,
+  onImageBlurred,
   loading,
   dragAttributes,
   dragListeners,
@@ -57,6 +64,7 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
     width: 0,
     height: 0,
   });
+  const [showBlurAnnotator, setShowBlurAnnotator] = useState(false); // New state
 
   const imgRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -126,6 +134,17 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
     } else if (e.key === "Enter") {
       inputRef.current?.blur();
     }
+  };
+
+  // Handle blur annotation
+  const handleBlurAnnotation = () => {
+    if (img && mode === "edit") {
+      setShowBlurAnnotator(true);
+    }
+  };
+
+  const handleBlurCancel = () => {
+    setShowBlurAnnotator(false);
   };
 
   useEffect(() => {
@@ -206,145 +225,174 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
   }, [updateDisplayDimensions]);
 
   return (
-    <div
-      ref={containerRef}
-      className={`screenshot-item border border-blue-200 rounded-lg p-4 bg-blue-50 flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
-        isDragging ? "shadow-lg scale-105" : ""
-      }`}
-    >
-      <div className="flex items-start gap-2 text-sm font-medium w-full">
-        {mode === "edit" ? (
-          <span
-            className="cursor-grab active:cursor-grabbing hover:text-blue-800"
-            {...(dragAttributes as DraggableAttributes)}
-            {...(dragListeners as SyntheticListenerMap)}
-          >
-            <GripVertical className="w-4 h-4 inline-block" />{" "}
-          </span>
-        ) : (
-          <div className="flex items-center gap-2 justify-center">
-            <div className="w-6 h-6 rounded-full font-semibold text-blue-600 bg-slate-200 p-4 flex items-center justify-center text-center">
-              {index + 1}
-            </div>
+    <div>
+      <div
+        ref={containerRef}
+        className={`screenshot-item border border-blue-200 rounded-lg p-4 bg-blue-50 flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
+          isDragging ? "shadow-lg scale-105" : ""
+        }`}
+      >
+        <div className="flex items-start gap-2 text-sm font-medium w-full">
+          {mode === "edit" ? (
+            <span
+              className="cursor-grab active:cursor-grabbing hover:text-blue-800"
+              {...(dragAttributes as DraggableAttributes)}
+              {...(dragListeners as SyntheticListenerMap)}
+            >
+              <GripVertical className="w-4 h-4 inline-block" />{" "}
+            </span>
+          ) : (
+            <div className="flex items-center gap-2 justify-center">
+              <div className="w-6 h-6 rounded-full font-semibold text-blue-600 bg-slate-200 p-4 flex items-center justify-center text-center">
+                {index + 1}
+              </div>
 
-            <MousePointer className="w-4 h-4 text-blue-600" />
-          </div>
-        )}
-        <div className="flex-1 ml-4 mt-1">
-          <textarea
-            ref={inputRef}
-            className={`rounded-md w-full h-auto overflow-hidden text-md ${
-              mode === "edit"
-                ? "border-blue-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-blue-100 focus:ring-2 focus:ring-blue-500"
-                : "font-semibold bg-transparent border-none cursor-default"
-            }`}
-            value={stepDescription}
-            readOnly={mode !== "edit"}
-            disabled={mode !== "edit"}
-            onChange={handleDescriptionChange}
-            onKeyDown={handleKeyDown}
-            placeholder={mode === "edit" ? "Enter step description..." : ""}
-            rows={1}
-            style={{ minHeight: "2.5rem" }}
-            onInput={(e) => {
-              const target = e.target as HTMLTextAreaElement;
-              target.style.height = "auto";
-              target.style.height = `${target.scrollHeight}px`;
-            }}
-          />
-        </div>
-        {mode === "edit" && (
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-red-100 transition-colors">
-              <CustomAlertDialog
-                title="Delete Step"
-                description={`Are you sure you want to delete this step? `}
-                onConfirm={() => handleDeleteStep(stepId)}
-                triggerDescription={
-                  <Trash
-                    aria-label="Delete Step"
-                    role="button"
-                    className="w-6 h-6 text-red-500 cursor-pointer hover:text-red-700 transition-colors"
-                  />
-                }
-              />
+              <MousePointer className="w-4 h-4 text-blue-600" />
             </div>
+          )}
+          <div className="flex-1 ml-4 mt-1">
+            <textarea
+              ref={inputRef}
+              className={`rounded-md w-full h-auto overflow-hidden text-md ${
+                mode === "edit"
+                  ? "border-blue-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-blue-100 focus:ring-2 focus:ring-blue-500"
+                  : "font-semibold bg-transparent border-none cursor-default"
+              }`}
+              value={stepDescription}
+              readOnly={mode !== "edit"}
+              disabled={mode !== "edit"}
+              onChange={handleDescriptionChange}
+              onKeyDown={handleKeyDown}
+              placeholder={mode === "edit" ? "Enter step description..." : ""}
+              rows={1}
+              style={{ minHeight: "2.5rem" }}
+              onInput={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = "auto";
+                target.style.height = `${target.scrollHeight}px`;
+              }}
+            />
           </div>
+          {mode === "edit" && (
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-red-100 transition-colors">
+                <CustomAlertDialog
+                  title="Delete Step"
+                  description={`Are you sure you want to delete this step? `}
+                  onConfirm={() => handleDeleteStep(stepId)}
+                  triggerDescription={
+                    <Trash
+                      aria-label="Delete Step"
+                      role="button"
+                      className="w-6 h-6 text-red-500 cursor-pointer hover:text-red-700 transition-colors"
+                    />
+                  }
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {img ? (
+          <div className="relative w-full group">
+            <Image
+              ref={imgRef}
+              src={img}
+              alt={`Screenshot ${stepNumber}`}
+              width={info?.viewportWidth || 800}
+              height={info?.viewportHeight || 600}
+              onLoad={handleImageLoad}
+              className={`w-full h-auto border rounded-md transition-all duration-200 ${
+                mode === "edit"
+                  ? "group-hover:brightness-80 cursor-pointer"
+                  : ""
+              }`}
+              style={{ maxWidth: "100%", height: "auto" }}
+            />
+
+            {mode === "edit" && (
+              <div className="hidden group-hover:flex absolute top-2 right-2 items-center gap-2 bg-white p-1.5 rounded-md shadow-md">
+                {/* Blur button */}
+                <button
+                  onClick={handleBlurAnnotation}
+                  className="p-1.5  bg-blue-custom rounded text-white cursor-pointer"
+                  title="Blur sensitive information"
+                  aria-label="Blur sensitive information from image"
+                >
+                  Blur sensitive information
+                </button>
+
+                {/* Delete image button */}
+                <CustomAlertDialog
+                  title="Delete Image"
+                  description={`Are you sure you want to delete the image from this step? `}
+                  onConfirm={() => handleDeleteImage?.(stepNumber)}
+                  triggerDescription={
+                    <div
+                      className="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors"
+                      title="Delete image"
+                      aria-label="Delete image from step"
+                      role="button"
+                    >
+                      <Trash className="w-5 h-5" />
+                    </div>
+                  }
+                />
+              </div>
+            )}
+
+            {info?.viewportX !== 0 &&
+              info?.viewportY !== 0 &&
+              imageDimensions.width > 0 &&
+              displayDimensions.width > 0 && (
+                <div
+                  className={`absolute opacity-50 border-4 rounded-full bg-opacity-30 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-all duration-200 ${determineAnnotationColor(
+                    annotationColor || "BLUE"
+                  )}`}
+                  style={{
+                    ...getResponsivePosition(),
+                    width: `${getIndicatorSize()}px`,
+                    height: `${getIndicatorSize()}px`,
+                  }}
+                  aria-label={`Click indicator for step ${stepNumber}`}
+                >
+                  <div className="absolute inset-0 bg-blue-400 rounded-full opacity-50"></div>
+                </div>
+              )}
+          </div>
+        ) : (
+          <>
+            {mode === "edit" && (
+              <div className="w-full h-24 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+                {loading ? (
+                  <Loader className="w-12 h-12 text-blue-300 animate-spin" />
+                ) : (
+                  <div className="flex flex-col items-center gap-2 text-gray-400">
+                    <ImagePlus
+                      className="w-12 h-12 text-gray-400 cursor-pointer hover:text-blue-600 transition-colors"
+                      onClick={() => {
+                        handleAddNewImage?.(stepNumber);
+                      }}
+                    />
+                    <span>Add new image to the step</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
 
-      {img ? (
-        <div className="relative w-full group">
-          <Image
-            ref={imgRef}
-            src={img}
-            alt={`Screenshot ${stepNumber}`}
-            width={info?.viewportWidth || 800}
-            height={info?.viewportHeight || 600}
-            onLoad={handleImageLoad}
-            className={`w-full h-auto border rounded-md transition-all duration-200 ${
-              mode === "edit" ? "group-hover:brightness-80 cursor-pointer" : ""
-            }`}
-            style={{ maxWidth: "100%", height: "auto" }}
-          />
-
-          {mode === "edit" && (
-            <CustomAlertDialog
-              title="Delete Image"
-              description={`Are you sure you want to delete the image from this step? `}
-              onConfirm={() => handleDeleteImage?.(stepNumber)}
-              triggerDescription={
-                <div className="hidden group-hover:flex absolute top-2 right-2 items-center gap-2 bg-white p-1.5 rounded-md shadow-md cursor-pointer hover:shadow-lg transition-all">
-                  <Trash
-                    aria-label="Delete image"
-                    role="button"
-                    className="w-8 h-8 p-2 group-hover:bg-red-400 group-hover:text-slate-50 rounded-full cursor-pointer"
-                  />
-                  <span>Delete image</span>
-                </div>
-              }
-            />
-          )}
-
-          {info?.viewportX !== 0 &&
-            info?.viewportY !== 0 &&
-            imageDimensions.width > 0 &&
-            displayDimensions.width > 0 && (
-              <div
-                className={`absolute opacity-50 border-4 rounded-full bg-opacity-30 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-all duration-200 ${determineAnnotationColor(
-                  annotationColor || "BLUE"
-                )}`}
-                style={{
-                  ...getResponsivePosition(),
-                  width: `${getIndicatorSize()}px`,
-                  height: `${getIndicatorSize()}px`,
-                }}
-                aria-label={`Click indicator for step ${stepNumber}`}
-              >
-                <div className="absolute inset-0 bg-blue-400 rounded-full opacity-50"></div>
-              </div>
-            )}
-        </div>
-      ) : (
-        <>
-          {mode === "edit" && (
-            <div className="w-full h-24 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
-              {loading ? (
-                <Loader className="w-12 h-12 text-blue-300 animate-spin" />
-              ) : (
-                <div className="flex flex-col items-center gap-2 text-gray-400">
-                  <ImagePlus
-                    className="w-12 h-12 text-gray-400 cursor-pointer hover:text-blue-600 transition-colors"
-                    onClick={() => {
-                      handleAddNewImage?.(stepNumber);
-                    }}
-                  />
-                  <span>Add new image to the step</span>
-                </div>
-              )}
-            </div>
-          )}
-        </>
+      {/* Blur Annotator Modal */}
+      {showBlurAnnotator && img && (
+        <BlurAnnotator
+          stepId={stepId}
+          imageUrl={img}
+          onSave={onImageBlurred}
+          onCancel={handleBlurCancel}
+          isOpen={showBlurAnnotator}
+          info={info}
+        />
       )}
     </div>
   );
