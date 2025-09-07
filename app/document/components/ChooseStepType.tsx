@@ -23,9 +23,9 @@ const ChooseStepType = (props: Props) => {
           onClick={() => props.onStepTypeSelect?.("TIPS")}
         />
         <AddStepButton
-          label="Danger"
-          variant="danger"
-          onClick={() => props.onStepTypeSelect?.("DANGER")}
+          label="ALERT"
+          variant="ALERT"
+          onClick={() => props.onStepTypeSelect?.("ALERT")}
         />
         <AddStepButton
           label="Header"
