@@ -32,6 +32,7 @@ const BlurAnnotator: React.FC<BlurAnnotatorProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
+
   const [isDrawing, setIsDrawing] = useState(false);
   const [blurRegions, setBlurRegions] = useState<BlurRegion[]>([]);
   const [currentRegion, setCurrentRegion] = useState<BlurRegion | null>(null);
@@ -59,10 +60,10 @@ const BlurAnnotator: React.FC<BlurAnnotatorProps> = ({
     if (!canvas || !overlayCanvas) return;
 
     const ctx = canvas.getContext("2d");
-    const overlayCtx = overlayCanvas.getContext("2d");
-    if (!ctx || !overlayCtx) return;
+    if (!ctx) return;
 
     const img = new Image();
+    img.referrerPolicy = "no-referrer";
     img.crossOrigin = "anonymous";
 
     img.onload = () => {
@@ -82,6 +83,7 @@ const BlurAnnotator: React.FC<BlurAnnotatorProps> = ({
     img.src = imageUrl;
   }, [isOpen, imageUrl]);
 
+  // Optimized blur function
   const applyBlur = useCallback(
     (imageData: ImageData, region: BlurRegion, blurRadius: number = 8) => {
       const { data, width, height } = imageData;
@@ -132,45 +134,18 @@ const BlurAnnotator: React.FC<BlurAnnotatorProps> = ({
     []
   );
 
-  const renderCanvas = useCallback(() => {
-    const canvas = canvasRef.current;
+  // Update overlay with dotted lines
+  const updateOverlay = useCallback(() => {
     const overlayCanvas = overlayCanvasRef.current;
-    if (!canvas || !overlayCanvas || !originalImageData) return;
+    if (!overlayCanvas) return;
 
-    const ctx = canvas.getContext("2d");
     const overlayCtx = overlayCanvas.getContext("2d");
-    if (!ctx || !overlayCtx) return;
+    if (!overlayCtx) return;
 
     // Clear overlay
     overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
-    // Clone original image data
-    const workingImageData = new ImageData(
-      new Uint8ClampedArray(originalImageData.data),
-      originalImageData.width,
-      originalImageData.height
-    );
-
-    // Apply blur to all regions
-    blurRegions.forEach((region) => {
-      applyBlur(workingImageData, region);
-    });
-
-    // Apply blur to current region if drawing
-    if (currentRegion && isDrawing) {
-      // Normalize current region for preview
-      const normalizedRegion = {
-        x: Math.min(currentRegion.x, currentRegion.x + currentRegion.width),
-        y: Math.min(currentRegion.y, currentRegion.y + currentRegion.height),
-        width: Math.abs(currentRegion.width),
-        height: Math.abs(currentRegion.height),
-      };
-      applyBlur(workingImageData, normalizedRegion);
-    }
-
-    ctx.putImageData(workingImageData, 0, 0);
-
-    // Draw overlay rectangles for visual feedback
+    // Draw dotted rectangles
     overlayCtx.strokeStyle = "#8EACFE";
     overlayCtx.lineWidth = 2;
     overlayCtx.setLineDash([5, 5]);
@@ -189,14 +164,46 @@ const BlurAnnotator: React.FC<BlurAnnotatorProps> = ({
         currentRegion.height
       );
     }
-  }, [blurRegions, currentRegion, originalImageData, applyBlur, isDrawing]);
+  }, [blurRegions, currentRegion, isDrawing]);
 
-  // Update canvas when regions change
+  // Apply blur to canvas (only when not drawing)
+  const renderBlurredCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !originalImageData || isDrawing) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const workingImageData = new ImageData(
+      new Uint8ClampedArray(originalImageData.data),
+      originalImageData.width,
+      originalImageData.height
+    );
+
+    // Apply blur to all regions
+    blurRegions.forEach((region) => {
+      applyBlur(workingImageData, region);
+    });
+
+    ctx.putImageData(workingImageData, 0, 0);
+  }, [blurRegions, originalImageData, applyBlur, isDrawing]);
+
+  // Update display
   useEffect(() => {
     if (imageLoaded) {
-      renderCanvas();
+      updateOverlay(); // Always update overlay for dotted lines
+      if (!isDrawing) {
+        renderBlurredCanvas(); // Apply blur only when not drawing
+      }
     }
-  }, [imageLoaded, renderCanvas]);
+  }, [
+    imageLoaded,
+    blurRegions,
+    currentRegion,
+    isDrawing,
+    updateOverlay,
+    renderBlurredCanvas,
+  ]);
 
   // Mouse event handlers
   const getMousePos = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -204,12 +211,8 @@ const BlurAnnotator: React.FC<BlurAnnotatorProps> = ({
     if (!canvas) return { x: 0, y: 0 };
 
     const rect = canvas.getBoundingClientRect();
-
-    // Calculate the scale factors
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-
-    // Get mouse position relative to canvas and scale to actual canvas coordinates
     const x = (e.clientX - rect.left) * scaleX;
     const y = (e.clientY - rect.top) * scaleY;
 
@@ -227,21 +230,23 @@ const BlurAnnotator: React.FC<BlurAnnotatorProps> = ({
     });
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || !currentRegion) return;
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (!isDrawing || !currentRegion) return;
 
-    const pos = getMousePos(e);
-    setCurrentRegion({
-      ...currentRegion,
-      width: pos.x - currentRegion.x,
-      height: pos.y - currentRegion.y,
-    });
-  };
+      const pos = getMousePos(e);
+      setCurrentRegion({
+        ...currentRegion,
+        width: pos.x - currentRegion.x,
+        height: pos.y - currentRegion.y,
+      });
+    },
+    [isDrawing, currentRegion]
+  );
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     if (!currentRegion || !isDrawing) return;
 
-    // Normalize the region (handle negative width/height)
     const normalizedRegion = {
       x:
         currentRegion.width < 0
@@ -255,20 +260,39 @@ const BlurAnnotator: React.FC<BlurAnnotatorProps> = ({
       height: Math.abs(currentRegion.height),
     };
 
-    // Only add region if it has meaningful size
     if (normalizedRegion.width > 10 && normalizedRegion.height > 10) {
       setBlurRegions((prev) => [...prev, normalizedRegion]);
     }
 
     setCurrentRegion(null);
     setIsDrawing(false);
-  };
+  }, [currentRegion, isDrawing]);
 
   const handleSaveAsDataURL = async () => {
     setImageUploadLoading(true);
+
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const dataURL = canvas.toDataURL("image/png");
+    if (!canvas || !originalImageData) return;
+
+    const finalCanvas = document.createElement("canvas");
+    finalCanvas.width = originalImageData.width;
+    finalCanvas.height = originalImageData.height;
+    const finalCtx = finalCanvas.getContext("2d");
+    if (!finalCtx) return;
+
+    const finalImageData = new ImageData(
+      new Uint8ClampedArray(originalImageData.data),
+      originalImageData.width,
+      originalImageData.height
+    );
+
+    // Apply blur to all regions
+    blurRegions.forEach((region) => {
+      applyBlur(finalImageData, region);
+    });
+
+    finalCtx.putImageData(finalImageData, 0, 0);
+    const dataURL = finalCanvas.toDataURL("image/png");
 
     try {
       await onSave?.(stepId, dataURL, info);
@@ -276,11 +300,8 @@ const BlurAnnotator: React.FC<BlurAnnotatorProps> = ({
       onCancel();
     } catch (error) {
       console.error("Error saving blurred image:", error);
+      setImageUploadLoading(false);
     }
-  };
-
-  const handleUndo = () => {
-    setBlurRegions((prev) => prev.slice(0, -1));
   };
 
   if (!isOpen) return null;
@@ -328,15 +349,8 @@ const BlurAnnotator: React.FC<BlurAnnotatorProps> = ({
         </div>
 
         <div className="flex justify-between items-center">
-          <div className="flex gap-2">
-            <button
-              onClick={handleUndo}
-              disabled={blurRegions.length === 0}
-              className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Undo Last
-            </button>
-            <span className="text-sm text-gray-500 self-center">
+          <div className="flex gap-2 items-center">
+            <span className="text-sm text-gray-500">
               {blurRegions.length} region(s) selected
             </span>
           </div>
@@ -351,7 +365,7 @@ const BlurAnnotator: React.FC<BlurAnnotatorProps> = ({
             </button>
             <button
               onClick={handleSaveAsDataURL}
-              disabled={blurRegions.length === 0}
+              disabled={blurRegions.length === 0 || imageUploadLoading}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <Check className="w-4 h-4 inline mr-1" />
