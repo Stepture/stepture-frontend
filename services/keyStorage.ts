@@ -37,9 +37,7 @@ export class KeyStorageService {
 
   async getEncryptedKey(): Promise<EncryptedKeyData | null> {
     try {
-      console.log("🌐 Making API call to get encrypted key...");
       const data = await apiClient.protected.getApiKey();
-      console.log("✅ API call successful, received data:", !!data);
 
       // Convert base64 back to Uint8Arrays
       return {
@@ -71,9 +69,8 @@ export class KeyStorageService {
 
   async hasStoredKey(): Promise<boolean> {
     try {
-      console.log("🔍 Checking if user has stored key...");
       const data = await apiClient.protected.getApiKeyStatus();
-      console.log("✅ API key status:", data);
+
       return data.hasCustomApiKey;
     } catch (error) {
       console.error("❌ Failed to check API key status:", error);

@@ -163,8 +163,6 @@ export default function DocumentDetailsList({
         id,
         updateData
       );
-
-      console.log("Updated data:", updatedData);
       setDocumentUpdateLoading(false);
 
       showToast("success", <span>Document updated successfully!</span>, {
@@ -214,13 +212,6 @@ export default function DocumentDetailsList({
     prevStepNumber: number,
     afterStepNumber: number
   ) => {
-    console.log(
-      "Calculating step number between:",
-      prevStepNumber,
-      "and",
-      afterStepNumber
-    );
-
     // Handle edge case where afterStepNumber is 0 or not provided
     if (afterStepNumber === 0 || !afterStepNumber) {
       return prevStepNumber + 1;
