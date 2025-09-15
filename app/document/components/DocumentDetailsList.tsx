@@ -159,10 +159,7 @@ export default function DocumentDetailsList({
     setDocumentUpdateLoading(true);
 
     try {
-      const updatedData = await apiClient.protected.updateDocument(
-        id,
-        updateData
-      );
+      await apiClient.protected.updateDocument(id, updateData);
       setDocumentUpdateLoading(false);
 
       showToast("success", <span>Document updated successfully!</span>, {
