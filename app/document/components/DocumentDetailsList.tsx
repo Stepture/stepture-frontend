@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import TimeIcon from "@/public/time.svg";
 import StepsIcon from "@/public/steps.svg";
@@ -61,6 +61,15 @@ export default function DocumentDetailsList({
   const containerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const originalStepsRef = useRef<Step[]>(captures.steps);
+
+  // Sync local state with props when captures change (defensive programming)
+  useEffect(() => {
+    setCapturesData(captures);
+    setStepsToDelete([]); // Reset deletion tracking when props change
+    originalTitleRef.current = captures.title;
+    originalDescriptionRef.current = captures.description;
+    originalStepsRef.current = captures.steps;
+  }, [captures]);
 
   // Handle title changes
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,7 +168,22 @@ export default function DocumentDetailsList({
     setDocumentUpdateLoading(true);
 
     try {
-      await apiClient.protected.updateDocument(id, updateData);
+      const updatedDocument = await apiClient.protected.updateDocument(
+        id,
+        updateData
+      );
+
+      // Server reconciliation: Update state with server response
+      if (updatedDocument) {
+        setCapturesData(updatedDocument);
+        setStepsToDelete([]);
+
+        // Update refs to match server state
+        originalTitleRef.current = updatedDocument.title;
+        originalDescriptionRef.current = updatedDocument.description;
+        originalStepsRef.current = updatedDocument.steps;
+      }
+
       setDocumentUpdateLoading(false);
 
       showToast("success", <span>Document updated successfully!</span>, {
@@ -230,40 +254,47 @@ export default function DocumentDetailsList({
   };
 
   const handleAddNewStep = (selectedType: string, index: number) => {
-    let newStepNumber: number;
+    setCapturesData((prev) => {
+      let newStepNumber: number;
 
-    // if the new step is added at the end, just add 1 to the last step number
-    if (index === capturesData.steps.length - 1) {
-      newStepNumber = capturesData.steps.length
-        ? capturesData.steps[capturesData.steps.length - 1].stepNumber + 1
-        : 1;
-    } else {
-      // if not, calculate the new step number based on the previous and next step numbers
-      newStepNumber = calculateStepNumber(
-        capturesData.steps[index]?.stepNumber || 0,
-        capturesData.steps[index + 1]?.stepNumber || 0
-      );
-    }
-    const tempId = `temp-${Date.now()}-${Math.random()
-      .toString(36)
-      .substring(2, 9)}`;
+      // Use functional state update to avoid stale state issues
+      const currentSteps = prev.steps;
 
-    const newStep: Step = {
-      id: tempId,
-      stepDescription: "New step added",
-      stepNumber: newStepNumber,
-      type: selectedType,
-      documentId: capturesData.id,
-      screenshot: null,
-    };
-    setCapturesData((prev) => ({
-      ...prev,
-      steps: [
-        ...prev.steps.slice(0, index + 1),
-        newStep,
-        ...prev.steps.slice(index + 1),
-      ],
-    }));
+      // if the new step is added at the end, just add 1 to the last step number
+      if (index === currentSteps.length - 1) {
+        newStepNumber = currentSteps.length
+          ? currentSteps[currentSteps.length - 1].stepNumber + 1
+          : 1;
+      } else {
+        // Calculate based on current state, not stale capturesData
+        newStepNumber = calculateStepNumber(
+          currentSteps[index]?.stepNumber || 0,
+          currentSteps[index + 1]?.stepNumber || 0
+        );
+      }
+
+      const tempId = `temp-${Date.now()}-${Math.random()
+        .toString(36)
+        .substring(2, 9)}`;
+
+      const newStep: Step = {
+        id: tempId,
+        stepDescription: "New step added",
+        stepNumber: newStepNumber,
+        type: selectedType,
+        documentId: prev.id,
+        screenshot: null,
+      };
+
+      return {
+        ...prev,
+        steps: [
+          ...currentSteps.slice(0, index + 1),
+          newStep,
+          ...currentSteps.slice(index + 1),
+        ],
+      };
+    });
 
     showToast("success", <span>New step added successfully!</span>, {
       autoClose: 2000,
