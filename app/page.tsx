@@ -390,7 +390,8 @@ export default function Page() {
           {/* CTA (centered) */}
           <div className="text-center mt-1">
             <a
-              href="#cta"
+              href="https://chromewebstore.google.com/detail/stepture-automated-docume/mjefhbjefkfflljnddillegbhmfiahmi"
+              target="_blank"
               className="inline-block rounded-full bg-gradient-to-r from-[#6777C9] to-[#334982] text-white px-6 py-3 font-semibold shadow-md hover:opacity-90"
             >
               Try Stepture

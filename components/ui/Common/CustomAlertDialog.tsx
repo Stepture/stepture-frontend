@@ -31,7 +31,10 @@ const CustomAlertDialog = (props: Props) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={props.onConfirm}>
+            <AlertDialogAction
+              onClick={props.onConfirm}
+              className="bg-blue-custom text-white hover:bg-blue-600"
+            >
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>
