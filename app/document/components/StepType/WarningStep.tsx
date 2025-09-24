@@ -81,10 +81,10 @@ const WarningStep: React.FC<WarningStepProps> = ({
         <div className="flex-1 ml-4 mt-1">
           <textarea
             ref={inputRef}
-            className={`rounded-md w-full h-auto overflow-hidden text-md ${
+            className={`rounded-md w-full h-auto resize-none break-words break-all text-base ${
               mode === "edit"
-                ? "border-red-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-red-100 focus:ring-2 focus:ring-red-500"
-                : "font-semibold bg-transparent border-none cursor-default text-red-800"
+                ? "border-red-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-red-100 focus:ring-2 focus:ring-red-500 font-normal"
+                : "font-medium bg-transparent border-none cursor-default text-red-800"
             }`}
             value={stepDescription}
             readOnly={mode !== "edit"}
@@ -93,7 +93,13 @@ const WarningStep: React.FC<WarningStepProps> = ({
             onKeyDown={handleKeyDown}
             placeholder={mode === "edit" ? "Enter warning description..." : ""}
             rows={1}
-            style={{ minHeight: "2.5rem" }}
+            style={{
+              minHeight: "2.5rem",
+              wordBreak: "break-all",
+              overflowWrap: "break-word",
+              whiteSpace: "pre-wrap",
+              overflow: "visible",
+            }}
             onInput={(e) => {
               const target = e.target as HTMLTextAreaElement;
               target.style.height = "auto";

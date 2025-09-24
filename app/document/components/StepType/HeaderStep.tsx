@@ -72,7 +72,7 @@ const HeaderStep: React.FC<HeaderStepProps> = ({
         <div className="flex-1">
           <textarea
             ref={inputRef}
-            className={`w-full h-auto overflow-hidden resize-none font-bold text-lg text-gray-700 underline text-center  ${
+            className={`w-full h-auto resize-none font-semibold text-xl text-gray-700 underline text-center break-words break-all ${
               mode === "edit"
                 ? "bg-white border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 : "bg-transparent border-none cursor-default"
@@ -84,7 +84,13 @@ const HeaderStep: React.FC<HeaderStepProps> = ({
             onKeyDown={handleKeyDown}
             placeholder={mode === "edit" ? "Enter header title..." : ""}
             rows={1}
-            style={{ minHeight: "2rem" }}
+            style={{
+              minHeight: "2rem",
+              wordBreak: "break-all",
+              overflowWrap: "break-word",
+              whiteSpace: "pre-wrap",
+              overflow: "visible",
+            }}
             onInput={(e) => {
               const target = e.target as HTMLTextAreaElement;
               target.style.height = "auto";

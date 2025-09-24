@@ -5,7 +5,7 @@ import Image from "next/image";
 import TimeIcon from "@/public/time.svg";
 import StepsIcon from "@/public/steps.svg";
 import PersonIcon from "@/public/person.svg";
-import Logo from "@/public/AUlogo.png";
+import Logo from "@/public/Stepture.png";
 import { Loader, Sparkles } from "lucide-react";
 import CustomButton from "@/components/ui/Common/CustomButton";
 import { useRouter } from "next/navigation";
@@ -279,7 +279,7 @@ export default function DocumentDetailsList({
 
       const newStep: Step = {
         id: tempId,
-        stepDescription: "New step added",
+        stepDescription: `New ${selectedType} added`,
         stepNumber: newStepNumber,
         type: selectedType,
         documentId: prev.id,
@@ -610,11 +610,14 @@ export default function DocumentDetailsList({
                   ↑ Scroll to top
                 </button>
 
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1">
+                <div className="flex items-center">
+                  <div className="flex gap-2 border-1 border-gray-300 rounded-md px-3 py-1 bg-slate-100">
+                    <span className="text-gray-500">
+                      Choose annotation color:
+                    </span>
                     <button
                       onClick={() => handleAnnotationColorChange("blue")}
-                      className={`w-6 h-6 rounded-full bg-blue-500 border-2 transition-all ${
+                      className={`w-6 h-6 rounded-full bg-blue-500 border-2 transition-all ml-2 ${
                         capturesData.annotationColor?.toLowerCase() === "blue"
                           ? "border-blue-700 ring-2 ring-blue-500"
                           : "border-blue-300 hover:border-blue-600"

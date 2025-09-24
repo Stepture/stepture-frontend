@@ -136,6 +136,53 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
     }
   };
 
+  // Function to render text with "Navigate to:" links
+  const renderTextWithLinks = (text: string) => {
+    const navigateToRegex = /^Navigate to:\s*(.+)$/i;
+    const match = text.match(navigateToRegex);
+
+    if (match) {
+      const url = match[1].trim();
+      // Check if the URL starts with http:// or https://, if not, add https://
+      const formattedUrl = url.match(/^https?:\/\//) ? url : `https://${url}`;
+
+      return (
+        <span>
+          <span className="font-medium">Navigate to: </span>
+          <a
+            href={formattedUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline hover:no-underline transition-colors"
+          >
+            {url}
+          </a>
+        </span>
+      );
+    }
+
+    // Check if text starts with https:// or http://
+    const urlRegex = /^(https?:\/\/.+)$/i;
+    const urlMatch = text.match(urlRegex);
+
+    if (urlMatch) {
+      const url = urlMatch[1].trim();
+
+      return (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:text-blue-800 underline hover:no-underline transition-colors"
+        >
+          {url}
+        </a>
+      );
+    }
+
+    return <span>{text}</span>;
+  };
+
   // Handle blur annotation
   const handleBlurAnnotation = () => {
     if (img && mode === "edit") {
@@ -251,27 +298,42 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
             </div>
           )}
           <div className="flex-1 ml-4 mt-1">
-            <textarea
-              ref={inputRef}
-              className={`rounded-md w-full h-auto overflow-hidden text-md ${
-                mode === "edit"
-                  ? "border-blue-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-blue-100 focus:ring-2 focus:ring-blue-500"
-                  : "font-semibold bg-transparent border-none cursor-default"
-              }`}
-              value={stepDescription}
-              readOnly={mode !== "edit"}
-              disabled={mode !== "edit"}
-              onChange={handleDescriptionChange}
-              onKeyDown={handleKeyDown}
-              placeholder={mode === "edit" ? "Enter step description..." : ""}
-              rows={1}
-              style={{ minHeight: "2.5rem" }}
-              onInput={(e) => {
-                const target = e.target as HTMLTextAreaElement;
-                target.style.height = "auto";
-                target.style.height = `${target.scrollHeight}px`;
-              }}
-            />
+            {mode === "edit" ? (
+              <textarea
+                ref={inputRef}
+                className="rounded-md w-full h-auto resize-none break-words break-all text-base border-blue-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-blue-100 focus:ring-2 focus:ring-blue-500 font-normal"
+                value={stepDescription}
+                onChange={handleDescriptionChange}
+                onKeyDown={handleKeyDown}
+                placeholder="Enter step description..."
+                rows={1}
+                style={{
+                  minHeight: "2.5rem",
+                  wordBreak: "break-all",
+                  overflowWrap: "break-word",
+                  whiteSpace: "pre-wrap",
+                  overflow: "visible",
+                }}
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = "auto";
+                  target.style.height = `${target.scrollHeight}px`;
+                }}
+              />
+            ) : (
+              <div
+                className="rounded-md w-full min-h-10 break-words break-all text-base font-medium bg-transparent cursor-default"
+                style={{
+                  minHeight: "2.5rem",
+                  wordBreak: "break-all",
+                  overflowWrap: "break-word",
+                  whiteSpace: "pre-wrap",
+                  padding: "0.5rem 0",
+                }}
+              >
+                {renderTextWithLinks(stepDescription)}
+              </div>
+            )}
           </div>
           {mode === "edit" && (
             <div className="flex items-center gap-2">
