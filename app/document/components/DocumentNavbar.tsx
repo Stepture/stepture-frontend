@@ -236,7 +236,6 @@ const DocumentNavbar = () => {
                 size="small"
                 onClick={() => setIsShareModalOpen(true)}
               />
-
               <CustomButton
                 icon={!savedStatus ? nav_save : nav_saved}
                 variant="secondary"
@@ -255,7 +254,12 @@ const DocumentNavbar = () => {
                 size="small"
                 onClick={() => setIsShareModalOpen(true)}
               />
-              <CustomButton icon={nav_save} variant="secondary" />
+              <CustomButton
+                icon={!savedStatus ? nav_save : nav_saved}
+                variant="secondary"
+                onClick={!savedStatus ? saveDocument : unsaveDocument}
+                label={savedStatus ? "Saved" : "Save"}
+              />
             </>
           ) : null}
         </div>
