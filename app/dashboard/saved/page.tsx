@@ -7,7 +7,11 @@ interface DocumentData {
   id: string;
   title: string;
   description: string;
-  userId: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
   _count: {
     steps: number;
   };
@@ -45,7 +49,7 @@ const page = async () => {
               logoSrc={"/Stepture.png"} // need to replace in future
               websiteName="Stepture" // need to replace in future
               docTitle={doc.title}
-              author={doc.author || "bhone"} // add in backend - current
+              author={doc?.user?.name || ""} // add in backend - current
               stepCount={doc._count.steps || 5}
               estimatedTime={doc.estimatedTime || "3 mins"} // need to replace in future
               href={`/document/${doc.id}`}
