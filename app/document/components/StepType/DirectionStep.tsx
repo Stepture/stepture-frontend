@@ -275,14 +275,14 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
     <div>
       <div
         ref={containerRef}
-        className={`screenshot-item border border-blue-200 rounded-lg p-4 bg-blue-50 flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
+        className={`screenshot-item border border-blue-200 dark:border-blue-700 rounded-lg p-4 bg-blue-50 dark:bg-blue-900/30 flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
           isDragging ? "shadow-lg scale-105" : ""
         }`}
       >
         <div className="flex items-start gap-2 text-sm font-medium w-full">
           {mode === "edit" ? (
             <span
-              className="cursor-grab active:cursor-grabbing hover:text-blue-800"
+              className="cursor-grab active:cursor-grabbing hover:text-blue-800 dark:hover:text-blue-300"
               {...(dragAttributes as DraggableAttributes)}
               {...(dragListeners as SyntheticListenerMap)}
             >
@@ -290,18 +290,18 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
             </span>
           ) : (
             <div className="flex items-center gap-2 justify-center">
-              <div className="w-6 h-6 rounded-full font-semibold text-blue-600 bg-slate-200 p-4 flex items-center justify-center text-center">
+              <div className="w-6 h-6 rounded-full font-semibold text-blue-600 dark:text-blue-300 bg-slate-200 dark:bg-slate-600 p-4 flex items-center justify-center text-center">
                 {index + 1}
               </div>
 
-              <MousePointer className="w-4 h-4 text-blue-600" />
+              <MousePointer className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
           )}
           <div className="flex-1 ml-4 mt-1">
             {mode === "edit" ? (
               <textarea
                 ref={inputRef}
-                className="rounded-md w-full h-auto resize-none break-words break-all text-base border-blue-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-blue-100 focus:ring-2 focus:ring-blue-500 font-normal"
+                className="rounded-md w-full h-auto resize-none break-words break-all text-base border-blue-300 dark:border-blue-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 px-2 cursor-text border-none focus:outline-none ring-2 ring-blue-100 dark:ring-blue-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 font-normal"
                 value={stepDescription}
                 onChange={handleDescriptionChange}
                 onKeyDown={handleKeyDown}
@@ -337,7 +337,7 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
           </div>
           {mode === "edit" && (
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-red-100 transition-colors">
+              <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-sm cursor-pointer hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
                 <CustomAlertDialog
                   title="Delete Step"
                   description={`Are you sure you want to delete this step? `}
@@ -346,7 +346,7 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
                     <Trash
                       aria-label="Delete Step"
                       role="button"
-                      className="w-6 h-6 text-red-500 cursor-pointer hover:text-red-700 transition-colors"
+                      className="w-6 h-6 text-red-500 dark:text-red-400 cursor-pointer hover:text-red-700 dark:hover:text-red-300 transition-colors"
                     />
                   }
                 />
@@ -364,7 +364,7 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
               width={info?.viewportWidth || 800}
               height={info?.viewportHeight || 600}
               onLoad={handleImageLoad}
-              className={`w-full h-auto border rounded-md transition-all duration-200 ${
+              className={`w-full h-auto border border-gray-200 dark:border-gray-600 rounded-md transition-all duration-200 ${
                 mode === "edit"
                   ? "group-hover:brightness-80 cursor-pointer"
                   : ""
@@ -373,11 +373,11 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
             />
 
             {mode === "edit" && (
-              <div className="hidden group-hover:flex absolute top-2 right-2 items-center gap-2 bg-white p-1.5 rounded-md shadow-md">
+              <div className="hidden group-hover:flex absolute top-2 right-2 items-center gap-2 bg-white dark:bg-slate-700 p-1.5 rounded-md shadow-md">
                 {/* Blur button */}
                 <button
                   onClick={handleBlurAnnotation}
-                  className="p-1.5  bg-blue-custom rounded text-white cursor-pointer"
+                  className="p-1.5 bg-blue-custom dark:bg-blue-600 rounded text-white cursor-pointer hover:bg-blue-600 dark:hover:bg-blue-500 transition-colors"
                   title="Blur sensitive information"
                   aria-label="Blur sensitive information from image"
                 >
@@ -391,7 +391,7 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
                   onConfirm={() => handleDeleteImage?.(stepNumber)}
                   triggerDescription={
                     <div
-                      className="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors"
+                      className="p-1.5 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
                       title="Delete image"
                       aria-label="Delete image from step"
                       role="button"
@@ -425,13 +425,13 @@ const DirectionStep: React.FC<DirectionStepProps> = ({
         ) : (
           <>
             {mode === "edit" && (
-              <div className="w-full h-24 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+              <div className="w-full h-24 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-slate-800">
                 {loading ? (
-                  <Loader className="w-12 h-12 text-blue-300 animate-spin" />
+                  <Loader className="w-12 h-12 text-blue-300 dark:text-blue-400 animate-spin" />
                 ) : (
-                  <div className="flex flex-col items-center gap-2 text-gray-400">
+                  <div className="flex flex-col items-center gap-2 text-gray-400 dark:text-gray-500">
                     <ImagePlus
-                      className="w-12 h-12 text-gray-400 cursor-pointer hover:text-blue-600 transition-colors"
+                      className="w-12 h-12 text-gray-400 dark:text-gray-500 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                       onClick={() => {
                         handleAddNewImage?.(stepNumber);
                       }}

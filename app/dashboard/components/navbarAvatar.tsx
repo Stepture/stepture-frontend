@@ -15,9 +15,9 @@ const NavBarAvatar = () => {
             alt="User Avatar"
             width={32}
             height={32}
-            className="rounded-full mr-2 border border-gray-300"
+            className="rounded-full mr-2 border border-gray-300 dark:invert"
           />
-          <span className="text-slate-800 font-semibold text-sm">
+          <span className="text-slate-800 dark:text-white font-semibold text-sm">
             {user?.name}
           </span>
         </>

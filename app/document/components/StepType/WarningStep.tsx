@@ -56,14 +56,14 @@ const WarningStep: React.FC<WarningStepProps> = ({
 
   return (
     <div
-      className={`screenshot-item border border-red-200 rounded-lg p-4 bg-red-50 flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
+      className={`screenshot-item border border-red-200 dark:border-red-700 rounded-lg p-4 bg-red-50 dark:bg-red-900/30 flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
         isDragging ? "shadow-lg scale-105" : ""
       }`}
     >
       <div className="flex items-start gap-2 text-sm font-medium w-full">
         {mode === "edit" ? (
           <span
-            className="cursor-grab active:cursor-grabbing hover:text-red-800"
+            className="cursor-grab active:cursor-grabbing hover:text-red-800 dark:hover:text-red-300"
             {...(dragAttributes as DraggableAttributes)}
             {...(dragListeners as SyntheticListenerMap)}
           >
@@ -71,11 +71,11 @@ const WarningStep: React.FC<WarningStepProps> = ({
           </span>
         ) : (
           <div className="flex items-center gap-2 justify-center">
-            <div className="w-6 h-6 rounded-full font-semibold text-blue-600 bg-slate-200 p-4 flex items-center justify-center text-center">
+            <div className="w-6 h-6 rounded-full font-semibold text-blue-600 dark:text-blue-300 bg-slate-200 dark:bg-slate-600 p-4 flex items-center justify-center text-center">
               {index + 1}
             </div>
 
-            <AlertTriangle className="w-4 h-4 text-red-600" />
+            <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400" />
           </div>
         )}
         <div className="flex-1 ml-4 mt-1">
@@ -83,8 +83,8 @@ const WarningStep: React.FC<WarningStepProps> = ({
             ref={inputRef}
             className={`rounded-md w-full h-auto resize-none break-words break-all text-base ${
               mode === "edit"
-                ? "border-red-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-red-100 focus:ring-2 focus:ring-red-500 font-normal"
-                : "font-medium bg-transparent border-none cursor-default text-red-800"
+                ? "border-red-300 dark:border-red-600 bg-white dark:bg-slate-700 px-2 cursor-text border-none focus:outline-none ring-2 ring-red-100 dark:ring-red-700 focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 font-normal text-gray-900 dark:text-gray-100"
+                : "font-medium bg-transparent border-none cursor-default text-red-800 dark:text-red-300"
             }`}
             value={stepDescription}
             readOnly={mode !== "edit"}
@@ -109,7 +109,7 @@ const WarningStep: React.FC<WarningStepProps> = ({
         </div>
         {mode === "edit" && (
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-red-100 transition-colors">
+            <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-sm cursor-pointer hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
               <CustomAlertDialog
                 title="Delete Warning Step"
                 description={`Are you sure you want to delete this warning step? `}
@@ -118,7 +118,7 @@ const WarningStep: React.FC<WarningStepProps> = ({
                   <Trash
                     aria-label="Delete Step"
                     role="button"
-                    className="w-6 h-6 text-red-500 cursor-pointer hover:text-red-700 transition-colors"
+                    className="w-6 h-6 text-red-500 dark:text-red-400 cursor-pointer hover:text-red-700 dark:hover:text-red-300 transition-colors"
                   />
                 }
               />
