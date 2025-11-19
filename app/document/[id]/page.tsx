@@ -77,14 +77,14 @@ const Page = async ({ params, searchParams }: Props) => {
   if (!data) {
     // Document not found or access denied
     return (
-      <div className="w-full mx-auto p-4">
-        <div className="text-center text-red-500 py-10">
+      <div className="w-full mx-auto p-4 bg-white dark:bg-slate-700 min-h-screen">
+        <div className="text-center text-red-500 dark:text-red-400 py-10">
           <h2 className="text-xl font-semibold mb-2">Document Not Available</h2>
           <p>
             This document may be private, does not exist, or you may not have
             permission to view it.
           </p>
-          <p className="mt-4 text-sm text-gray-500">
+          <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
             Please check the link or contact the document owner.
           </p>
         </div>
@@ -93,7 +93,7 @@ const Page = async ({ params, searchParams }: Props) => {
   }
 
   return (
-    <div className="w-full mx-auto p-4">
+    <div className="w-full mx-auto p-4 bg-white dark:bg-slate-700 min-h-screen">
       <div data-print-target="screenshot-viewer">
         <DocumentDetailsList
           captures={data as CaptureResponse}

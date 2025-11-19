@@ -55,14 +55,14 @@ const HeaderStep: React.FC<HeaderStepProps> = ({
 
   return (
     <div
-      className={`screenshot-item bg-gray-50 py-4 px-6 transition-all duration-200 ${
+      className={`screenshot-item bg-gray-50 dark:bg-slate-600 py-4 px-6 transition-all duration-200 ${
         isDragging ? "shadow-lg scale-105" : ""
       }`}
     >
       <div className="flex items-center gap-3 w-full">
         {mode === "edit" && (
           <span
-            className="cursor-grab active:cursor-grabbing hover:text-gray-600 flex-shrink-0"
+            className="cursor-grab active:cursor-grabbing hover:text-gray-600 dark:hover:text-gray-300 flex-shrink-0"
             {...(dragAttributes as DraggableAttributes)}
             {...(dragListeners as SyntheticListenerMap)}
           >
@@ -72,9 +72,9 @@ const HeaderStep: React.FC<HeaderStepProps> = ({
         <div className="flex-1">
           <textarea
             ref={inputRef}
-            className={`w-full h-auto resize-none font-semibold text-xl text-gray-700 underline text-center break-words break-all ${
+            className={`w-full h-auto resize-none font-semibold text-xl text-gray-700 dark:text-gray-100 underline text-center break-words break-all ${
               mode === "edit"
-                ? "bg-white border border-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                ? "bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
                 : "bg-transparent border-none cursor-default"
             }`}
             value={stepDescription}

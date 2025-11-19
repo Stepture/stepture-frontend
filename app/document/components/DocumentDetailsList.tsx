@@ -583,13 +583,15 @@ export default function DocumentDetailsList({
       className="w-full max-w-4xl mx-auto px-4 py-8 space-y-6 relative"
     >
       {documentUpdateLoading ? (
-        <div className="fixed inset-0 flex items-center justify-center bg-slate-200 backdrop-blur-md z-50">
-          <div className="absolute inset-0 bg-gray-900/10"></div>
+        <div className="fixed inset-0 flex items-center justify-center bg-slate-200 dark:bg-slate-800 backdrop-blur-md z-50">
+          <div className="absolute inset-0 bg-gray-900/10 dark:bg-gray-900/30"></div>
           <div className="relative z-10 flex flex-col items-center justify-center space-y-4">
-            <Loader className="w-12 h-12 text-blue-300 animate-spin" />
+            <Loader className="w-12 h-12 text-blue-300 dark:text-blue-400 animate-spin" />
             <div className="text-center">
-              <p className="text-gray-700 font-medium">Updating document...</p>
-              <p className="text-gray-500 text-sm mt-1">
+              <p className="text-gray-700 dark:text-gray-200 font-medium">
+                Updating document...
+              </p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
                 Please wait for a moment
               </p>
             </div>
@@ -600,19 +602,19 @@ export default function DocumentDetailsList({
           {mode === "edit" && (
             <div
               ref={headerRef}
-              className="sticky top-2 left-0 z-50 w-full flex items-center justify-between p-4 bg-blue-100 backdrop-blur-sm border-b border-gray-100 rounded-lg"
+              className="sticky top-2 left-0 z-50 w-full flex items-center justify-between p-4 bg-blue-100 dark:bg-slate-600 backdrop-blur-sm border-b border-gray-100 dark:border-gray-600 rounded-lg"
             >
               <div className="flex items-center gap-4">
                 <button
                   onClick={scrollToTop}
-                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                  className="text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors cursor-pointer"
                 >
                   ↑ Scroll to top
                 </button>
 
                 <div className="flex items-center">
-                  <div className="flex gap-2 border-1 border-gray-300 rounded-md px-3 py-1 bg-slate-100">
-                    <span className="text-gray-500">
+                  <div className="flex gap-2 border-1 border-gray-300 dark:border-gray-500 rounded-md px-3 py-1 bg-slate-100 dark:bg-slate-700">
+                    <span className="text-gray-500 dark:text-gray-300">
                       Choose annotation color:
                     </span>
                     <button
@@ -649,7 +651,7 @@ export default function DocumentDetailsList({
               <div className="flex gap-2">
                 <button
                   onClick={handleCancelEdit}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors cursor-pointer"
+                  className="px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -687,15 +689,15 @@ export default function DocumentDetailsList({
           )}
 
           <div className="flex items-start gap-4 mb-4">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-b from-[#E3EAFC] to-white flex items-center justify-center flex-shrink-0">
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-b from-[#E3EAFC] to-white dark:from-slate-600 dark:to-slate-700 flex items-center justify-center flex-shrink-0">
               <Image src={Logo} alt="Logo" width={48} height={48} />
             </div>
             <div className="flex-1 min-w-0">
               <input
                 ref={titleInputRef}
-                className={`text-2xl font-semibold text-gray-900 w-full ${
+                className={`text-2xl font-semibold text-gray-900 dark:text-gray-100 w-full ${
                   mode === "edit"
-                    ? "bg-transparent border-none outline-none ring-2 ring-blue-200 focus:ring-blue-500 focus:ring-offset-2 rounded p-2 mx-2"
+                    ? "bg-transparent border-none outline-none ring-2 ring-blue-200 dark:ring-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 rounded p-2 mx-2"
                     : ""
                 }`}
                 type="text"
@@ -710,9 +712,9 @@ export default function DocumentDetailsList({
               <div className="flex items-center gap-2">
                 <input
                   ref={descriptionInputRef}
-                  className={`text-gray-700 mt-2 break-words w-full ${
+                  className={`text-gray-700 dark:text-gray-300 mt-2 break-words w-full ${
                     mode === "edit"
-                      ? "bg-transparent border-none outline-none ring-2 ring-blue-200 focus:ring-blue-500 focus:ring-offset-2 rounded p-2 mx-2"
+                      ? "bg-transparent border-none outline-none ring-2 ring-blue-200 dark:ring-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 rounded p-2 mx-2"
                       : "bg-transparent border-none cursor-default"
                   }`}
                   type="text"
@@ -733,7 +735,7 @@ export default function DocumentDetailsList({
                   </button>
                 )}
               </div>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mt-3">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mt-3">
                 <div className="flex items-center gap-1">
                   <Image src={PersonIcon} alt="Author" width={16} height={16} />
                   <span>{capturesData?.user?.name || "Unknown Author"}</span>
@@ -777,7 +779,7 @@ export default function DocumentDetailsList({
           </div>
 
           {/* Footer Section */}
-          <footer className="text-center text-gray-500 text-sm mt-8 pt-8 border-t border-gray-100">
+          <footer className="text-center text-gray-500 dark:text-gray-400 text-sm mt-8 pt-8 border-t border-gray-100 dark:border-gray-600">
             <p>© {new Date().getFullYear()} Stepture. All rights reserved.</p>
           </footer>
         </>

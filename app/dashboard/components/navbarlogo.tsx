@@ -47,11 +47,11 @@ const NavbarLogo = () => {
             alt={`${currentItem?.title} Icon`}
             width={20}
             height={20}
-            className="mr-2"
+            className="mr-2 dark:invert"
           />
         )}
       </div>
-      <span className="text-slate-800 text-md font-semibold">
+      <span className="text-slate-800 dark:text-white text-md font-semibold">
         {currentItem?.title}
       </span>
     </>

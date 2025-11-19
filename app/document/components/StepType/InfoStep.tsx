@@ -56,14 +56,14 @@ const InfoStep: React.FC<InfoStepProps> = ({
 
   return (
     <div
-      className={`screenshot-item border border-green-200 rounded-lg p-4 bg-green-50 flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
+      className={`screenshot-item border border-green-200 dark:border-green-700 rounded-lg p-4 bg-green-50 dark:bg-green-900/30 flex flex-col items-start gap-3 shadow-sm transition-all duration-200 ${
         isDragging ? "shadow-lg scale-105" : ""
       }`}
     >
       <div className="flex items-start gap-2 text-sm font-medium w-full">
         {mode === "edit" ? (
           <span
-            className="cursor-grab active:cursor-grabbing hover:text-blue-800"
+            className="cursor-grab active:cursor-grabbing hover:text-blue-800 dark:hover:text-blue-300"
             {...(dragAttributes as DraggableAttributes)}
             {...(dragListeners as SyntheticListenerMap)}
           >
@@ -71,11 +71,11 @@ const InfoStep: React.FC<InfoStepProps> = ({
           </span>
         ) : (
           <div className="flex items-center gap-2 justify-center">
-            <div className="w-6 h-6 rounded-full font-semibold text-blue-600 bg-slate-200 p-4 flex items-center justify-center text-center">
+            <div className="w-6 h-6 rounded-full font-semibold text-blue-600 dark:text-blue-300 bg-slate-200 dark:bg-slate-600 p-4 flex items-center justify-center text-center">
               {index + 1}
             </div>
 
-            <Info className="w-4 h-4 text-green-600" />
+            <Info className="w-4 h-4 text-green-600 dark:text-green-400" />
           </div>
         )}
         <div className="flex-1 ml-4 mt-1">
@@ -83,8 +83,8 @@ const InfoStep: React.FC<InfoStepProps> = ({
             ref={inputRef}
             className={`rounded-md w-full h-auto resize-none break-words break-all text-base ${
               mode === "edit"
-                ? "border-blue-300 bg-white px-2 cursor-text border-none focus:outline-none ring-2 ring-blue-100 focus:ring-2 focus:ring-blue-500 font-normal"
-                : "font-medium bg-transparent border-none cursor-default text-blue-800"
+                ? "border-blue-300 dark:border-blue-600 bg-white dark:bg-slate-700 px-2 cursor-text border-none focus:outline-none ring-2 ring-blue-100 dark:ring-blue-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 font-normal text-gray-900 dark:text-gray-100"
+                : "font-medium bg-transparent border-none cursor-default text-blue-800 dark:text-blue-300"
             }`}
             value={stepDescription}
             readOnly={mode !== "edit"}
@@ -109,7 +109,7 @@ const InfoStep: React.FC<InfoStepProps> = ({
         </div>
         {mode === "edit" && (
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-slate-100 rounded-sm cursor-pointer hover:bg-red-100 transition-colors">
+            <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-sm cursor-pointer hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
               <CustomAlertDialog
                 title="Delete Info Step"
                 description={`Are you sure you want to delete this info step? `}
@@ -118,7 +118,7 @@ const InfoStep: React.FC<InfoStepProps> = ({
                   <Trash
                     aria-label="Delete Step"
                     role="button"
-                    className="w-6 h-6 text-red-500 cursor-pointer hover:text-red-700 transition-colors"
+                    className="w-6 h-6 text-red-500 dark:text-red-400 cursor-pointer hover:text-red-700 dark:hover:text-red-300 transition-colors"
                   />
                 }
               />

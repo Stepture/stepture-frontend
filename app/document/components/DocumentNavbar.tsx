@@ -19,6 +19,7 @@ import { apiClient } from "@/lib/axios-client";
 import { CaptureResponse } from "@/app/document/document.types";
 import { AxiosError } from "axios";
 import { showToast } from "@/components/ui/Common/ShowToast";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const DocumentNavbar = () => {
   const router = useRouter();
@@ -154,20 +155,20 @@ const DocumentNavbar = () => {
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
-    <header className="bg-white shadow-sm w-full relative">
-      <nav className="flex items-center justify-between p-4 text-slate-700 max-w-[1200px] mx-auto">
+    <header className="bg-white dark:bg-slate-700 shadow-sm w-full relative">
+      <nav className="flex items-center justify-between p-4 text-slate-700 dark:text-slate-200 max-w-[1200px] mx-auto">
         {/* Left side - Back/Logo */}
         {isLoading ? (
           // Loading skeleton for left side
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-6 w-6 bg-gray-200 dark:bg-slate-600 rounded animate-pulse"></div>
+            <div className="h-4 w-20 bg-gray-200 dark:bg-slate-600 rounded animate-pulse"></div>
           </div>
         ) : isLoggedIn ? (
           // Dashboard link for logged-in users
           <Link
             href="/dashboard/created"
-            className="flex items-center text-slate-400 text-sm hover:scale-110 transition-ease-in duration-400"
+            className="flex items-center text-slate-400 dark:text-slate-400 text-sm hover:scale-110 transition-ease-in duration-400"
             onClick={closeMobileMenu}
           >
             <Image
@@ -183,7 +184,7 @@ const DocumentNavbar = () => {
           // Stepture logo for non-logged-in users
           <Link
             href="/"
-            className="flex items-center text-slate-700 hover:scale-105 transition-ease-in duration-400"
+            className="flex items-center text-slate-700 dark:text-slate-200 hover:scale-105 transition-ease-in duration-400"
             onClick={closeMobileMenu}
           >
             <Image
@@ -199,11 +200,12 @@ const DocumentNavbar = () => {
 
         {/* Desktop Menu - Right side */}
         <div className="hidden md:flex items-center gap-2">
+          <ThemeToggle />
           {isLoading ? (
             // Loading skeleton
             <div className="flex items-center gap-2">
-              <div className="h-8 w-24 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-8 w-8 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-8 w-24 bg-gray-200 dark:bg-slate-600 rounded animate-pulse"></div>
+              <div className="h-8 w-8 bg-gray-200 dark:bg-slate-600 rounded animate-pulse"></div>
             </div>
           ) : !isLoggedIn ? (
             // Non-logged-in users: only "Login to Stepture" button
@@ -266,14 +268,14 @@ const DocumentNavbar = () => {
 
         {/* Mobile Hamburger Menu Button */}
         <button
-          className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors relative z-50"
+          className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors relative z-50"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle menu"
         >
           {isMobileMenuOpen ? (
-            <X className="h-6 w-6 text-slate-700 stroke-2" />
+            <X className="h-6 w-6 text-slate-700 dark:text-slate-200 stroke-2" />
           ) : (
-            <Menu className="h-6 w-6 text-slate-700 stroke-2" />
+            <Menu className="h-6 w-6 text-slate-700 dark:text-slate-200 stroke-2" />
           )}
         </button>
       </nav>
@@ -290,10 +292,13 @@ const DocumentNavbar = () => {
           {/* Menu content */}
           <div className="relative backdrop-blur-lg shadow-2xl border-b mt-[72px]">
             <div className="p-2 space-y-4">
+              <div className="flex justify-end">
+                <ThemeToggle />
+              </div>
               {isLoading ? (
                 <div className="space-y-3">
-                  <div className="h-12 bg-gray-200 rounded-lg animate-pulse"></div>
-                  <div className="h-12 bg-gray-200 rounded-lg animate-pulse"></div>
+                  <div className="h-12 bg-gray-200 dark:bg-slate-600 rounded-lg animate-pulse"></div>
+                  <div className="h-12 bg-gray-200 dark:bg-slate-600 rounded-lg animate-pulse"></div>
                 </div>
               ) : !isLoggedIn ? (
                 <div className="w-full">
