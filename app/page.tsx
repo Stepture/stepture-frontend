@@ -60,7 +60,7 @@ export default function Page() {
         />
 
         {/* HERO (centered) */}
-        <div className="relative z-10 mx-auto max-w-4xl px-6 pt-[220px] pb-12 md:pb-16">
+        <div className="relative z-10 mx-auto max-w-4xl px-6 pt-[220px] pb-16 md:pb-24">
           <div className="relative text-center inline-block w-full">
             {/* outline arrow at START of headline */}
             <Image
@@ -102,12 +102,22 @@ export default function Page() {
             </a>
           </div>
         </div>
+      </section>
 
-        {/* INTRO VIDEO (inside the hero, below the CTA) */}
-        <div className="relative z-10 mx-auto max-w-[980px] px-4 lg:px-0 pb-16 md:pb-24">
-          {/* Glass frame over the hero gradient */}
-          <div className="rounded-[24px] bg-white/20 p-2 md:p-3 ring-1 ring-white/40 backdrop-blur-sm shadow-[0_30px_80px_rgba(30,45,110,0.35)]">
-            <div className="rounded-[18px] bg-white p-2 md:p-3">
+      {/* ===== INTRO VIDEO ===== */}
+      <section id="demo" className="bg-white">
+        <div className="mx-auto max-w-[980px] px-6 lg:px-0 py-16 md:py-20">
+          <h2 className="text-center text-3xl md:text-[32px] font-extrabold text-slate-800">
+            See Stepture in Action
+          </h2>
+          <p className="mt-3 text-center text-slate-500 max-w-2xl mx-auto">
+            Watch a workflow turn into a polished, shareable guide in under a
+            minute.
+          </p>
+
+          {/* Gradient panel with a white frame around the video */}
+          <div className="mt-10 rounded-[24px] bg-gradient-to-b from-[#DDE6FF] via-[#EEF3FF] to-transparent p-4 md:p-8">
+            <div className="rounded-[18px] bg-white ring-1 ring-slate-200 p-2 md:p-3 shadow-md">
               <video
                 src="/assets/landingpage/stepture-intro.mp4"
                 poster="/assets/landingpage/stepture-intro-poster.jpg"
