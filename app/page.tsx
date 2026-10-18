@@ -148,9 +148,7 @@ export default function Page() {
             Why Choose Us
           </h2>
           <p className="mt-3 text-center text-slate-500 max-w-2xl mx-auto">
-            Stepture captures your actions and instantly turns them into
-            polished guides you can share, embed, or export—no manual
-            screenshots or writing needed.
+            Everything you need to document a process, without the busywork.
           </p>
 
           <div className="mt-12 grid gap-10 sm:grid-cols-3">
@@ -211,80 +209,11 @@ export default function Page() {
           </div>
         </div>
       </section>
-      {/* ===== HOW STEPTURE WORKS ===== */}
-      <section id="how" className="bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
-          {/* Centered title */}
-          <h2 className="text-3xl md:text-[32px] font-extrabold text-slate-800 text-center">
-            How Stepture Works
-          </h2>
-
-          <div className="mt-12 grid md:grid-cols-2 gap-12 items-center">
-            {/* Left: Steps */}
-            <div className="relative">
-              {/* Vertical dotted line */}
-              <div className="absolute left-[9px] top-3 bottom-3 w-px border-l-2 border-dotted border-gray-300"></div>
-
-              <div className="space-y-10">
-                {/* Step 1 */}
-                <div className="relative pl-10">
-                  <span className="absolute left-0 top-1 w-5 h-5 rounded-full bg-[#80A7FF] border-2 border-white shadow ring-2 ring-[#80A7FF]" />
-                  <h3 className="font-semibold text-slate-800">
-                    Click And Capture
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
-                    Start by clicking the Stepture extension or app. Perform
-                    your task as usual. Stepture quietly tracks your actions in
-                    the background.
-                  </p>
-                </div>
-
-                {/* Step 2 */}
-                <div className="relative pl-10">
-                  <span className="absolute left-0 top-1 w-5 h-5 rounded-full bg-[#80A7FF] border-2 border-white shadow ring-2 ring-[#80A7FF]" />
-                  <h3 className="font-semibold text-slate-800">
-                    Auto-Generate A Guide
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
-                    When you&apos;tre done, Stepture will automatically create a
-                    clean, step-by-step guide including screenshots, titles, and
-                    clear instructions.
-                  </p>
-                </div>
-
-                {/* Step 3 */}
-                <div className="relative pl-10">
-                  <span className="absolute left-0 top-1 w-5 h-5 rounded-full bg-[#80A7FF] border-2 border-white shadow ring-2 ring-[#80A7FF]" />
-                  <h3 className="font-semibold text-slate-800">
-                    Share Or Export Instantly
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
-                    Copy a shareable link, or embed the guide in your docs,
-                    wikis, or help desk tools. Your guide is ready to use in
-                    just seconds.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Right: Graphic */}
-            <div className="flex justify-center">
-              <Image
-                src="/assets/landingpage/Howitworks.png"
-                alt="How Stepture Works"
-                width={450}
-                height={450}
-                priority
-              />
-            </div>
-          </div>
-        </div>
-      </section>
       {/* ===== CREATE & SHARE (FEATURES GRID) ===== */}
       <section id="features" className="bg-white">
         <div className="mx-auto max-w-[1200px] px-6 py-16 md:py-20">
           <h2 className="text-center text-3xl md:text-[32px] font-extrabold text-slate-800">
-            Create and Share Documentations in Easiest Way
+            Create and Share Documentation the Easy Way
           </h2>
 
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -301,13 +230,13 @@ export default function Page() {
               },
               {
                 img: "/assets/landingpage/Aigenerated.png",
-                title: "AI-Generated",
-                desc: "Instantly generate structured SOPs, how-tos, or onboarding docs using smart automation.",
+                title: "AI Step Refinement",
+                desc: "Let AI rewrite your captured steps into clear, easy-to-follow instructions in one click.",
               },
               {
                 img: "/assets/landingpage/Sensitiveinfo.png",
                 title: "Sensitive Info Redaction",
-                desc: "Blur out emails, names, and private data automatically to stay secure and compliant.",
+                desc: "Blur emails, names, and private data with a quick drag before you share.",
               },
               {
                 img: "/assets/landingpage/Edit.png",
@@ -317,7 +246,7 @@ export default function Page() {
               {
                 img: "/assets/landingpage/Easysharing.png",
                 title: "Easy Sharing & Export",
-                desc: "Copy a link, embed in Notion or Confluence, or export as branded PDFs in one click.",
+                desc: "Share a public link, or export your guide to PDF or Markdown in one click.",
               },
             ].map(({ img, title, desc }) => (
               <div
@@ -377,9 +306,6 @@ export default function Page() {
                   </li>
                   <li>
                     <a href="#why">Why Us</a>
-                  </li>
-                  <li>
-                    <a href="#how">How it works</a>
                   </li>
                   <li>
                     <a
