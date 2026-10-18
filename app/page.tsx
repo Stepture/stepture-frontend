@@ -88,7 +88,7 @@ export default function Page() {
 
           <p className="mt-5 mx-auto max-w-2xl text-center text-white/85">
             Stepture captures your actions and instantly turns them into
-            polished guides you can share, embed, or export—no manual
+            polished guides you can share or export—no manual
             screenshots or writing needed.
           </p>
 
@@ -141,76 +141,8 @@ export default function Page() {
         </div>
       </section>
 
-      {/* ===== WHY CHOOSE US ===== */}
-      <section id="why" className="bg-[#FBFAFB]">
-        <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
-          <h2 className="text-center text-3xl md:text-[32px] font-extrabold text-slate-800">
-            Why Choose Us
-          </h2>
-          <p className="mt-3 text-center text-slate-500 max-w-2xl mx-auto">
-            Everything you need to document a process, without the busywork.
-          </p>
-
-          <div className="mt-12 grid gap-10 sm:grid-cols-3">
-            {/* Save Time */}
-            <div className="text-center">
-              <div className="mx-auto h-16 w-16">
-                <Image
-                  src="/assets/landingpage/Savetime.png"
-                  alt="Save Time"
-                  width={64}
-                  height={64}
-                  className="mx-auto"
-                />
-              </div>
-              <h3 className="mt-4 font-semibold text-slate-800">Save Time</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Create guidelines in most easiest ways in seconds
-              </p>
-            </div>
-
-            {/* Private & Secure */}
-            <div className="text-center">
-              <div className="mx-auto h-16 w-16">
-                <Image
-                  src="/assets/landingpage/Privacy.png"
-                  alt="Private & Secure"
-                  width={64}
-                  height={64}
-                  className="mx-auto"
-                />
-              </div>
-              <h3 className="mt-4 font-semibold text-slate-800">
-                Private & Secure
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Your data stays safe, with zero setup or complexity.
-              </p>
-            </div>
-
-            {/* Built For Real Workflows */}
-            <div className="text-center">
-              <div className="mx-auto h-16 w-16">
-                <Image
-                  src="/assets/landingpage/Workflow.png"
-                  alt="Built For Real Workflows"
-                  width={64}
-                  height={64}
-                  className="mx-auto"
-                />
-              </div>
-              <h3 className="mt-4 font-semibold text-slate-800">
-                Built For Real Workflows
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Create, edit, and share guides that actually get used.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
       {/* ===== CREATE & SHARE (FEATURES GRID) ===== */}
-      <section id="features" className="bg-white">
+      <section id="features" className="bg-[#FBFAFB]">
         <div className="mx-auto max-w-[1200px] px-6 py-16 md:py-20">
           <h2 className="text-center text-3xl md:text-[32px] font-extrabold text-slate-800">
             Create and Share Documentation the Easy Way
@@ -274,6 +206,74 @@ export default function Page() {
         </div>
       </section>
 
+      {/* ===== WHY CHOOSE US ===== */}
+      <section id="why" className="bg-white">
+        <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
+          <h2 className="text-center text-3xl md:text-[32px] font-extrabold text-slate-800">
+            Why Choose Us
+          </h2>
+          <p className="mt-3 text-center text-slate-500 max-w-2xl mx-auto">
+            Everything you need to document a process, without the busywork.
+          </p>
+
+          <div className="mt-12 grid gap-10 sm:grid-cols-3">
+            {/* Save Time */}
+            <div className="text-center">
+              <div className="mx-auto h-16 w-16">
+                <Image
+                  src="/assets/landingpage/Savetime.png"
+                  alt="Save Time"
+                  width={64}
+                  height={64}
+                  className="mx-auto"
+                />
+              </div>
+              <h3 className="mt-4 font-semibold text-slate-800">Save Time</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Create step-by-step guides in seconds
+              </p>
+            </div>
+
+            {/* Private & Secure */}
+            <div className="text-center">
+              <div className="mx-auto h-16 w-16">
+                <Image
+                  src="/assets/landingpage/Privacy.png"
+                  alt="Private & Secure"
+                  width={64}
+                  height={64}
+                  className="mx-auto"
+                />
+              </div>
+              <h3 className="mt-4 font-semibold text-slate-800">
+                Private & Secure
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Your data stays safe, with zero setup or complexity.
+              </p>
+            </div>
+
+            {/* Built For Real Workflows */}
+            <div className="text-center">
+              <div className="mx-auto h-16 w-16">
+                <Image
+                  src="/assets/landingpage/Workflow.png"
+                  alt="Built For Real Workflows"
+                  width={64}
+                  height={64}
+                  className="mx-auto"
+                />
+              </div>
+              <h3 className="mt-4 font-semibold text-slate-800">
+                Built For Real Workflows
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Create, edit, and share guides that actually get used.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
       {/* ===== FOOTER ===== */}
       <footer className="w-full bg-gradient-to-r from-[#6878CA] to-[#344982] text-white">
         <div className="max-w-[1440px] mx-auto px-8 py-12 flex flex-col md:flex-row justify-between items-start gap-12">
