@@ -14,7 +14,7 @@ export default function PrivacyPolicyPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Privacy Policy
           </h1>
-          <p className="text-gray-600">Last updated: August 26, 2025</p>
+          <p className="text-gray-600">Last updated: October 19, 2026</p>
         </div>
 
         <div className="prose prose-lg max-w-none">
@@ -131,6 +131,17 @@ export default function PrivacyPolicyPage() {
                 and your Google Drive
               </li>
             </ul>
+
+            <h3 className="text-xl font-medium text-gray-900 mb-3">
+              Website Analytics
+            </h3>
+            <p className="text-gray-700 mb-4">
+              On our landing page we use Umami, a privacy-focused analytics
+              service, to count visits and clicks on the Download button. Umami
+              does not use cookies and does not collect personal information. It
+              records anonymous, aggregated data such as the page visited, the
+              referring website, browser and device type, and country.
+            </p>
 
             <h3 className="text-xl font-medium text-gray-900 mb-3">
               Database Storage
