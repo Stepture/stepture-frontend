@@ -130,36 +130,6 @@ export default function Page() {
               </video>
             </div>
           </div>
-
-          {/* Independent overlays (NOT inside the frame) so they won't be clipped */}
-          {/* Positioned relative to the centered 980px area; hidden below lg where they would overflow */}
-          <Image
-            src="/assets/landingpage/Bhone.png"
-            alt="Bhone"
-            width={96}
-            height={40}
-            className="pointer-events-none select-none absolute hidden lg:block top-1/2 -translate-y-1/2 z-20"
-            style={{ left: "calc(50% - 490px - 18px)" }}
-            aria-hidden
-          />
-          <Image
-            src="/assets/landingpage/MMM.png"
-            alt="MMM"
-            width={96}
-            height={40}
-            className="pointer-events-none select-none absolute hidden lg:block top-1/2 -translate-y-1/2 z-20"
-            style={{ right: "calc(50% - 490px - 18px)" }}
-            aria-hidden
-          />
-          <Image
-            src="/assets/landingpage/Bee.png"
-            alt="Bee"
-            width={110}
-            height={46}
-            className="pointer-events-none select-none absolute hidden lg:block z-20"
-            style={{ right: "calc(50% - 490px + 24px)", bottom: "26px" }}
-            aria-hidden
-          />
         </div>
       </section>
 
