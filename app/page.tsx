@@ -71,7 +71,7 @@ export default function Page() {
           width={350}
           height={350}
           priority
-          className="pointer-events-none select-none absolute left-[14%] top-[18%] max-w-none opacity-80"
+          className="pointer-events-none select-none absolute left-[14%] top-[115px] max-w-none opacity-80"
           aria-hidden
         />
         <Image
@@ -80,12 +80,12 @@ export default function Page() {
           width={500}
           height={500}
           priority
-          className="pointer-events-none select-none absolute right-[9%] top-[15%] max-w-none opacity-100"
+          className="pointer-events-none select-none absolute right-[9%] top-[96px] max-w-none opacity-100"
           aria-hidden
         />
 
         {/* HERO (centered) */}
-        <div className="relative z-10 mx-auto max-w-4xl px-6 pt-[220px] pb-16 md:pb-24">
+        <div className="relative z-10 mx-auto max-w-4xl px-6 pt-[220px] pb-28 md:pb-52">
           <div className="relative text-center inline-block w-full">
             {/* outline arrow at START of headline */}
             <Image
@@ -142,6 +142,65 @@ export default function Page() {
               Privacy Policy
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* ===== INTRO VIDEO (pulled up to overlap the hero's bottom edge) ===== */}
+      <section id="demo" className="relative z-10 flow-root bg-[#FBFAFB]">
+        <div className="relative mx-auto -mt-20 md:-mt-40 max-w-[980px] px-4 lg:px-0 pb-4 md:pb-8">
+          {/* Glass frame so the video reads against both the hero gradient and the page */}
+          <div className="rounded-[24px] bg-white/20 p-2 md:p-3 ring-1 ring-white/40 backdrop-blur-sm shadow-[0_30px_80px_rgba(30,45,110,0.35)]">
+            <div className="rounded-[18px] bg-white p-2 md:p-3">
+              <video
+                src="/assets/landingpage/stepture-intro.mp4"
+                poster="/assets/landingpage/stepture-intro-poster.jpg"
+                width={1920}
+                height={1080}
+                className="w-full h-auto aspect-video rounded-[12px] bg-[#334982]"
+                controls
+                playsInline
+                preload="metadata"
+                aria-label="Stepture introduction video"
+              >
+                <track
+                  kind="captions"
+                  src="/assets/landingpage/stepture-intro.en.vtt"
+                  srcLang="en"
+                  label="English"
+                />
+              </video>
+            </div>
+          </div>
+
+          {/* Independent overlays (NOT inside the frame) so they won't be clipped */}
+          {/* Positioned relative to the centered 980px area; hidden below lg where they would overflow */}
+          <Image
+            src="/assets/landingpage/Bhone.png"
+            alt="Bhone"
+            width={96}
+            height={40}
+            className="pointer-events-none select-none absolute hidden lg:block top-1/2 -translate-y-1/2 z-20"
+            style={{ left: "calc(50% - 490px - 18px)" }}
+            aria-hidden
+          />
+          <Image
+            src="/assets/landingpage/MMM.png"
+            alt="MMM"
+            width={96}
+            height={40}
+            className="pointer-events-none select-none absolute hidden lg:block top-1/2 -translate-y-1/2 z-20"
+            style={{ right: "calc(50% - 490px - 18px)" }}
+            aria-hidden
+          />
+          <Image
+            src="/assets/landingpage/Bee.png"
+            alt="Bee"
+            width={110}
+            height={46}
+            className="pointer-events-none select-none absolute hidden lg:block z-20"
+            style={{ right: "calc(50% - 490px + 24px)", bottom: "26px" }}
+            aria-hidden
+          />
         </div>
       </section>
 
@@ -284,124 +343,6 @@ export default function Page() {
           </div>
         </div>
       </section>
-      {/* ===== LOOK HOW EASY IT IS ===== */}
-      <section className="relative bg-[#FBFAFB] overflow-hidden">
-        {/* Edge graphics FLUSH to section edges (no gap) */}
-        <Image
-          src="/assets/landingpage/Howeasy1.png"
-          alt=""
-          width={240}
-          height={240}
-          className="pointer-events-none select-none absolute top-0 right-0 z-0 opacity-20"
-          aria-hidden
-        />
-        <Image
-          src="/assets/landingpage/Howeasy2.png"
-          alt=""
-          width={240}
-          height={240}
-          className="pointer-events-none select-none absolute bottom-0 left-0 z-0 opacity-20"
-          aria-hidden
-        />
-
-        {/* Max-width content */}
-        <div className="relative z-10 max-w-[1440px] mx-auto px-6 py-16 md:py-20">
-          {/* Heading: centered block; pill + dotted box left-aligned inside */}
-          <div className="text-center">
-            <div className="relative inline-block text-left">
-              {/* MB Traid pill (top-left) */}
-              <span className="absolute -top-5 left-0 bg-[#8EACFE] text-white text-[11px] font-semibold px-3 py-1">
-                MB Traid
-              </span>
-
-              {/* Dotted rectangle (no arrow) */}
-              <div className="inline-block border-2 border-dashed border-[#8EACFE] px-8 py-2">
-                <h2 className="text-[28px] md:text-[32px] font-extrabold text-slate-800">
-                  Look How Easy It Is
-                </h2>
-              </div>
-            </div>
-
-            {/* <p className="mt-4 text-slate-400 max-w-xl mx-auto text-sm md:text-base">
-              Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting
-              Industry.
-            </p> */}
-          </div>
-
-          {/* Centered demo frame — gradient clearly visible around the image */}
-          <div className="relative mx-auto mt-10 max-w-[980px]">
-            {/* Gradient panel with padding all around */}
-            <div className="rounded-[24px] bg-gradient-to-b from-[#DDE6FF] via-[#EEF3FF] to-transparent p-6 md:p-8">
-              {/* White frame */}
-              <div className="relative rounded-[18px] bg-white/95 ring-1 ring-slate-200 p-3 shadow-md">
-                {/* Intro video centered and smaller so gradient shows */}
-                <div className="relative mx-auto max-w-[860px]">
-                  <video
-                    src="/assets/landingpage/stepture-intro.mp4"
-                    poster="/assets/landingpage/stepture-intro-poster.jpg"
-                    width={1920}
-                    height={1080}
-                    className="w-full h-auto aspect-video rounded-[12px] mx-auto bg-[#334982]"
-                    controls
-                    playsInline
-                    preload="metadata"
-                    aria-label="Stepture introduction video"
-                  >
-                    <track
-                      kind="captions"
-                      src="/assets/landingpage/stepture-intro.en.vtt"
-                      srcLang="en"
-                      label="English"
-                    />
-                  </video>
-                </div>
-              </div>
-            </div>
-
-            {/* Independent overlays (NOT inside the frame) so they won't be clipped */}
-            {/* Positioned relative to the centered 980px area */}
-            <Image
-              src="/assets/landingpage/Bhone.png"
-              alt="Bhone"
-              width={96}
-              height={40}
-              className="pointer-events-none select-none absolute top-1/2 -translate-y-1/2 z-20"
-              style={{ left: "calc(50% - 490px - 18px)" }}
-              aria-hidden
-            />
-            <Image
-              src="/assets/landingpage/MMM.png"
-              alt="MMM"
-              width={96}
-              height={40}
-              className="pointer-events-none select-none absolute top-1/2 -translate-y-1/2 z-20"
-              style={{ right: "calc(50% - 490px - 18px)" }}
-              aria-hidden
-            />
-            <Image
-              src="/assets/landingpage/Bee.png"
-              alt="Bee"
-              width={110}
-              height={46}
-              className="pointer-events-none select-none absolute z-20"
-              style={{ right: "calc(50% - 490px + 24px)", bottom: "-6px" }}
-              aria-hidden
-            />
-          </div>
-
-          {/* CTA (centered) */}
-          <div className="text-center mt-1">
-            <a
-              href="https://chromewebstore.google.com/detail/stepture-automated-docume/mjefhbjefkfflljnddillegbhmfiahmi"
-              target="_blank"
-              className="inline-block rounded-full bg-gradient-to-r from-[#6777C9] to-[#334982] text-white px-6 py-3 font-semibold shadow-md hover:opacity-90"
-            >
-              Try Stepture
-            </a>
-          </div>
-        </div>
-      </section>
-
       {/* ===== CREATE & SHARE (FEATURES GRID) ===== */}
       <section id="features" className="bg-white">
         <div className="mx-auto max-w-[1200px] px-6 py-16 md:py-20">
