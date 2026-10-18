@@ -334,24 +334,26 @@ export default function Page() {
             <div className="rounded-[24px] bg-gradient-to-b from-[#DDE6FF] via-[#EEF3FF] to-transparent p-6 md:p-8">
               {/* White frame */}
               <div className="relative rounded-[18px] bg-white/95 ring-1 ring-slate-200 p-3 shadow-md">
-                {/* Dummy video centered and smaller so gradient shows */}
+                {/* Intro video centered and smaller so gradient shows */}
                 <div className="relative mx-auto max-w-[860px]">
-                  <Image
-                    src="/assets/landingpage/Dummyvid.png"
-                    alt="Demo placeholder"
-                    width={860}
-                    height={480}
-                    className="w-full h-auto rounded-[12px] mx-auto"
-                    priority
-                  />
-
-                  {/* Play button */}
-                  <button
-                    aria-label="Play"
-                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-14 w-14 rounded-full bg-white/90 text-[#5368AC] grid place-items-center shadow-md"
+                  <video
+                    src="/assets/landingpage/stepture-intro.mp4"
+                    poster="/assets/landingpage/stepture-intro-poster.jpg"
+                    width={1920}
+                    height={1080}
+                    className="w-full h-auto aspect-video rounded-[12px] mx-auto bg-[#334982]"
+                    controls
+                    playsInline
+                    preload="metadata"
+                    aria-label="Stepture introduction video"
                   >
-                    ▶
-                  </button>
+                    <track
+                      kind="captions"
+                      src="/assets/landingpage/stepture-intro.en.vtt"
+                      srcLang="en"
+                      label="English"
+                    />
+                  </video>
                 </div>
               </div>
             </div>
