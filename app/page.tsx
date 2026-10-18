@@ -27,32 +27,7 @@ export default function Page() {
                 priority
               />
             </div>
-            <div className="w-full">
-              <nav className="hidden md:flex justify-center gap-10 text-white/90 text-sm w-full">
-                <a href="#why" className="hover:text-white">
-                  Why Us
-                </a>
-                <a href="#how" className="hover:text-white">
-                  How It Works
-                </a>
-                <a href="#features" className="hover:text-white">
-                  Instruction
-                </a>
-                <a
-                  href="/privacy-policy"
-                  className="hover:text-white font-semibold border border-white/30 px-3 py-1 rounded-full"
-                >
-                  Privacy Policy
-                </a>
-              </nav>
-            </div>
             <div className="flex items-center gap-4">
-              <a
-                href="/privacy-policy"
-                className="md:hidden text-white/90 hover:text-white text-sm border border-white/30 px-2 py-1 rounded-full font-medium"
-              >
-                Privacy Policy
-              </a>
               <a
                 href="https://chromewebstore.google.com/detail/stepture-automated-docume/mjefhbjefkfflljnddillegbhmfiahmi"
                 className="rounded-full bg-white/90 text-[#5368AC] px-5 py-2 text-sm font-semibold hover:bg-white"
