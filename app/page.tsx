@@ -60,7 +60,7 @@ export default function Page() {
         />
 
         {/* HERO (centered) */}
-        <div className="relative z-10 mx-auto max-w-4xl px-6 pt-[220px] pb-28 md:pb-48">
+        <div className="relative z-10 mx-auto max-w-4xl px-6 pt-[220px] pb-12 md:pb-16">
           <div className="relative text-center inline-block w-full">
             {/* outline arrow at START of headline */}
             <Image
@@ -102,12 +102,10 @@ export default function Page() {
             </a>
           </div>
         </div>
-      </section>
 
-      {/* ===== INTRO VIDEO (pulled up to overlap the hero's bottom edge) ===== */}
-      <section id="demo" className="relative z-10 flow-root bg-[#FBFAFB]">
-        <div className="relative mx-auto -mt-20 md:-mt-40 max-w-[980px] px-4 lg:px-0 pb-4 md:pb-8">
-          {/* Glass frame so the video reads against both the hero gradient and the page */}
+        {/* INTRO VIDEO (inside the hero, below the CTA) */}
+        <div className="relative z-10 mx-auto max-w-[980px] px-4 lg:px-0 pb-16 md:pb-24">
+          {/* Glass frame over the hero gradient */}
           <div className="rounded-[24px] bg-white/20 p-2 md:p-3 ring-1 ring-white/40 backdrop-blur-sm shadow-[0_30px_80px_rgba(30,45,110,0.35)]">
             <div className="rounded-[18px] bg-white p-2 md:p-3">
               <video
