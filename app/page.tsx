@@ -27,32 +27,7 @@ export default function Page() {
                 priority
               />
             </div>
-            <div className="w-full">
-              <nav className="hidden md:flex justify-center gap-10 text-white/90 text-sm w-full">
-                <a href="#why" className="hover:text-white">
-                  Why Us
-                </a>
-                <a href="#how" className="hover:text-white">
-                  How It Works
-                </a>
-                <a href="#features" className="hover:text-white">
-                  Instruction
-                </a>
-                <a
-                  href="/privacy-policy"
-                  className="hover:text-white font-semibold border border-white/30 px-3 py-1 rounded-full"
-                >
-                  Privacy Policy
-                </a>
-              </nav>
-            </div>
             <div className="flex items-center gap-4">
-              <a
-                href="/privacy-policy"
-                className="md:hidden text-white/90 hover:text-white text-sm border border-white/30 px-2 py-1 rounded-full font-medium"
-              >
-                Privacy Policy
-              </a>
               <a
                 href="https://chromewebstore.google.com/detail/stepture-automated-docume/mjefhbjefkfflljnddillegbhmfiahmi"
                 className="rounded-full bg-white/90 text-[#5368AC] px-5 py-2 text-sm font-semibold hover:bg-white"
@@ -71,7 +46,7 @@ export default function Page() {
           width={350}
           height={350}
           priority
-          className="pointer-events-none select-none absolute left-[14%] top-[18%] max-w-none opacity-80"
+          className="pointer-events-none select-none absolute left-[14%] top-[115px] max-w-none opacity-80"
           aria-hidden
         />
         <Image
@@ -80,7 +55,7 @@ export default function Page() {
           width={500}
           height={500}
           priority
-          className="pointer-events-none select-none absolute right-[9%] top-[15%] max-w-none opacity-100"
+          className="pointer-events-none select-none absolute right-[9%] top-[96px] max-w-none opacity-100"
           aria-hidden
         />
 
@@ -113,7 +88,7 @@ export default function Page() {
 
           <p className="mt-5 mx-auto max-w-2xl text-center text-white/85">
             Stepture captures your actions and instantly turns them into
-            polished guides you can share, embed, or export—no manual
+            polished guides you can share or export—no manual
             screenshots or writing needed.
           </p>
 
@@ -125,36 +100,120 @@ export default function Page() {
             >
               Download
             </a>
-            <a
-              href="#how"
-              className="px-6 py-3 font-semibold text-white hover:bg-white/10"
-            >
-              See how it works →
-            </a>
           </div>
+        </div>
+      </section>
 
-          {/* Privacy policy link for OAuth verification */}
-          <div className="mt-4 text-center">
-            <a
-              href="/privacy-policy"
-              className="text-white/80 hover:text-white text-sm underline"
-            >
-              Privacy Policy
-            </a>
+      {/* ===== INTRO VIDEO ===== */}
+      <section id="demo" className="bg-white">
+        <div className="mx-auto max-w-[980px] px-6 lg:px-0 py-16 md:py-20">
+          <h2 className="text-center text-3xl md:text-[32px] font-extrabold text-slate-800">
+            See Stepture in Action
+          </h2>
+          <p className="mt-3 text-center text-slate-500 max-w-2xl mx-auto">
+            Watch a workflow turn into a polished, shareable guide in under a
+            minute.
+          </p>
+
+          {/* Gradient panel with a white frame around the video */}
+          <div className="mt-10 rounded-[24px] bg-gradient-to-b from-[#DDE6FF] via-[#EEF3FF] to-transparent p-4 md:p-8">
+            <div className="rounded-[18px] bg-white ring-1 ring-slate-200 p-2 md:p-3 shadow-md">
+              <video
+                src="/assets/landingpage/stepture-intro.mp4"
+                poster="/assets/landingpage/stepture-intro-poster.jpg"
+                width={1920}
+                height={1080}
+                className="w-full h-auto aspect-video rounded-[12px] bg-[#334982]"
+                controls
+                playsInline
+                preload="metadata"
+                aria-label="Stepture introduction video"
+              >
+                <track
+                  kind="captions"
+                  src="/assets/landingpage/stepture-intro.en.vtt"
+                  srcLang="en"
+                  label="English"
+                />
+              </video>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== CREATE & SHARE (FEATURES GRID) ===== */}
+      <section id="features" className="bg-[#FBFAFB]">
+        <div className="mx-auto max-w-[1200px] px-6 py-16 md:py-20">
+          <h2 className="text-center text-3xl md:text-[32px] font-extrabold text-slate-800">
+            Create and Share Documentation the Easy Way
+          </h2>
+
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                img: "/assets/landingpage/Captureweb.png",
+                title: "Capture Any Web Process",
+                desc: "Record any browser-based workflow with just one click — no setup, no friction.",
+              },
+              {
+                img: "/assets/landingpage/Stepswritten.png",
+                title: "Steps Written For You",
+                desc: "Automatically turns your clicks into clear, editable instructions — no typing needed.",
+              },
+              {
+                img: "/assets/landingpage/Aigenerated.png",
+                title: "AI Step Refinement",
+                desc: "Let AI rewrite your captured steps into clear, easy-to-follow instructions in one click.",
+              },
+              {
+                img: "/assets/landingpage/Sensitiveinfo.png",
+                title: "Sensitive Info Redaction",
+                desc: "Blur emails, names, and private data with a quick drag before you share.",
+              },
+              {
+                img: "/assets/landingpage/Edit.png",
+                title: "Edit Anytime",
+                desc: "Tweak steps, rearrange flow, or update screenshots with just a few clicks.",
+              },
+              {
+                img: "/assets/landingpage/Easysharing.png",
+                title: "Easy Sharing & Export",
+                desc: "Share a public link, or export your guide to PDF or Markdown in one click.",
+              },
+            ].map(({ img, title, desc }) => (
+              <div
+                key={title}
+                className="rounded-xl border border-slate-200/70 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+              >
+                {/* image full width */}
+                <Image
+                  src={img}
+                  alt={title}
+                  width={400}
+                  height={250}
+                  className="w-full object-cover"
+                />
+                {/* text */}
+                <div className="p-5">
+                  <h3 className="font-semibold text-slate-800">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                    {desc}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ===== WHY CHOOSE US ===== */}
-      <section id="why" className="bg-[#FBFAFB]">
+      <section id="why" className="bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
           <h2 className="text-center text-3xl md:text-[32px] font-extrabold text-slate-800">
             Why Choose Us
           </h2>
           <p className="mt-3 text-center text-slate-500 max-w-2xl mx-auto">
-            Stepture captures your actions and instantly turns them into
-            polished guides you can share, embed, or export—no manual
-            screenshots or writing needed.
+            Everything you need to document a process, without the busywork.
           </p>
 
           <div className="mt-12 grid gap-10 sm:grid-cols-3">
@@ -171,7 +230,7 @@ export default function Page() {
               </div>
               <h3 className="mt-4 font-semibold text-slate-800">Save Time</h3>
               <p className="mt-2 text-sm leading-6 text-slate-500">
-                Create guidelines in most easiest ways in seconds
+                Create step-by-step guides in seconds
               </p>
             </div>
 
@@ -215,258 +274,6 @@ export default function Page() {
           </div>
         </div>
       </section>
-      {/* ===== HOW STEPTURE WORKS ===== */}
-      <section id="how" className="bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
-          {/* Centered title */}
-          <h2 className="text-3xl md:text-[32px] font-extrabold text-slate-800 text-center">
-            How Stepture Works
-          </h2>
-
-          <div className="mt-12 grid md:grid-cols-2 gap-12 items-center">
-            {/* Left: Steps */}
-            <div className="relative">
-              {/* Vertical dotted line */}
-              <div className="absolute left-[9px] top-3 bottom-3 w-px border-l-2 border-dotted border-gray-300"></div>
-
-              <div className="space-y-10">
-                {/* Step 1 */}
-                <div className="relative pl-10">
-                  <span className="absolute left-0 top-1 w-5 h-5 rounded-full bg-[#80A7FF] border-2 border-white shadow ring-2 ring-[#80A7FF]" />
-                  <h3 className="font-semibold text-slate-800">
-                    Click And Capture
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
-                    Start by clicking the Stepture extension or app. Perform
-                    your task as usual. Stepture quietly tracks your actions in
-                    the background.
-                  </p>
-                </div>
-
-                {/* Step 2 */}
-                <div className="relative pl-10">
-                  <span className="absolute left-0 top-1 w-5 h-5 rounded-full bg-[#80A7FF] border-2 border-white shadow ring-2 ring-[#80A7FF]" />
-                  <h3 className="font-semibold text-slate-800">
-                    Auto-Generate A Guide
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
-                    When you&apos;tre done, Stepture will automatically create a
-                    clean, step-by-step guide including screenshots, titles, and
-                    clear instructions.
-                  </p>
-                </div>
-
-                {/* Step 3 */}
-                <div className="relative pl-10">
-                  <span className="absolute left-0 top-1 w-5 h-5 rounded-full bg-[#80A7FF] border-2 border-white shadow ring-2 ring-[#80A7FF]" />
-                  <h3 className="font-semibold text-slate-800">
-                    Share Or Export Instantly
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
-                    Copy a shareable link, or embed the guide in your docs,
-                    wikis, or help desk tools. Your guide is ready to use in
-                    just seconds.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Right: Graphic */}
-            <div className="flex justify-center">
-              <Image
-                src="/assets/landingpage/Howitworks.png"
-                alt="How Stepture Works"
-                width={450}
-                height={450}
-                priority
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* ===== LOOK HOW EASY IT IS ===== */}
-      <section className="relative bg-[#FBFAFB] overflow-hidden">
-        {/* Edge graphics FLUSH to section edges (no gap) */}
-        <Image
-          src="/assets/landingpage/Howeasy1.png"
-          alt=""
-          width={240}
-          height={240}
-          className="pointer-events-none select-none absolute top-0 right-0 z-0 opacity-20"
-          aria-hidden
-        />
-        <Image
-          src="/assets/landingpage/Howeasy2.png"
-          alt=""
-          width={240}
-          height={240}
-          className="pointer-events-none select-none absolute bottom-0 left-0 z-0 opacity-20"
-          aria-hidden
-        />
-
-        {/* Max-width content */}
-        <div className="relative z-10 max-w-[1440px] mx-auto px-6 py-16 md:py-20">
-          {/* Heading: centered block; pill + dotted box left-aligned inside */}
-          <div className="text-center">
-            <div className="relative inline-block text-left">
-              {/* MB Traid pill (top-left) */}
-              <span className="absolute -top-5 left-0 bg-[#8EACFE] text-white text-[11px] font-semibold px-3 py-1">
-                MB Traid
-              </span>
-
-              {/* Dotted rectangle (no arrow) */}
-              <div className="inline-block border-2 border-dashed border-[#8EACFE] px-8 py-2">
-                <h2 className="text-[28px] md:text-[32px] font-extrabold text-slate-800">
-                  Look How Easy It Is
-                </h2>
-              </div>
-            </div>
-
-            {/* <p className="mt-4 text-slate-400 max-w-xl mx-auto text-sm md:text-base">
-              Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting
-              Industry.
-            </p> */}
-          </div>
-
-          {/* Centered demo frame — gradient clearly visible around the image */}
-          <div className="relative mx-auto mt-10 max-w-[980px]">
-            {/* Gradient panel with padding all around */}
-            <div className="rounded-[24px] bg-gradient-to-b from-[#DDE6FF] via-[#EEF3FF] to-transparent p-6 md:p-8">
-              {/* White frame */}
-              <div className="relative rounded-[18px] bg-white/95 ring-1 ring-slate-200 p-3 shadow-md">
-                {/* Intro video centered and smaller so gradient shows */}
-                <div className="relative mx-auto max-w-[860px]">
-                  <video
-                    src="/assets/landingpage/stepture-intro.mp4"
-                    poster="/assets/landingpage/stepture-intro-poster.jpg"
-                    width={1920}
-                    height={1080}
-                    className="w-full h-auto aspect-video rounded-[12px] mx-auto bg-[#334982]"
-                    controls
-                    playsInline
-                    preload="metadata"
-                    aria-label="Stepture introduction video"
-                  >
-                    <track
-                      kind="captions"
-                      src="/assets/landingpage/stepture-intro.en.vtt"
-                      srcLang="en"
-                      label="English"
-                    />
-                  </video>
-                </div>
-              </div>
-            </div>
-
-            {/* Independent overlays (NOT inside the frame) so they won't be clipped */}
-            {/* Positioned relative to the centered 980px area */}
-            <Image
-              src="/assets/landingpage/Bhone.png"
-              alt="Bhone"
-              width={96}
-              height={40}
-              className="pointer-events-none select-none absolute top-1/2 -translate-y-1/2 z-20"
-              style={{ left: "calc(50% - 490px - 18px)" }}
-              aria-hidden
-            />
-            <Image
-              src="/assets/landingpage/MMM.png"
-              alt="MMM"
-              width={96}
-              height={40}
-              className="pointer-events-none select-none absolute top-1/2 -translate-y-1/2 z-20"
-              style={{ right: "calc(50% - 490px - 18px)" }}
-              aria-hidden
-            />
-            <Image
-              src="/assets/landingpage/Bee.png"
-              alt="Bee"
-              width={110}
-              height={46}
-              className="pointer-events-none select-none absolute z-20"
-              style={{ right: "calc(50% - 490px + 24px)", bottom: "-6px" }}
-              aria-hidden
-            />
-          </div>
-
-          {/* CTA (centered) */}
-          <div className="text-center mt-1">
-            <a
-              href="https://chromewebstore.google.com/detail/stepture-automated-docume/mjefhbjefkfflljnddillegbhmfiahmi"
-              target="_blank"
-              className="inline-block rounded-full bg-gradient-to-r from-[#6777C9] to-[#334982] text-white px-6 py-3 font-semibold shadow-md hover:opacity-90"
-            >
-              Try Stepture
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== CREATE & SHARE (FEATURES GRID) ===== */}
-      <section id="features" className="bg-white">
-        <div className="mx-auto max-w-[1200px] px-6 py-16 md:py-20">
-          <h2 className="text-center text-3xl md:text-[32px] font-extrabold text-slate-800">
-            Create and Share Documentations in Easiest Way
-          </h2>
-
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                img: "/assets/landingpage/Captureweb.png",
-                title: "Capture Any Web Process",
-                desc: "Record any browser-based workflow with just one click — no setup, no friction.",
-              },
-              {
-                img: "/assets/landingpage/Stepswritten.png",
-                title: "Steps Written For You",
-                desc: "Automatically turns your clicks into clear, editable instructions — no typing needed.",
-              },
-              {
-                img: "/assets/landingpage/Aigenerated.png",
-                title: "AI-Generated",
-                desc: "Instantly generate structured SOPs, how-tos, or onboarding docs using smart automation.",
-              },
-              {
-                img: "/assets/landingpage/Sensitiveinfo.png",
-                title: "Sensitive Info Redaction",
-                desc: "Blur out emails, names, and private data automatically to stay secure and compliant.",
-              },
-              {
-                img: "/assets/landingpage/Edit.png",
-                title: "Edit Anytime",
-                desc: "Tweak steps, rearrange flow, or update screenshots with just a few clicks.",
-              },
-              {
-                img: "/assets/landingpage/Easysharing.png",
-                title: "Easy Sharing & Export",
-                desc: "Copy a link, embed in Notion or Confluence, or export as branded PDFs in one click.",
-              },
-            ].map(({ img, title, desc }) => (
-              <div
-                key={title}
-                className="rounded-xl border border-slate-200/70 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-              >
-                {/* image full width */}
-                <Image
-                  src={img}
-                  alt={title}
-                  width={400}
-                  height={250}
-                  className="w-full object-cover"
-                />
-                {/* text */}
-                <div className="p-5">
-                  <h3 className="font-semibold text-slate-800">{title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
-                    {desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ===== FOOTER ===== */}
       <footer className="w-full bg-gradient-to-r from-[#6878CA] to-[#344982] text-white">
         <div className="max-w-[1440px] mx-auto px-8 py-12 flex flex-col md:flex-row justify-between items-start gap-12">
@@ -499,9 +306,6 @@ export default function Page() {
                   </li>
                   <li>
                     <a href="#why">Why Us</a>
-                  </li>
-                  <li>
-                    <a href="#how">How it works</a>
                   </li>
                   <li>
                     <a
