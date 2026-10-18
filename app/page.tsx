@@ -85,7 +85,7 @@ export default function Page() {
         />
 
         {/* HERO (centered) */}
-        <div className="relative z-10 mx-auto max-w-4xl px-6 pt-[220px] pb-28 md:pb-52">
+        <div className="relative z-10 mx-auto max-w-4xl px-6 pt-[220px] pb-28 md:pb-48">
           <div className="relative text-center inline-block w-full">
             {/* outline arrow at START of headline */}
             <Image
@@ -124,22 +124,6 @@ export default function Page() {
               target="_blank"
             >
               Download
-            </a>
-            <a
-              href="#how"
-              className="px-6 py-3 font-semibold text-white hover:bg-white/10"
-            >
-              See how it works →
-            </a>
-          </div>
-
-          {/* Privacy policy link for OAuth verification */}
-          <div className="mt-4 text-center">
-            <a
-              href="/privacy-policy"
-              className="text-white/80 hover:text-white text-sm underline"
-            >
-              Privacy Policy
             </a>
           </div>
         </div>
