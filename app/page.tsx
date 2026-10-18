@@ -1,6 +1,11 @@
 import Image from "next/image";
+import Script from "next/script";
 import { Raleway } from "next/font/google";
 import RotatingWord from "../components/RotatingWord";
+
+// Umami Cloud (cookieless): counts landing page visits and Download clicks.
+// The website ID is public by design; data-domains keeps local dev out of the stats.
+const UMAMI_WEBSITE_ID = "61acab30-3755-43f9-b779-e05b7c6946d8";
 
 const raleway = Raleway({
   subsets: ["latin"],
@@ -10,6 +15,13 @@ const raleway = Raleway({
 export default function Page() {
   return (
     <main className={`${raleway.className} text-slate-900`}>
+      <Script
+        src="https://cloud.umami.is/script.js"
+        data-website-id={UMAMI_WEBSITE_ID}
+        data-domains="stepture.site"
+        strategy="afterInteractive"
+      />
+
       {/* NAV + HERO */}
       <section className="relative overflow-hidden text-white rounded-b-[24px]">
         {/* gradient bg */}
@@ -30,6 +42,8 @@ export default function Page() {
             <div className="flex items-center gap-4">
               <a
                 href="https://chromewebstore.google.com/detail/stepture-automated-docume/mjefhbjefkfflljnddillegbhmfiahmi"
+                data-umami-event="Download click"
+                data-umami-event-location="navbar"
                 className="rounded-full bg-white/90 text-[#5368AC] px-5 py-2 text-sm font-semibold hover:bg-white"
                 target="_blank"
               >
@@ -95,6 +109,8 @@ export default function Page() {
           <div className="mt-8 flex flex-wrap gap-4 justify-center">
             <a
               href="https://chromewebstore.google.com/detail/stepture-automated-docume/mjefhbjefkfflljnddillegbhmfiahmi"
+              data-umami-event="Download click"
+              data-umami-event-location="hero"
               className="rounded-full bg-white text-[#5368AC] px-6 py-3 font-semibold shadow-md hover:opacity-90"
               target="_blank"
             >
@@ -331,6 +347,8 @@ export default function Page() {
             {/* Download button */}
             <a
               href="https://chromewebstore.google.com/detail/stepture-automated-docume/mjefhbjefkfflljnddillegbhmfiahmi"
+              data-umami-event="Download click"
+              data-umami-event-location="footer"
               className="rounded-full bg-white text-[#344982] px-7 py-2 font-medium hover:opacity-90 transition"
               target="_blank"
             >
